@@ -1,8 +1,8 @@
 // DAG: validate-test
 // Cardinality checking tests
 
-import { cardinality } from "@gftdcojp/shapebox-core";
 import { describe, expect, it } from "vitest";
+import { cardinality } from "../../core/dsl/cardinality.ts";
 import { checkCardinality } from "../shape/cardinality-check.ts";
 
 describe("checkCardinality", () => {

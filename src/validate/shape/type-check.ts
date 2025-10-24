@@ -1,7 +1,7 @@
 // DAG: validate-shape
 // @type membership checking
 
-import type { IRI } from "@gftdcojp/shapebox-core";
+import type { IRI } from "../../core/types/iri.ts";
 import type { ShapeViolation } from "../report/types.ts";
 
 /**

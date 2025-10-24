@@ -53,7 +53,7 @@ Shapebox provides compile-time type safety and runtime validation for RDF/JSON-L
 ## Installation
 
 ```bash
-pnpm add @gftdcojp/shapebox-core @gftdcojp/shapebox-validate
+pnpm add @gftdcojp/shapebox
 ```
 
 ## Quick Start
@@ -62,7 +62,7 @@ pnpm add @gftdcojp/shapebox-core @gftdcojp/shapebox-validate
 
 ```typescript
 import { Type } from "@sinclair/typebox";
-import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
+import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox";
 
 const Person = defineShape({
   classIri: iri("ex:Person"),
@@ -97,7 +97,7 @@ const Person = defineShape({
 ### 2. Generate JSON-LD Context
 
 ```typescript
-import { buildContext } from "@gftdcojp/shapebox-core";
+import { buildContext } from "@gftdcojp/shapebox";
 
 const context = buildContext([Person], {
   includeNamespaces: true,
@@ -122,7 +122,7 @@ const context = buildContext([Person], {
 ### 3. Validate Data
 
 ```typescript
-import { validateStruct, validateShape } from "@gftdcojp/shapebox-validate";
+import { validateStruct, validateShape } from "@gftdcojp/shapebox";
 
 const data = {
   "@id": "ex:john",
@@ -225,19 +225,57 @@ This separation allows:
 - **Comunica**: Handle query translation and execution
 - No need to build custom SPARQL DSL (unless advanced UPDATE operations are needed)
 
-## Packages
+## API Reference
 
-| Package | Description |
-|---------|-------------|
-| `@gftdcojp/shapebox-core` | Core types, DSL API, and JSON-LD context generation |
-| `@gftdcojp/shapebox-validate` | Runtime validation (Ajv + ShEx-like shape checking) |
+### DSL Functions
 
-## Examples
+- `iri<T>(uri: string): IRI<T>` - Create a branded IRI type
+- `cardinality(opts)` - Define cardinality constraints
+- `range.datatype(iri)` - Define a literal datatype range
+- `range.shape(shapeId)` - Define a shape reference range
+- `defineShape<T>(def)` - Define a shape (main API)
 
-See `examples/` directory for complete examples:
-- `person.ts`: Person shape definition
-- `project.ts`: Project shape with array properties
-- `usage.ts`: Complete validation workflow
+### Context Generation
+
+- `buildContext(shapes, options?)` - Generate JSON-LD `@context` from shapes
+- `mergeContexts(contexts)` - Merge multiple contexts
+- `extractNamespacePrefixes(shapes)` - Extract namespace prefixes
+
+### Validation Functions
+
+- `validateStruct(shape, data)` - Structural validation (Ajv-based)
+- `validateShape(shape, data)` - Semantic shape validation (ShEx-like)
+- `validateStructBatch(shape, dataArray)` - Validate multiple nodes (structure)
+- `validateShapeBatch(shape, dataArray)` - Validate multiple nodes (shape)
+
+### Report Types
+
+- `ValidationResult` - Structural validation report
+- `ShapeReport` - Shape validation report
+- `ShapeViolation` - Shape constraint violation
+
+## Project Structure
+
+```
+shapebox/
+├── src/
+│   ├── core/                     # Core shape definition and context
+│   │   ├── types/                # Type definitions (IRI, Range, Shape, etc.)
+│   │   ├── dsl/                  # DSL API (defineShape, iri, cardinality, etc.)
+│   │   ├── typecheck/            # Compile-time consistency checks
+│   │   └── context/              # JSON-LD context generation
+│   ├── validate/                 # Validation logic
+│   │   ├── struct/               # Ajv-based structural validation
+│   │   ├── shape/                # ShEx-like shape validation
+│   │   └── report/               # Validation report types
+│   └── index.ts                  # Main entry point
+├── package.json                  # @gftdcojp/shapebox
+├── tsconfig.json
+├── vitest.config.ts
+├── biome.json
+├── story.jsonnet                 # Process network DAG
+└── README.md
+```
 
 ## Design Principles
 
@@ -303,4 +341,3 @@ Copyright 2025 GFTD Co., JP
 **Shapebox** = TypeBox 拡張 + RDF/OWL-lite/SHACL-lite + JSON-LD Context 生成 + ShEx的検証
 
 型安全な意味メタデータと構造検証を統合。
-

@@ -1,8 +1,9 @@
 // DAG: validate-test
 // Range checking tests
 
-import { iri, range } from "@gftdcojp/shapebox-core";
 import { describe, expect, it } from "vitest";
+import { iri } from "../../core/dsl/iri.ts";
+import { range } from "../../core/dsl/range.ts";
 import { checkRange } from "../shape/range-check.ts";
 
 describe("checkRange", () => {

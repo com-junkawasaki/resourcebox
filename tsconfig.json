@@ -6,7 +6,13 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "noEmit": true,
+    "noEmit": false,
+    "emitDeclarationOnly": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -19,17 +25,8 @@
 
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-
-    "baseUrl": ".",
-    "paths": {
-      "@gftdcojp/shapebox-core": ["./packages/core/src/index.ts"],
-      "@gftdcojp/shapebox-validate": ["./packages/validate/src/index.ts"]
-    }
+    "allowSyntheticDefaultImports": true
   },
-  "exclude": ["node_modules", "dist", ".next"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test-d.ts", "examples"]
 }

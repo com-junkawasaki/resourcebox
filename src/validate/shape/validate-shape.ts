@@ -1,7 +1,7 @@
 // DAG: validate-shape
 // Shape validation (ShEx-like local node validation)
 
-import type { Shape } from "@gftdcojp/shapebox-core";
+import type { Shape } from "../../core/types/shape.ts";
 import type { ShapeReport, ShapeViolation } from "../report/types.ts";
 import { checkCardinality } from "./cardinality-check.ts";
 import { checkRange } from "./range-check.ts";

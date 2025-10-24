@@ -1,8 +1,8 @@
 // DAG: validate-shape
 // Range constraint checking
 
-import type { Range } from "@gftdcojp/shapebox-core";
-import { isIRI } from "@gftdcojp/shapebox-core";
+import { isIRI } from "../../core/types/iri.ts";
+import type { Range } from "../../core/types/range.ts";
 import type { ShapeViolation } from "../report/types.ts";
 
 /**

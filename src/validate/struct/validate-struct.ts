@@ -1,7 +1,7 @@
 // DAG: validate-struct
 // Structure validation using Ajv
 
-import type { Shape } from "@gftdcojp/shapebox-core";
+import type { Shape } from "../../core/types/shape.ts";
 import type { ValidationError, ValidationResult } from "../report/types.ts";
 import { getAjvInstance } from "./ajv-setup.ts";
 

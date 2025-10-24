@@ -7,6 +7,16 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@sinclair/typebox':
+        specifier: ^0.32.35
+        version: 0.32.35
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
+      ajv-formats:
+        specifier: ^3.0.1
+        version: 3.0.1(ajv@8.17.1)
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.8.3

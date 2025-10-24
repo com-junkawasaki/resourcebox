@@ -1,7 +1,7 @@
 // DAG: validate-shape
 // Cardinality constraint checking
 
-import type { Cardinality } from "@gftdcojp/shapebox-core";
+import type { Cardinality } from "../../core/types/cardinality.ts";
 import type { ShapeViolation } from "../report/types.ts";
 
 /**

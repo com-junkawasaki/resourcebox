@@ -9,5 +9,6 @@ export default defineConfig({
     reporters: ["dot"],
     testTimeout: 10000,
     hookTimeout: 10000,
+    include: ["src/**/*.test.ts"],
   },
 });

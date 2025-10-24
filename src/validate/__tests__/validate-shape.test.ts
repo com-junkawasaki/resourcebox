@@ -1,9 +1,12 @@
 // DAG: validate-test
 // validateShape tests
 
-import { cardinality, defineShape, iri, range } from "@gftdcojp/shapebox-core";
 import { Type } from "@sinclair/typebox";
 import { describe, expect, it } from "vitest";
+import { cardinality } from "../../core/dsl/cardinality.ts";
+import { defineShape } from "../../core/dsl/define-shape.ts";
+import { iri } from "../../core/dsl/iri.ts";
+import { range } from "../../core/dsl/range.ts";
 import { validateShape } from "../shape/validate-shape.ts";
 
 describe("validateShape", () => {
