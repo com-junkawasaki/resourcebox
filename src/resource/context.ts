@@ -109,7 +109,7 @@ function extractContextFromObject(schema: ObjectSchema, contextMap: Record<strin
       };
     } else if (propSchema.kind === "Array") {
       // Array property
-      if ("items" in propSchema && propSchema.items.kind === "Ref") {
+      if ("items" in propSchema && (propSchema as {items: AnyResourceSchema}).items.kind === "Ref") {
         contextMap[key] = {
           "@id": propertyIRI,
           "@type": "@id",

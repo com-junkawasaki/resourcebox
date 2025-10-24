@@ -79,7 +79,7 @@ export interface BooleanSchema extends ResourceSchema {
  */
 export interface ArraySchema extends ResourceSchema {
   readonly kind: "Array";
-  readonly items: ResourceSchema;
+  readonly items: AnyResourceSchema;
   readonly options?: {
     readonly minItems?: number;
     readonly maxItems?: number;
@@ -94,7 +94,7 @@ export interface ArraySchema extends ResourceSchema {
  */
 export interface ObjectSchema extends ResourceSchema {
   readonly kind: "Object";
-  readonly properties: Record<string, ResourceSchema>;
+  readonly properties: Record<string, AnyResourceSchema>;
   readonly options?: {
     readonly class?: OntoIRI | OntoClass;
     readonly additionalProperties?: boolean;
@@ -126,7 +126,7 @@ export interface LiteralSchema<T = unknown> extends ResourceSchema {
  */
 export interface OptionalSchema extends ResourceSchema {
   readonly kind: "Optional";
-  readonly schema: ResourceSchema;
+  readonly schema: AnyResourceSchema;
 }
 
 /**

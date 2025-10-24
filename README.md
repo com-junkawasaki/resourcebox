@@ -1,54 +1,17 @@
-
-
 # ResourceBox
 
 **TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript**
 
-ResourceBox provides compile-time type safety and runtime validation for RDF/JSON-LD data, bridging the gap between TypeScript's type system and semantic web technologies. Inspired by TypeBox's elegant API design, ResourceBox extends it to the semantic web domain.
+ResourceBox provides a clean, TypeScript-first API for defining RDF resources, OWL ontologies, and SHACL constraints. Inspired by TypeBox's elegant design, ResourceBox brings type safety and validation to the semantic web.
 
-## Purpose / Scope
+## Features
 
-### ✅ What ResourceBox Does
-
-* **Type-safe shape definitions**: Define RDF/OWL/SHACL-lite shapes using TypeBox with compile-time type checking
-* **Structure validation**: Ajv-based validation of JSON-LD node structure (types, formats, required fields)
-* **Shape validation**: ShEx-like local node validation (cardinality, range constraints, @type membership)
-* **JSON-LD context generation**: Automatically generate `@context` from shape definitions for Comunica/GraphQL-LD
-* **Ingestion hygiene**: Ensure only valid, consistent data enters your triplestore (Neptune, etc.)
-
-### ❌ What ResourceBox Does NOT Do
-
-* **OWL reasoning**: No inference, transitive closure, or TBox/ABox reasoning (use Neptune or OWL reasoner)
-* **Data querying**: No SPARQL execution or data fetching (use Comunica + GraphQL-LD)
-* **External validation**: No checking if referenced IRIs exist (no I/O, purely local validation)
-* **Global consistency**: No cross-graph or federated validation
-
-## Architecture
-
-```
-               ┌──────────────┐
-               │ resourcebox  │
-               │  (this lib)  │
-               └─────┬────────┘
-                     │  defineShape(...)
-        ┌────────────┼─────────────────────────┐
-        │            │                         │
-        ▼            ▼                         ▼
-  1. Metadata    2. Validation             3. Context
-  (RDF/OWL/      (Ajv + ShEx)              (JSON-LD)
-   SHACL-lite)                              
-        │            │                         │
-        └────────────┴─────────────────────────┘
-                     │
-                     ▼
-               Neptune / RDF Store
-
----------------------------------
-
-     (別ライブラリ / 別層)
-       Comunica + GraphQL-LD
-       Nexus GraphQL API
-```
+- 🎯 **TypeBox-like API**: Fluent, intuitive schema definition
+- 🔒 **Type Safety**: Full TypeScript type inference with `Resource.Static<T>`
+- ✅ **Dual Validation**: Structural (JSON Schema) + Semantic (SHACL) validation
+- 🌐 **JSON-LD**: Automatic `@context` generation
+- 📦 **Three Layers**: Onto (OWL/RDFS) → Resource (Data) → Shape (SHACL)
+- 🔗 **Composable**: Build complex ontologies from simple pieces
 
 ## Installation
 
@@ -58,286 +21,390 @@ pnpm add @gftdcojp/resourcebox
 
 ## Quick Start
 
-### 1. Define a Shape
+### Basic Example
 
 ```typescript
-import { Type } from "@sinclair/typebox";
-import { defineShape, iri, cardinality, range } from "@gftdcojp/resourcebox";
+import { Onto, Resource, Shape } from '@gftdcojp/resourcebox';
 
-const Person = defineShape({
-  classIri: iri("ex:Person"),
+// 1. Define ontology (optional but recommended)
+const foaf = Onto.Namespace({
+  prefix: "foaf",
+  uri: "http://xmlns.com/foaf/0.1/"
+});
+
+const Person = Onto.Class({
+  iri: foaf("Person"),
+  label: "Person"
+});
+
+const name = Onto.Property({
+  iri: foaf("name"),
+  domain: [Person],
+  range: [Onto.Datatype.String],
+  functional: true
+});
+
+// 2. Define resource schema (TypeBox-inspired)
+const PersonResource = Resource.Object({
+  "@id": Resource.String({ format: "uri" }),
+  "@type": Resource.Literal([foaf("Person")]),
   
-  // TypeBox schema (structure)
-  schema: Type.Object({
-    "@id": Type.String({ format: "uri" }),
-    "@type": Type.Array(Type.String({ format: "uri" }), { minItems: 1 }),
-    email: Type.String({ format: "email" }),
-    manager: Type.Optional(Type.String({ format: "uri" })),
+  name: Resource.String({
+    property: name,
+    minLength: 1,
+    required: true
   }),
   
-  // RDF/OWL/SHACL-lite metadata
-  props: {
-    email: {
-      predicate: iri("ex:hasEmail"),
-      cardinality: cardinality({ min: 1, max: 1, required: true }),
-      range: range.datatype(iri("xsd:string")),
-    },
-    manager: {
-      predicate: iri("ex:hasManager"),
-      cardinality: cardinality({ min: 0, max: 1, required: false }),
-      range: range.shape("ex:Person"),
-    },
-  },
+  email: Resource.String({
+    property: foaf("mbox"),
+    format: "email",
+    optional: true
+  }),
   
-  extends: [iri("ex:Agent")],
-  description: "A person entity",
+  friends: Resource.Array(
+    Resource.Ref(Person),
+    { property: foaf("knows") }
+  )
+}, {
+  class: Person
+});
+
+// 3. Type inference (like TypeBox)
+type Person = Resource.Static<typeof PersonResource>;
+// → { "@id": string; "@type": OntoIRI[]; name: string; email?: string; friends: string[] }
+
+// 4. Validate data
+const validData = {
+  "@id": "http://example.org/john",
+  "@type": [foaf("Person")],
+  name: "John Doe",
+  email: "john@example.org",
+  friends: ["http://example.org/jane"]
+};
+
+const result = Resource.validate(PersonResource, validData);
+if (result.ok) {
+  console.log("✓ Valid:", result.data);
+} else {
+  console.error("✗ Errors:", result.errors);
+}
+
+// 5. Generate JSON-LD context
+const context = Resource.context(PersonResource, {
+  includeNamespaces: true,
+  namespaces: {
+    foaf: "http://xmlns.com/foaf/0.1/"
+  }
 });
 ```
 
-### 2. Generate JSON-LD Context
+## API Overview
+
+ResourceBox has three main layers:
+
+### 1. Onto Layer (OWL/RDFS Ontology)
+
+Define vocabulary, classes, properties, and relationships.
 
 ```typescript
-import { buildContext } from "@gftdcojp/resourcebox";
+// Namespace
+const ex = Onto.Namespace({ prefix: "ex", uri: "http://example.org/" });
+const foaf = Onto.FOAF;  // Built-in: FOAF, RDF, RDFS, OWL, XSD
 
-const context = buildContext([Person], {
+// Class
+const Person = Onto.Class({
+  iri: ex("Person"),
+  label: "Person",
+  comment: "A human being",
+  subClassOf: [foaf("Agent")]
+});
+
+// Property
+const age = Onto.Property({
+  iri: ex("age"),
+  label: "age",
+  domain: [Person],
+  range: [Onto.Datatype.Integer],
+  functional: true
+});
+
+// Built-in XSD Datatypes
+Onto.Datatype.String
+Onto.Datatype.Integer
+Onto.Datatype.Boolean
+Onto.Datatype.Date
+Onto.Datatype.DateTime
+// ... and more
+```
+
+### 2. Resource Layer (Data Structure)
+
+Define data structures with TypeBox-like API.
+
+```typescript
+// Primitives
+Resource.String({ minLength: 1, maxLength: 100, pattern: "^[A-Z]" })
+Resource.Number({ minimum: 0, maximum: 150 })
+Resource.Boolean()
+
+// Complex types
+Resource.Object({
+  name: Resource.String(),
+  age: Resource.Number({ optional: true })
+})
+
+Resource.Array(Resource.String(), { minItems: 1, uniqueItems: true })
+
+// References
+Resource.Ref(Person)  // IRI reference to another resource
+
+// Literals
+Resource.Literal(["foaf:Person"])  // Constant value
+
+// Optional
+Resource.Optional(Resource.String())
+// or
+Resource.String({ optional: true })
+
+// With RDF property mapping
+Resource.String({
+  property: foaf("name"),  // Link to ontology
+  required: true,
+  minLength: 1
+})
+
+// Type inference
+type PersonType = Resource.Static<typeof PersonResource>;
+```
+
+### 3. Shape Layer (SHACL Constraints)
+
+Define SHACL shapes for semantic validation.
+
+```typescript
+// Manual shape definition
+const PersonShape = Shape.Define({
+  targetClass: Person,
+  
+  property: {
+    name: Shape.Property({
+      path: foaf("name"),
+      datatype: Onto.Datatype.String,
+      minCount: 1,
+      maxCount: 1,
+      pattern: "^[A-Z]"
+    }),
+    
+    age: Shape.Property({
+      path: ex("age"),
+      datatype: Onto.Datatype.Integer,
+      minInclusive: 0,
+      maxInclusive: 150
+    })
+  },
+  
+  closed: true
+});
+
+// Auto-generate from Resource
+const AutoShape = Shape.fromResource(PersonResource, {
+  strict: true
+});
+
+// Validate against shape
+const result = Shape.validate(PersonShape, data);
+if (!result.ok) {
+  console.error(result.violations);
+}
+```
+
+## Validation
+
+ResourceBox provides two levels of validation:
+
+### 1. Structural Validation (JSON Schema)
+
+Validates data structure, types, and formats using Ajv.
+
+```typescript
+const result = Resource.validate(PersonResource, data);
+// Checks: required fields, types, string lengths, patterns, etc.
+```
+
+### 2. Semantic Validation (SHACL)
+
+Validates RDF constraints like cardinality, ranges, and class membership.
+
+```typescript
+const result = Shape.validate(PersonShape, data);
+// Checks: minCount, maxCount, datatypes, classes, patterns, etc.
+```
+
+## JSON-LD Context Generation
+
+```typescript
+const context = Resource.context(PersonResource, {
   includeNamespaces: true,
   namespaces: {
-    ex: "http://example.org/",
-    xsd: "http://www.w3.org/2001/XMLSchema#",
-  },
+    foaf: "http://xmlns.com/foaf/0.1/",
+    ex: "http://example.org/"
+  }
 });
 
 // Result:
 // {
 //   "@context": {
+//     "foaf": "http://xmlns.com/foaf/0.1/",
 //     "ex": "http://example.org/",
-//     "xsd": "http://www.w3.org/2001/XMLSchema#",
-//     "Person": "ex:Person",
-//     "email": { "@id": "ex:hasEmail", "@type": "xsd:string" },
-//     "manager": { "@id": "ex:hasManager", "@type": "@id" }
+//     "name": { "@id": "foaf:name" },
+//     "email": { "@id": "foaf:mbox" },
+//     "friends": { "@id": "foaf:knows", "@type": "@id" }
 //   }
 // }
 ```
 
-### 3. Validate Data
+## Integrated API
+
+For complex scenarios, use `Resource.Shaped()` to combine all three layers:
 
 ```typescript
-import { validateStruct, validateShape } from "@gftdcojp/resourcebox";
+const Person = Resource.Shaped({
+  class: foaf("Person"),
+  
+  properties: {
+    name: Resource.String({
+      property: foaf("name"),
+      required: true,
+      minLength: 1
+    }),
+    
+    email: Resource.String({
+      property: foaf("mbox"),
+      format: "email",
+      optional: true
+    })
+  },
+  
+  shape: {
+    closed: true
+  }
+});
+```
+
+## Examples
+
+### Simple Resource
+
+```typescript
+const Book = Resource.Object({
+  title: Resource.String({ minLength: 1 }),
+  author: Resource.String(),
+  isbn: Resource.String({ pattern: "^\\d{13}$" }),
+  publishedYear: Resource.Number({ minimum: 1800, maximum: 2100 })
+});
+
+type Book = Resource.Static<typeof Book>;
+```
+
+### With Ontology
+
+```typescript
+const bibo = Onto.Namespace({
+  prefix: "bibo",
+  uri: "http://purl.org/ontology/bibo/"
+});
+
+const Book = Onto.Class({ iri: bibo("Book") });
+const title = Onto.Property({
+  iri: bibo("title"),
+  range: [Onto.Datatype.String]
+});
+
+const BookResource = Resource.Object({
+  title: Resource.String({
+    property: title,
+    required: true
+  })
+}, {
+  class: Book
+});
+```
+
+### With Shape Validation
+
+```typescript
+const BookShape = Shape.fromResource(BookResource, { strict: true });
 
 const data = {
-  "@id": "ex:john",
-  "@type": ["ex:Person"],
-  email: "john@example.com",
-  manager: "ex:jane",
+  title: "The TypeScript Handbook",
+  author: "Microsoft",
+  isbn: "1234567890123",
+  publishedYear: 2020
 };
 
-// Structure validation (Ajv-based)
-const structResult = validateStruct(Person, data);
-if (!structResult.ok) {
-  console.error("Structure errors:", structResult.errors);
+const structResult = Resource.validate(BookResource, data);
+const shapeResult = Shape.validate(BookShape, data);
+
+if (structResult.ok && shapeResult.ok) {
+  console.log("✓ Data is valid!");
 }
-
-// Shape validation (ShEx-like)
-const shapeResult = validateShape(Person, data);
-if (!shapeResult.ok) {
-  console.error("Shape violations:", shapeResult.violations);
-}
-```
-
-## Compile-Time Type Safety
-
-ResourceBox enforces consistency at **compile time** using TypeScript's type system:
-
-### ❌ Cardinality vs Optional Mismatch
-
-```typescript
-// ERROR: required=true but schema is Optional
-defineShape({
-  classIri: iri("ex:Person"),
-  schema: Type.Object({
-    email: Type.Optional(Type.String()), // ❌ Optional
-  }),
-  props: {
-    email: {
-      cardinality: cardinality({ min: 1, max: 1, required: true }), // ❌ required=true
-      // ...
-    },
-  },
-});
-// TypeScript error: Property 'email' has cardinality.required=true but schema is Optional
-```
-
-### ❌ Props-Schema Key Mismatch
-
-```typescript
-// ERROR: 'age' in props but not in schema
-defineShape({
-  schema: Type.Object({
-    email: Type.String(),
-  }),
-  props: {
-    email: { /* ... */ },
-    age: { /* ... */ }, // ❌ 'age' not in schema
-  },
-});
-// TypeScript error: Property 'age' does not exist in schema
-```
-
-### ❌ Circular Inheritance
-
-```typescript
-// ERROR: Person extends itself
-defineShape({
-  classIri: iri("ex:Person"),
-  extends: [iri("ex:Person")], // ❌ Self-reference
-  // ...
-});
-// TypeScript error: Class 'ex:Person' extends itself (circular reference)
-```
-
-## Runtime Validation
-
-### Structure Validation (validateStruct)
-
-Checks JSON-LD structure using Ajv:
-- Property types (string, number, boolean, array, object)
-- Format constraints (email, uri, date-time, etc.)
-- Required vs optional properties
-- Array constraints (minItems, maxItems)
-
-### Shape Validation (validateShape)
-
-Checks RDF/SHACL-lite constraints:
-- **@type membership**: Node must have the shape's class IRI in `@type`
-- **Cardinality**: Min/max occurrence counts, required properties
-- **Range**: Datatype (literal) vs shape (IRI reference)
-
-## Integration with Query Layer
-
-ResourceBox is designed to integrate with **Comunica + GraphQL-LD** for data querying:
-
-1. **ResourceBox** generates `@context` from shapes
-2. **Comunica + GraphQL-LD** uses `@context` to translate GraphQL queries to SPARQL
-3. **Nexus** provides GraphQL API (edge layer)
-
-This separation allows:
-- **ResourceBox**: Focus on ingestion hygiene and validation
-- **Comunica**: Handle query translation and execution
-- No need to build custom SPARQL DSL (unless advanced UPDATE operations are needed)
-
-## API Reference
-
-### DSL Functions
-
-- `iri<T>(uri: string): IRI<T>` - Create a branded IRI type
-- `cardinality(opts)` - Define cardinality constraints
-- `range.datatype(iri)` - Define a literal datatype range
-- `range.shape(shapeId)` - Define a shape reference range
-- `defineShape<T>(def)` - Define a shape (main API)
-
-### Context Generation
-
-- `buildContext(shapes, options?)` - Generate JSON-LD `@context` from shapes
-- `mergeContexts(contexts)` - Merge multiple contexts
-- `extractNamespacePrefixes(shapes)` - Extract namespace prefixes
-
-### Validation Functions
-
-- `validateStruct(shape, data)` - Structural validation (Ajv-based)
-- `validateShape(shape, data)` - Semantic shape validation (ShEx-like)
-- `validateStructBatch(shape, dataArray)` - Validate multiple nodes (structure)
-- `validateShapeBatch(shape, dataArray)` - Validate multiple nodes (shape)
-
-### Report Types
-
-- `ValidationResult` - Structural validation report
-- `ShapeReport` - Shape validation report
-- `ShapeViolation` - Shape constraint violation
-
-## Project Structure
-
-```
-resourcebox/
-├── src/
-│   ├── core/                     # Core shape definition and context
-│   │   ├── types/                # Type definitions (IRI, Range, Shape, etc.)
-│   │   ├── dsl/                  # DSL API (defineShape, iri, cardinality, etc.)
-│   │   ├── typecheck/            # Compile-time consistency checks
-│   │   └── context/              # JSON-LD context generation
-│   ├── validate/                 # Validation logic
-│   │   ├── struct/               # Ajv-based structural validation
-│   │   ├── shape/                # ShEx-like shape validation
-│   │   └── report/               # Validation report types
-│   └── index.ts                  # Main entry point
-├── package.json                  # @gftdcojp/resourcebox
-├── tsconfig.json
-├── vitest.config.ts
-├── biome.json
-├── story.jsonnet                 # Process network DAG
-└── README.md
 ```
 
 ## Design Principles
 
-### 1. Single Source of Truth (SSoT)
+1. **TypeScript-first**: Leverage TypeScript's type system for compile-time safety
+2. **Layered Architecture**: Separate concerns (Onto → Resource → Shape)
+3. **Progressive Enhancement**: Use as much or as little as you need
+4. **TypeBox Compatibility**: Familiar API for TypeBox users
+5. **Semantic Web Standards**: Built on RDF, OWL, SHACL, JSON-LD
 
-Shape definitions are the **only** source for:
-- TypeScript types (via TypeBox)
-- JSON-LD context (via `buildContext`)
-- RDF/OWL/SHACL-lite semantics (via `props`)
-- Validation rules (structure + shape)
+## Architecture
 
-### 2. Compile-Time Safety
+```
+┌─────────────────────────────────────────────────────┐
+│                    ResourceBox                      │
+├─────────────┬─────────────────┬────────────────────┤
+│  Onto       │  Resource       │  Shape             │
+│  (OWL/RDFS) │  (Data)         │  (SHACL)           │
+├─────────────┼─────────────────┼────────────────────┤
+│ - Namespace │ - String        │ - Define           │
+│ - Class     │ - Number        │ - Property         │
+│ - Property  │ - Boolean       │ - fromResource     │
+│ - Datatype  │ - Object        │ - validate         │
+│             │ - Array         │                    │
+│             │ - Ref           │                    │
+│             │ - Literal       │                    │
+│             │ - Optional      │                    │
+│             │ - Static<T>     │                    │
+│             │ - validate      │                    │
+│             │ - context       │                    │
+└─────────────┴─────────────────┴────────────────────┘
+```
 
-Type-level checks prevent:
-- Cardinality-optional inconsistencies
-- Props-schema key mismatches
-- Circular inheritance (1 level)
-- Range constraint violations
+## Comparison with Other Libraries
 
-### 3. No External I/O
-
-All validation is **pure** (no side effects):
-- No checking if IRIs exist
-- No fetching external data
-- No network calls
-
-Future `@gftdcojp/resourcebox-effect` can handle I/O-based validation separately.
-
-### 4. Separation of Concerns
-
-- **Ingestion** (ResourceBox): Ensure data validity before entering the triplestore
-- **Reasoning** (Neptune/OWL reasoner): Infer new facts, transitive closure
-- **Querying** (Comunica + GraphQL-LD): Fetch and transform data
-
-## Entropy Minimization
-
-ResourceBox follows **information entropy minimization** principles:
-
-1. **Vocabulary Consistency**: IRIs are the single source, no duplicate definitions
-2. **Structural Constraints**: TypeBox + SHACL-lite reduce ambiguity in data shapes
-3. **Type Safety**: Compile-time checks eliminate invalid configurations
-4. **Local Validation**: ShEx-like shape checking ensures node-level consistency
-
-This approach reduces uncertainty at **ingestion time**, preventing invalid data from propagating through the system.
+| Feature | ResourceBox | TypeBox | ShEx | SHACL-JS |
+|---------|------------|---------|------|----------|
+| TypeScript Support | ✅ Full | ✅ Full | ❌ | ❌ |
+| Type Inference | ✅ | ✅ | ❌ | ❌ |
+| RDF/OWL Support | ✅ | ❌ | ✅ | ✅ |
+| JSON Schema Validation | ✅ | ✅ | ❌ | ❌ |
+| SHACL Validation | ✅ | ❌ | Partial | ✅ |
+| JSON-LD Context Gen | ✅ | ❌ | ❌ | ❌ |
+| Fluent API | ✅ | ✅ | ❌ | ❌ |
 
 ## License
 
-Apache 2.0
-
-Copyright 2025 GFTD Co., JP
+Apache-2.0
 
 ## References
 
-- **TypeBox**: https://github.com/sinclairzx81/typebox
-- **JSON-LD**: https://www.w3.org/TR/json-ld11/
-- **SHACL**: https://www.w3.org/TR/shacl/
-- **ShEx**: https://shex.io/
-- **Comunica**: https://comunica.dev/
-- **GraphQL-LD**: https://github.com/rubensworks/graphql-ld.js
+- [TypeBox](https://github.com/sinclairzx81/typebox) - Inspiration for API design
+- [RDF 1.2](https://www.w3.org/TR/rdf12-concepts/) - RDF specification
+- [OWL 2](https://www.w3.org/TR/owl2-overview/) - Web Ontology Language
+- [SHACL](https://www.w3.org/TR/shacl/) - Shapes Constraint Language
+- [JSON-LD 1.1](https://www.w3.org/TR/json-ld11/) - JSON for Linked Data
 
 ---
 
 **ResourceBox** = TypeBox-inspired + RDF Resource Type Builder + SHACL Validation + OWL Ontology Support + JSON-LD Context Generation
-
-型安全なRDFリソース定義と意味制約の統合ライブラリ。

@@ -48,7 +48,7 @@ export function toTypeBox(schema: AnyResourceSchema): TSchema {
       const required: string[] = [];
       
       for (const [key, propSchema] of Object.entries(schema.properties)) {
-        properties[key] = toTypeBox(propSchema);
+        properties[key] = toTypeBox(propSchema as AnyResourceSchema);
         
         // Check if property is required
         const isOptional = 
