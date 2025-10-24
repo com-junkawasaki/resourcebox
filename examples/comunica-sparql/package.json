@@ -1,0 +1,18 @@
+{
+  "name": "@gftdcojp/resourcebox-comunica-examples",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": {
+    "select": "node src/select.js",
+    "construct": "node src/construct.js",
+    "update": "node src/update.js",
+    "fuseki": "docker compose up -d fuseki",
+    "fuseki:down": "docker compose down"
+  },
+  "dependencies": {
+    "@comunica/query-sparql": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "undici": "^6.19.8"
+  }
+}

@@ -350,6 +350,25 @@ if (structResult.ok && shapeResult.ok) {
 }
 ```
 
+### Comunica + SPARQL (Neptune/Stardog/GraphDB/Jena/SAP HANA/Oracle)
+
+See `examples/comunica-sparql`:
+- SELECT/CONSTRUCT queries via Comunica
+- SPARQL UPDATE via HTTP
+- Optional Basic Auth via env
+- Local Jena Fuseki with Docker Compose
+
+Quick start:
+```bash
+cd examples/comunica-sparql
+pnpm i
+cp .env.example .env
+pnpm fuseki   # start local Jena Fuseki on 3030
+pnpm update   # write sample triples
+pnpm select   # query triples
+pnpm construct
+```
+
 ## Design Principles
 
 1. **TypeScript-first**: Leverage TypeScript's type system for compile-time safety
