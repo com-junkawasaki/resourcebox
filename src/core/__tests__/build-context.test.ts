@@ -186,3 +186,86 @@ describe("extractNamespacePrefixes", () => {
     expect(prefixes.has("xsd")).toBe(true);
   });
 });
+
+describe("buildContext edge cases", () => {
+  it("should skip @id, @type, @context properties", () => {
+    const Shape = defineShape({
+      classIri: iri("ex:Shape"),
+      schema: Type.Object({
+        "@id": Type.String(),
+        "@type": Type.Array(Type.String()),
+        "@context": Type.Optional(Type.Object({})),
+        name: Type.String(),
+      }),
+      props: {
+        "@id": {
+          predicate: iri("ex:id"),
+          cardinality: cardinality({ min: 1, max: 1, required: true }),
+          range: range.datatype(iri("xsd:string")),
+        },
+        "@type": {
+          predicate: iri("ex:type"),
+          cardinality: cardinality({ min: 1, max: 1, required: true }),
+          range: range.datatype(iri("xsd:string")),
+        },
+        "@context": {
+          predicate: iri("ex:context"),
+          cardinality: cardinality({ min: 0, max: 1, required: false }),
+          range: range.datatype(iri("xsd:string")),
+        },
+        name: {
+          predicate: iri("ex:hasName"),
+          cardinality: cardinality({ min: 1, max: 1, required: true }),
+          range: range.datatype(iri("xsd:string")),
+        },
+      },
+    });
+
+    const context = buildContext([Shape]);
+
+    // Should not include @id, @type, @context as property terms
+    expect(context["@context"]["@id"]).toBeUndefined();
+    expect(context["@context"]["@type"]).toBeUndefined();
+    expect(context["@context"]["@context"]).toBeUndefined();
+    // But should include regular properties
+    expect(context["@context"]["name"]).toBeDefined();
+  });
+
+  it("should handle undefined propertyMeta", () => {
+    const Shape = defineShape({
+      classIri: iri("ex:Shape"),
+      schema: Type.Object({
+        "@id": Type.String(),
+        "@type": Type.Array(Type.String()),
+      }),
+      props: {},
+    });
+
+    const context = buildContext([Shape]);
+    expect(context["@context"]["Shape"]).toBe("ex:Shape");
+  });
+
+  it("should handle includeProperties option", () => {
+    const Shape = defineShape({
+      classIri: iri("ex:Shape"),
+      schema: Type.Object({
+        "@id": Type.String(),
+        "@type": Type.Array(Type.String()),
+        name: Type.String(),
+      }),
+      props: {
+        name: {
+          predicate: iri("ex:hasName"),
+          cardinality: cardinality({ min: 1, max: 1, required: true }),
+          range: range.datatype(iri("xsd:string")),
+        },
+      },
+    });
+
+    const contextWithProps = buildContext([Shape], { includeProperties: true });
+    expect(contextWithProps["@context"]["name"]).toBeDefined();
+
+    const contextWithoutProps = buildContext([Shape], { includeProperties: false });
+    expect(contextWithoutProps["@context"]["name"]).toBeUndefined();
+  });
+});

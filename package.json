@@ -14,11 +14,17 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "files": ["dist", "src", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -34,6 +40,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@types/node": "^22.10.2",
+    "@vitest/coverage-v8": "2.1.9",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },

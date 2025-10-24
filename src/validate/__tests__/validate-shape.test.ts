@@ -7,7 +7,8 @@ import { cardinality } from "../../core/dsl/cardinality.ts";
 import { defineShape } from "../../core/dsl/define-shape.ts";
 import { iri } from "../../core/dsl/iri.ts";
 import { range } from "../../core/dsl/range.ts";
-import { validateShape } from "../shape/validate-shape.ts";
+import { checkType } from "../shape/type-check.ts";
+import { validateShape, validateShapeBatch } from "../shape/validate-shape.ts";
 
 describe("validateShape", () => {
   const Person = defineShape({
@@ -139,5 +140,155 @@ describe("validateShape", () => {
 
     expect(report.ok).toBe(false);
     expect(report.violations).toHaveLength(1);
+  });
+});
+
+describe("checkType", () => {
+  it("should accept data with matching @type as string", () => {
+    const violations = checkType({ "@type": "ex:Person" }, iri("ex:Person"));
+    expect(violations).toHaveLength(0);
+  });
+
+  it("should accept data with matching @type in array", () => {
+    const violations = checkType({ "@type": ["ex:Agent", "ex:Person"] }, iri("ex:Person"));
+    expect(violations).toHaveLength(0);
+  });
+
+  it("should reject non-object data", () => {
+    const violations = checkType("not an object", iri("ex:Person"));
+    expect(violations).toHaveLength(1);
+    expect(violations[0].code).toBe("TYPE_MISMATCH");
+    expect(violations[0].message).toContain("not an object");
+  });
+
+  it("should reject null data", () => {
+    const violations = checkType(null, iri("ex:Person"));
+    expect(violations).toHaveLength(1);
+    expect(violations[0].code).toBe("TYPE_MISMATCH");
+  });
+
+  it("should reject data with missing @type", () => {
+    const violations = checkType({ "@id": "ex:john" }, iri("ex:Person"));
+    expect(violations).toHaveLength(1);
+    expect(violations[0].code).toBe("TYPE_MISMATCH");
+    expect(violations[0].message).toContain("missing or invalid");
+  });
+
+  it("should reject data with non-matching @type", () => {
+    const violations = checkType({ "@type": "ex:Agent" }, iri("ex:Person"));
+    expect(violations).toHaveLength(1);
+    expect(violations[0].code).toBe("TYPE_MISMATCH");
+    expect(violations[0].message).toContain("does not include");
+  });
+
+  it("should handle @type array with non-string values", () => {
+    const violations = checkType({ "@type": ["ex:Agent", 123, null] }, iri("ex:Person"));
+    expect(violations).toHaveLength(1);
+    expect(violations[0].code).toBe("TYPE_MISMATCH");
+  });
+
+  it("should accept when @type array contains matching type despite non-strings", () => {
+    const violations = checkType({ "@type": ["ex:Person", 123, null] }, iri("ex:Person"));
+    expect(violations).toHaveLength(0);
+  });
+});
+
+describe("validateShapeBatch", () => {
+  const Person = defineShape({
+    classIri: iri("ex:Person"),
+    schema: Type.Object({
+      "@id": Type.String({ format: "uri" }),
+      "@type": Type.Array(Type.String({ format: "uri" })),
+      name: Type.String(),
+    }),
+    props: {
+      name: {
+        predicate: iri("ex:hasName"),
+        cardinality: cardinality({ min: 1, max: 1, required: true }),
+        range: range.datatype(iri("xsd:string")),
+      },
+    },
+  });
+
+  it("should validate multiple valid nodes", () => {
+    const data = [
+      {
+        "@id": "ex:john",
+        "@type": ["ex:Person"],
+        name: "John",
+      },
+      {
+        "@id": "ex:jane",
+        "@type": ["ex:Person"],
+        name: "Jane",
+      },
+    ];
+
+    const reports = validateShapeBatch(Person, data);
+    expect(reports).toHaveLength(2);
+    expect(reports[0].ok).toBe(true);
+    expect(reports[1].ok).toBe(true);
+  });
+
+  it("should detect errors in batch", () => {
+    const data = [
+      {
+        "@id": "ex:john",
+        "@type": ["ex:Person"],
+        name: "John",
+      },
+      {
+        "@id": "ex:jane",
+        "@type": ["ex:Person"],
+        // missing name
+      },
+    ];
+
+    const reports = validateShapeBatch(Person, data);
+    expect(reports).toHaveLength(2);
+    expect(reports[0].ok).toBe(true);
+    expect(reports[1].ok).toBe(false);
+  });
+
+  it("should handle empty array", () => {
+    const reports = validateShapeBatch(Person, []);
+    expect(reports).toHaveLength(0);
+  });
+
+  it("should skip special JSON-LD properties in validation", () => {
+    const SpecialShape = defineShape({
+      classIri: iri("ex:Special"),
+      schema: Type.Object({
+        "@id": Type.String(),
+        "@type": Type.Array(Type.String()),
+        "@context": Type.Optional(Type.Object({})),
+      }),
+      props: {
+        "@id": {
+          predicate: iri("ex:id"),
+          cardinality: cardinality({ min: 1, max: 1, required: true }),
+          range: range.datatype(iri("xsd:string")),
+        },
+        "@type": {
+          predicate: iri("ex:type"),
+          cardinality: cardinality({ min: 1, max: 1, required: true }),
+          range: range.datatype(iri("xsd:string")),
+        },
+        "@context": {
+          predicate: iri("ex:context"),
+          cardinality: cardinality({ min: 0, max: 1, required: false }),
+          range: range.datatype(iri("xsd:string")),
+        },
+      },
+    });
+
+    const report = validateShape(SpecialShape, {
+      "@id": "ex:test",
+      "@type": ["ex:Special"],
+      "@context": {},
+    });
+
+    // Should not validate @id, @type, @context as regular properties
+    expect(report.ok).toBe(true);
   });
 });

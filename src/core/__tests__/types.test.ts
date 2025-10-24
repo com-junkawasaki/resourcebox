@@ -30,6 +30,13 @@ describe("IRI utilities", () => {
     expect(getIRILocalName(iri("http://example.org/ont#Person"))).toBe("Person");
     expect(getIRILocalName(iri("http://example.org/ont/Person"))).toBe("Person");
   });
+
+  it("should handle edge cases in getIRILocalName", () => {
+    // Full URI without # or /
+    expect(getIRILocalName(iri("http://example.org"))).toBe("http://example.org");
+    // IRI without colon
+    expect(getIRILocalName(iri("Person"))).toBe("Person");
+  });
 });
 
 describe("Cardinality validation", () => {
@@ -49,6 +56,12 @@ describe("Cardinality validation", () => {
 
   it("should reject max < min", () => {
     expect(validateCardinalityStructure({ min: 2, max: 1, required: false })).toContain("max");
+  });
+
+  it("should reject negative max", () => {
+    expect(validateCardinalityStructure({ min: 0, max: -1, required: false })).toContain(
+      "max must be >= 0"
+    );
   });
 
   it("should warn on required=true with min=0", () => {
@@ -116,5 +129,23 @@ describe("PropertyMeta validation", () => {
       symmetric: true,
     };
     expect(validatePropertyMeta(validSymmetric)).toBeUndefined();
+  });
+
+  it("should validate inverseOf property", () => {
+    const invalidInverseOf = {
+      predicate: iri("ex:hasParent"),
+      cardinality: cardinality({ min: 0, max: undefined, required: false }),
+      range: range.datatype(iri("xsd:string")),
+      inverseOf: iri("ex:hasChild"),
+    };
+    expect(validatePropertyMeta(invalidInverseOf)).toContain("inverseOf");
+
+    const validInverseOf = {
+      predicate: iri("ex:hasParent"),
+      cardinality: cardinality({ min: 0, max: undefined, required: false }),
+      range: range.shape("ex:Person"),
+      inverseOf: iri("ex:hasChild"),
+    };
+    expect(validatePropertyMeta(validInverseOf)).toBeUndefined();
   });
 });

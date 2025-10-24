@@ -7,7 +7,7 @@ import { cardinality } from "../../core/dsl/cardinality.ts";
 import { defineShape } from "../../core/dsl/define-shape.ts";
 import { iri } from "../../core/dsl/iri.ts";
 import { range } from "../../core/dsl/range.ts";
-import { validateStruct } from "../struct/validate-struct.ts";
+import { validateStruct, validateStructBatch } from "../struct/validate-struct.ts";
 
 describe("validateStruct", () => {
   const Person = defineShape({
@@ -122,5 +122,106 @@ describe("validateStruct", () => {
 
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.keyword === "minItems")).toBe(true);
+  });
+
+  it("should handle data with null errors array", () => {
+    const result = validateStruct(Person, {
+      "@id": "http://example.org/john",
+      "@type": ["ex:Person"],
+      email: "john@example.com",
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+});
+
+describe("validateStructBatch", () => {
+  const Person = defineShape({
+    classIri: iri("ex:Person"),
+    schema: Type.Object({
+      "@id": Type.String({ format: "uri" }),
+      "@type": Type.Array(Type.String({ format: "uri" })),
+      email: Type.String({ format: "email" }),
+    }),
+    props: {
+      email: {
+        predicate: iri("ex:hasEmail"),
+        cardinality: cardinality({ min: 1, max: 1, required: true }),
+        range: range.datatype(iri("xsd:string")),
+      },
+    },
+  });
+
+  it("should validate multiple valid nodes", () => {
+    const data = [
+      {
+        "@id": "http://example.org/john",
+        "@type": ["ex:Person"],
+        email: "john@example.com",
+      },
+      {
+        "@id": "http://example.org/jane",
+        "@type": ["ex:Person"],
+        email: "jane@example.com",
+      },
+    ];
+
+    const results = validateStructBatch(Person, data);
+    expect(results).toHaveLength(2);
+    expect(results[0].ok).toBe(true);
+    expect(results[1].ok).toBe(true);
+  });
+
+  it("should detect errors in batch", () => {
+    const data = [
+      {
+        "@id": "http://example.org/john",
+        "@type": ["ex:Person"],
+        email: "john@example.com",
+      },
+      {
+        "@id": "http://example.org/jane",
+        "@type": ["ex:Person"],
+        email: "not-an-email", // Invalid
+      },
+    ];
+
+    const results = validateStructBatch(Person, data);
+    expect(results).toHaveLength(2);
+    expect(results[0].ok).toBe(true);
+    expect(results[1].ok).toBe(false);
+    expect(results[1].errors.some((e) => e.keyword === "format")).toBe(true);
+  });
+
+  it("should handle empty array", () => {
+    const results = validateStructBatch(Person, []);
+    expect(results).toHaveLength(0);
+  });
+
+  it("should handle mixed valid and invalid data", () => {
+    const data = [
+      {
+        "@id": "http://example.org/john",
+        "@type": ["ex:Person"],
+        email: "john@example.com",
+      },
+      {
+        "@id": "not-a-uri", // Invalid URI
+        "@type": ["ex:Person"],
+        email: "jane@example.com",
+      },
+      {
+        "@id": "http://example.org/bob",
+        "@type": ["ex:Person"],
+        // missing email
+      },
+    ];
+
+    const results = validateStructBatch(Person, data);
+    expect(results).toHaveLength(3);
+    expect(results[0].ok).toBe(true);
+    expect(results[1].ok).toBe(false);
+    expect(results[2].ok).toBe(false);
   });
 });
