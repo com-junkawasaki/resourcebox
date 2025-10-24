@@ -1,0 +1,33 @@
+{
+  "name": "@gftdcojp/shapebox-validate",
+  "version": "0.1.0",
+  "description": "Runtime validation for shapebox - Ajv-based structure validation and ShEx-like shape validation",
+  "license": "Apache-2.0",
+  "author": "GFTD Co., JP",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "types": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "vitest run --config ../../vitest.config.ts",
+    "test:watch": "vitest --config ../../vitest.config.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage"
+  },
+  "dependencies": {
+    "@gftdcojp/shapebox-core": "workspace:*",
+    "@sinclair/typebox": "^0.32.35",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}
+
