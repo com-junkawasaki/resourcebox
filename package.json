@@ -1,6 +1,6 @@
 {
   "name": "@gftdcojp/resourcebox",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript",
   "license": "Apache-2.0",
   "author": "GFTD Co., JP",
@@ -56,11 +56,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gftdcojp/resourcebox.git"
+    "url": "https://github.com/com-junkawasaki/resourcebox.git"
   },
-  "homepage": "https://github.com/gftdcojp/resourcebox#readme",
+  "homepage": "https://github.com/com-junkawasaki/resourcebox#readme",
   "bugs": {
-    "url": "https://github.com/gftdcojp/resourcebox/issues"
+    "url": "https://github.com/com-junkawasaki/resourcebox/issues"
   },
   "publishConfig": {
     "access": "public"
