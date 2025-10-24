@@ -1,5 +1,5 @@
 // DAG: validate (main export)
-// @gftdcojp/shapebox-validate main entry point
+// @gftdcojp/resourcebox-validate main entry point
 
 // Report types
 export type {
@@ -8,13 +8,13 @@ export type {
   ShapeReport,
   ShapeViolation,
   ViolationCode,
-} from "./report/index.ts";
+} from "./report/index.js";
 
 // Structure validation
-export { validateStruct, validateStructBatch } from "./struct/index.ts";
+export { validateStruct, validateStructBatch } from "./struct/index.js";
 
 // Shape validation
-export { validateShape, validateShapeBatch } from "./shape/index.ts";
+export { validateShape, validateShapeBatch } from "./shape/index.js";
 
 // Helper functions (for advanced usage)
-export { checkCardinality, checkRange, checkType } from "./shape/index.ts";
+export { checkCardinality, checkRange, checkType } from "./shape/index.js";

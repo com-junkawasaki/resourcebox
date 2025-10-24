@@ -7,10 +7,10 @@ export type {
   JsonLdContextMap,
   JsonLdContext,
   BuildContextOptions,
-} from "./types.ts";
+} from "./types.js";
 
 export {
   buildContext,
   mergeContexts,
   extractNamespacePrefixes,
-} from "./build-context.ts";
+} from "./build-context.js";

@@ -1,15 +1,15 @@
 // DAG: core-context
 // buildContext: generate JSON-LD context from Shape definitions
 
-import { getIRILocalName } from "../types/iri.ts";
-import type { PropertyMeta } from "../types/property.ts";
-import type { Shape } from "../types/shape.ts";
+import { getIRILocalName } from "../types/iri.js";
+import type { PropertyMeta } from "../types/property.js";
+import type { Shape } from "../types/shape.js";
 import type {
   BuildContextOptions,
   JsonLdContext,
   JsonLdContextMap,
   JsonLdContextValue,
-} from "./types.ts";
+} from "./types.js";
 
 /**
  * Build a JSON-LD @context from Shape definitions.
@@ -29,7 +29,7 @@ import type {
  *
  * @example
  * ```ts
- * import { buildContext } from "@gftdcojp/shapebox-core";
+ * import { buildContext } from "@gftdcojp/resourcebox";
  *
  * const context = buildContext([Person, Project]);
  *

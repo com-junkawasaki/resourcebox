@@ -1,11 +1,11 @@
 // DAG: validate-shape
 // Shape validation (ShEx-like local node validation)
 
-import type { Shape } from "../../core/types/shape.ts";
-import type { ShapeReport, ShapeViolation } from "../report/types.ts";
-import { checkCardinality } from "./cardinality-check.ts";
-import { checkRange } from "./range-check.ts";
-import { checkType } from "./type-check.ts";
+import type { Shape } from "../../core/types/shape.js";
+import type { ShapeReport, ShapeViolation } from "../report/types.js";
+import { checkCardinality } from "./cardinality-check.js";
+import { checkRange } from "./range-check.js";
+import { checkType } from "./type-check.js";
 
 /**
  * Validate a JSON-LD node against a Shape definition.

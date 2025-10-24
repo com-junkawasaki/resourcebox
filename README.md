@@ -1,14 +1,14 @@
 
 
-# Shapebox
+# ResourceBox
 
-**TypeBox-based RDF/OWL/SHACL-lite shape validation library for TypeScript**
+**TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript**
 
-Shapebox provides compile-time type safety and runtime validation for RDF/JSON-LD data, bridging the gap between TypeScript's type system and semantic web technologies.
+ResourceBox provides compile-time type safety and runtime validation for RDF/JSON-LD data, bridging the gap between TypeScript's type system and semantic web technologies. Inspired by TypeBox's elegant API design, ResourceBox extends it to the semantic web domain.
 
 ## Purpose / Scope
 
-### ✅ What Shapebox Does
+### ✅ What ResourceBox Does
 
 * **Type-safe shape definitions**: Define RDF/OWL/SHACL-lite shapes using TypeBox with compile-time type checking
 * **Structure validation**: Ajv-based validation of JSON-LD node structure (types, formats, required fields)
@@ -16,7 +16,7 @@ Shapebox provides compile-time type safety and runtime validation for RDF/JSON-L
 * **JSON-LD context generation**: Automatically generate `@context` from shape definitions for Comunica/GraphQL-LD
 * **Ingestion hygiene**: Ensure only valid, consistent data enters your triplestore (Neptune, etc.)
 
-### ❌ What Shapebox Does NOT Do
+### ❌ What ResourceBox Does NOT Do
 
 * **OWL reasoning**: No inference, transitive closure, or TBox/ABox reasoning (use Neptune or OWL reasoner)
 * **Data querying**: No SPARQL execution or data fetching (use Comunica + GraphQL-LD)
@@ -27,7 +27,7 @@ Shapebox provides compile-time type safety and runtime validation for RDF/JSON-L
 
 ```
                ┌──────────────┐
-               │   shapebox   │
+               │ resourcebox  │
                │  (this lib)  │
                └─────┬────────┘
                      │  defineShape(...)
@@ -53,7 +53,7 @@ Shapebox provides compile-time type safety and runtime validation for RDF/JSON-L
 ## Installation
 
 ```bash
-pnpm add @gftdcojp/shapebox
+pnpm add @gftdcojp/resourcebox
 ```
 
 ## Quick Start
@@ -62,7 +62,7 @@ pnpm add @gftdcojp/shapebox
 
 ```typescript
 import { Type } from "@sinclair/typebox";
-import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox";
+import { defineShape, iri, cardinality, range } from "@gftdcojp/resourcebox";
 
 const Person = defineShape({
   classIri: iri("ex:Person"),
@@ -97,7 +97,7 @@ const Person = defineShape({
 ### 2. Generate JSON-LD Context
 
 ```typescript
-import { buildContext } from "@gftdcojp/shapebox";
+import { buildContext } from "@gftdcojp/resourcebox";
 
 const context = buildContext([Person], {
   includeNamespaces: true,
@@ -122,7 +122,7 @@ const context = buildContext([Person], {
 ### 3. Validate Data
 
 ```typescript
-import { validateStruct, validateShape } from "@gftdcojp/shapebox";
+import { validateStruct, validateShape } from "@gftdcojp/resourcebox";
 
 const data = {
   "@id": "ex:john",
@@ -146,7 +146,7 @@ if (!shapeResult.ok) {
 
 ## Compile-Time Type Safety
 
-Shapebox enforces consistency at **compile time** using TypeScript's type system:
+ResourceBox enforces consistency at **compile time** using TypeScript's type system:
 
 ### ❌ Cardinality vs Optional Mismatch
 
@@ -214,14 +214,14 @@ Checks RDF/SHACL-lite constraints:
 
 ## Integration with Query Layer
 
-Shapebox is designed to integrate with **Comunica + GraphQL-LD** for data querying:
+ResourceBox is designed to integrate with **Comunica + GraphQL-LD** for data querying:
 
-1. **Shapebox** generates `@context` from shapes
+1. **ResourceBox** generates `@context` from shapes
 2. **Comunica + GraphQL-LD** uses `@context` to translate GraphQL queries to SPARQL
 3. **Nexus** provides GraphQL API (edge layer)
 
 This separation allows:
-- **Shapebox**: Focus on ingestion hygiene and validation
+- **ResourceBox**: Focus on ingestion hygiene and validation
 - **Comunica**: Handle query translation and execution
 - No need to build custom SPARQL DSL (unless advanced UPDATE operations are needed)
 
@@ -257,7 +257,7 @@ This separation allows:
 ## Project Structure
 
 ```
-shapebox/
+resourcebox/
 ├── src/
 │   ├── core/                     # Core shape definition and context
 │   │   ├── types/                # Type definitions (IRI, Range, Shape, etc.)
@@ -269,7 +269,7 @@ shapebox/
 │   │   ├── shape/                # ShEx-like shape validation
 │   │   └── report/               # Validation report types
 │   └── index.ts                  # Main entry point
-├── package.json                  # @gftdcojp/shapebox
+├── package.json                  # @gftdcojp/resourcebox
 ├── tsconfig.json
 ├── vitest.config.ts
 ├── biome.json
@@ -302,17 +302,17 @@ All validation is **pure** (no side effects):
 - No fetching external data
 - No network calls
 
-Future `@gftdcojp/shapebox-effect` can handle I/O-based validation separately.
+Future `@gftdcojp/resourcebox-effect` can handle I/O-based validation separately.
 
 ### 4. Separation of Concerns
 
-- **Ingestion** (shapebox): Ensure data validity before entering the triplestore
+- **Ingestion** (ResourceBox): Ensure data validity before entering the triplestore
 - **Reasoning** (Neptune/OWL reasoner): Infer new facts, transitive closure
 - **Querying** (Comunica + GraphQL-LD): Fetch and transform data
 
 ## Entropy Minimization
 
-Shapebox follows **information entropy minimization** principles:
+ResourceBox follows **information entropy minimization** principles:
 
 1. **Vocabulary Consistency**: IRIs are the single source, no duplicate definitions
 2. **Structural Constraints**: TypeBox + SHACL-lite reduce ambiguity in data shapes
@@ -338,6 +338,6 @@ Copyright 2025 GFTD Co., JP
 
 ---
 
-**Shapebox** = TypeBox 拡張 + RDF/OWL-lite/SHACL-lite + JSON-LD Context 生成 + ShEx的検証
+**ResourceBox** = TypeBox-inspired + RDF Resource Type Builder + SHACL Validation + OWL Ontology Support + JSON-LD Context Generation
 
-型安全な意味メタデータと構造検証を統合。
+型安全なRDFリソース定義と意味制約の統合ライブラリ。

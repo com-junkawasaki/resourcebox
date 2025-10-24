@@ -1,8 +1,8 @@
 // DAG: core-api
 // Range helper functions for creating range constraints
 
-import type { IRI } from "../types/iri.ts";
-import type { Range } from "../types/range.ts";
+import type { IRI } from "../types/iri.js";
+import type { Range } from "../types/range.js";
 
 /**
  * Create a datatype range (for literal properties).
@@ -12,7 +12,7 @@ import type { Range } from "../types/range.ts";
  *
  * @example
  * ```ts
- * import { datatypeIri } from "./iri.ts";
+ * import { datatypeIri } from "./iri.js";
  *
  * const stringRange = range.datatype(datatypeIri("xsd:string"));
  * const intRange = range.datatype(datatypeIri("xsd:integer"));
@@ -44,7 +44,7 @@ function shape(shapeId: string): Range {
  *
  * @example
  * ```ts
- * import { range } from "@gftdcojp/shapebox-core";
+ * import { range } from "@gftdcojp/resourcebox";
  *
  * // Literal property
  * const emailRange = range.datatype(iri("xsd:string"));

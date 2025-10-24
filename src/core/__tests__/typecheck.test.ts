@@ -2,13 +2,13 @@
 // Type-level checks runtime validation tests
 
 import { describe, expect, it } from "vitest";
-import { iri } from "../dsl/iri.ts";
-import { range } from "../dsl/range.ts";
+import { iri } from "../dsl/iri.js";
+import { range } from "../dsl/range.js";
 import {
   validateExtendsCircularRuntime,
   validatePropsSchemaConsistencyRuntime,
   validateRangeExclusivityRuntime,
-} from "../typecheck/index.ts";
+} from "../typecheck/index.js";
 
 describe("validateRangeExclusivityRuntime", () => {
   it("should validate datatype range", () => {

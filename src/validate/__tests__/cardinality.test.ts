@@ -2,8 +2,8 @@
 // Cardinality checking tests
 
 import { describe, expect, it } from "vitest";
-import { cardinality } from "../../core/dsl/cardinality.ts";
-import { checkCardinality } from "../shape/cardinality-check.ts";
+import { cardinality } from "../../core/dsl/cardinality.js";
+import { checkCardinality } from "../shape/cardinality-check.js";
 
 describe("checkCardinality", () => {
   it("should accept valid exactly-one cardinality", () => {

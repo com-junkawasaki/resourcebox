@@ -1,9 +1,9 @@
 // DAG: validate-shape
 // Range constraint checking
 
-import { isIRI } from "../../core/types/iri.ts";
-import type { Range } from "../../core/types/range.ts";
-import type { ShapeViolation } from "../report/types.ts";
+import { isIRI } from "../../core/types/iri.js";
+import type { Range } from "../../core/types/range.js";
+import type { ShapeViolation } from "../report/types.js";
 
 /**
  * Check if a property value satisfies range constraints.

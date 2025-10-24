@@ -3,11 +3,11 @@
 
 import { Type } from "@sinclair/typebox";
 import { describe, expect, it } from "vitest";
-import { buildContext, extractNamespacePrefixes, mergeContexts } from "../context/build-context.ts";
-import { cardinality } from "../dsl/cardinality.ts";
-import { defineShape } from "../dsl/define-shape.ts";
-import { iri } from "../dsl/iri.ts";
-import { range } from "../dsl/range.ts";
+import { buildContext, extractNamespacePrefixes, mergeContexts } from "../context/build-context.js";
+import { cardinality } from "../dsl/cardinality.js";
+import { defineShape } from "../dsl/define-shape.js";
+import { iri } from "../dsl/iri.js";
+import { range } from "../dsl/range.js";
 
 describe("buildContext", () => {
   it("should build context from single shape", () => {

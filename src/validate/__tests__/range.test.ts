@@ -2,9 +2,9 @@
 // Range checking tests
 
 import { describe, expect, it } from "vitest";
-import { iri } from "../../core/dsl/iri.ts";
-import { range } from "../../core/dsl/range.ts";
-import { checkRange } from "../shape/range-check.ts";
+import { iri } from "../../core/dsl/iri.js";
+import { range } from "../../core/dsl/range.js";
+import { checkRange } from "../shape/range-check.js";
 
 describe("checkRange", () => {
   describe("datatype range", () => {

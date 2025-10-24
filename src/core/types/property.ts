@@ -1,9 +1,9 @@
 // DAG: core-types
 // PropertyMeta: RDF/OWL/SHACL-lite metadata for shape properties
 
-import type { Cardinality } from "./cardinality.ts";
-import type { IRI } from "./iri.ts";
-import type { Range } from "./range.ts";
+import type { Cardinality } from "./cardinality.js";
+import type { IRI } from "./iri.js";
+import type { Range } from "./range.js";
 
 /**
  * Property metadata definition.

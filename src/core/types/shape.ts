@@ -2,13 +2,13 @@
 // ShapeDefinition: top-level shape structure combining TypeBox schema + RDF/OWL metadata
 
 import type { TObject } from "@sinclair/typebox";
-import type { IRI } from "./iri.ts";
-import type { PropertyMeta } from "./property.ts";
+import type { IRI } from "./iri.js";
+import type { PropertyMeta } from "./property.js";
 
 /**
  * Shape definition combining TypeBox schema with RDF/OWL/SHACL-lite metadata.
  *
- * This is the core data structure of shapebox. It represents a "class" in RDF/OWL terms,
+ * This is the core data structure of ResourceBox. It represents a "class" in RDF/OWL terms,
  * with both structural constraints (TypeBox schema) and semantic metadata (RDF properties).
  *
  * @template TSchema - TypeBox TObject type representing the JSON-LD node structure

@@ -1,7 +1,7 @@
 // DAG: core-typecheck
 // Compile-time check: detect circular extends (1 level)
 
-import type { IRI } from "../types/iri.ts";
+import type { IRI } from "../types/iri.js";
 
 /**
  * Check if a class IRI appears in its own extends list (direct self-reference).

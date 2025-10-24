@@ -2,7 +2,7 @@
 // Core module index coverage test
 
 import { describe, expect, it } from "vitest";
-import * as coreIndex from "../index.ts";
+import * as coreIndex from "../index.js";
 
 describe("core module index", () => {
   it("should export all core functionality", () => {

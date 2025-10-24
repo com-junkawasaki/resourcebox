@@ -3,10 +3,10 @@
 
 import { Type } from "@sinclair/typebox";
 import { describe, expect, it } from "vitest";
-import { cardinality } from "../dsl/cardinality.ts";
-import { defineShape } from "../dsl/define-shape.ts";
-import { iri } from "../dsl/iri.ts";
-import { range } from "../dsl/range.ts";
+import { cardinality } from "../dsl/cardinality.js";
+import { defineShape } from "../dsl/define-shape.js";
+import { iri } from "../dsl/iri.js";
+import { range } from "../dsl/range.js";
 
 describe("defineShape", () => {
   it("should create a valid shape", () => {

@@ -1,9 +1,9 @@
 // DAG: validate-struct
 // Structure validation using Ajv
 
-import type { Shape } from "../../core/types/shape.ts";
-import type { ValidationError, ValidationResult } from "../report/types.ts";
-import { getAjvInstance } from "./ajv-setup.ts";
+import type { Shape } from "../../core/types/shape.js";
+import type { ValidationError, ValidationResult } from "../report/types.js";
+import { getAjvInstance } from "./ajv-setup.js";
 
 /**
  * Validate the structure of a JSON-LD node against a Shape's schema.

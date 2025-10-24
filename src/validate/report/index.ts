@@ -7,4 +7,4 @@ export type {
   ShapeReport,
   ShapeViolation,
   ViolationCode,
-} from "./types.ts";
+} from "./types.js";

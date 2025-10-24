@@ -5,7 +5,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 
 /**
- * Create a configured Ajv instance for shapebox validation.
+ * Create a configured Ajv instance for ResourceBox validation.
  *
  * This instance is configured with:
  * - Strict mode disabled (for flexibility with TypeBox schemas)

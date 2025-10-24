@@ -2,7 +2,7 @@
 // Validate module index coverage test
 
 import { describe, expect, it } from "vitest";
-import * as validateIndex from "../index.ts";
+import * as validateIndex from "../index.js";
 
 describe("validate module index", () => {
   it("should export all validate functionality", () => {

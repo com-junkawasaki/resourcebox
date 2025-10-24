@@ -2,8 +2,8 @@
 // DSL helper functions tests
 
 import { describe, expect, it } from "vitest";
-import { cardinality, exactlyOne, oneOrMore, optional, zeroOrMore } from "../dsl/cardinality.ts";
-import { classIri, datatypeIri, iri, propertyIri } from "../dsl/iri.ts";
+import { cardinality, exactlyOne, oneOrMore, optional, zeroOrMore } from "../dsl/cardinality.js";
+import { classIri, datatypeIri, iri, propertyIri } from "../dsl/iri.js";
 
 describe("cardinality helpers", () => {
   it("should create cardinality with defaults", () => {

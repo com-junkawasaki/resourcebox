@@ -1,25 +1,25 @@
 // DAG: core-types
 // Type definitions export index
 
-export type { IRI } from "./iri.ts";
-export { isIRI, getIRIPrefix, getIRILocalName } from "./iri.ts";
+export type { IRI } from "./iri.js";
+export { isIRI, getIRIPrefix, getIRILocalName } from "./iri.js";
 
-export type { Cardinality } from "./cardinality.ts";
+export type { Cardinality } from "./cardinality.js";
 export {
   validateCardinalityStructure,
   satisfiesCardinality,
   CARDINALITY_PATTERNS,
-} from "./cardinality.ts";
+} from "./cardinality.js";
 
-export type { Range } from "./range.ts";
+export type { Range } from "./range.js";
 export {
   isDatatypeRange,
   isShapeRange,
   XSD_DATATYPES,
   RDF_DATATYPES,
-} from "./range.ts";
+} from "./range.js";
 
-export type { PropertyMeta } from "./property.ts";
-export { validatePropertyMeta } from "./property.ts";
+export type { PropertyMeta } from "./property.js";
+export { validatePropertyMeta } from "./property.js";
 
-export type { ShapeDefinition, Shape, ShapeSchemaType, ShapeDataType } from "./shape.ts";
+export type { ShapeDefinition, Shape, ShapeSchemaType, ShapeDataType } from "./shape.js";

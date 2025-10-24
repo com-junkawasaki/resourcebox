@@ -1,8 +1,8 @@
 // DAG: core-api
 // Cardinality helper functions for creating cardinality constraints
 
-import type { Cardinality } from "../types/cardinality.ts";
-import { CARDINALITY_PATTERNS, validateCardinalityStructure } from "../types/cardinality.ts";
+import type { Cardinality } from "../types/cardinality.js";
+import { CARDINALITY_PATTERNS, validateCardinalityStructure } from "../types/cardinality.js";
 
 /**
  * Create a cardinality constraint.

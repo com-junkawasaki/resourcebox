@@ -5,16 +5,16 @@ import type { TObject } from "@sinclair/typebox";
 import {
   validateExtendsCircularRuntime,
   validatePropsSchemaConsistencyRuntime,
-} from "../typecheck/index.ts";
-import { getIRILocalName } from "../types/iri.ts";
-import type { PropertyMeta } from "../types/property.ts";
-import { validatePropertyMeta } from "../types/property.ts";
-import type { Shape, ShapeDefinition } from "../types/shape.ts";
+} from "../typecheck/index.js";
+import { getIRILocalName } from "../types/iri.js";
+import type { PropertyMeta } from "../types/property.js";
+import { validatePropertyMeta } from "../types/property.js";
+import type { Shape, ShapeDefinition } from "../types/shape.js";
 
 /**
  * Define a Shape with compile-time type safety.
  *
- * This is the main API for creating shape definitions in shapebox.
+ * This is the main API for creating shape definitions in ResourceBox.
  * It enforces runtime consistency checks and returns a Shape object
  * that can be used for validation and context generation.
  *
@@ -26,7 +26,7 @@ import type { Shape, ShapeDefinition } from "../types/shape.ts";
  * @example
  * ```ts
  * import { Type } from "@sinclair/typebox";
- * import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
+ * import { defineShape, iri, cardinality, range } from "@gftdcojp/resourcebox";
  *
  * const Person = defineShape({
  *   classIri: iri("ex:Person"),

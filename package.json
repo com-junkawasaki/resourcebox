@@ -1,7 +1,7 @@
 {
-  "name": "@gftdcojp/shapebox",
+  "name": "@gftdcojp/resourcebox",
   "version": "0.1.0",
-  "description": "TypeBox-based RDF/OWL/SHACL-lite shape validation library for TypeScript",
+  "description": "TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript",
   "license": "Apache-2.0",
   "author": "GFTD Co., JP",
   "type": "module",
@@ -41,6 +41,7 @@
   },
   "keywords": [
     "rdf",
+    "resource",
     "owl",
     "shacl",
     "shex",
@@ -50,15 +51,16 @@
     "semantic-web",
     "ontology",
     "typescript",
-    "type-safety"
+    "type-safety",
+    "resourcebox"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/gftdcojp/shapebox.git"
+    "url": "https://github.com/gftdcojp/resourcebox.git"
   },
-  "homepage": "https://github.com/gftdcojp/shapebox#readme",
+  "homepage": "https://github.com/gftdcojp/resourcebox#readme",
   "bugs": {
-    "url": "https://github.com/gftdcojp/shapebox/issues"
+    "url": "https://github.com/gftdcojp/resourcebox/issues"
   },
   "publishConfig": {
     "access": "public"

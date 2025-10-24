@@ -3,12 +3,12 @@
 
 import { Type } from "@sinclair/typebox";
 import { describe, expect, it } from "vitest";
-import { cardinality } from "../../core/dsl/cardinality.ts";
-import { defineShape } from "../../core/dsl/define-shape.ts";
-import { iri } from "../../core/dsl/iri.ts";
-import { range } from "../../core/dsl/range.ts";
-import { checkType } from "../shape/type-check.ts";
-import { validateShape, validateShapeBatch } from "../shape/validate-shape.ts";
+import { cardinality } from "../../core/dsl/cardinality.js";
+import { defineShape } from "../../core/dsl/define-shape.js";
+import { iri } from "../../core/dsl/iri.js";
+import { range } from "../../core/dsl/range.js";
+import { checkType } from "../shape/type-check.js";
+import { validateShape, validateShapeBatch } from "../shape/validate-shape.js";
 
 describe("validateShape", () => {
   const Person = defineShape({

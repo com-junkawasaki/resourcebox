@@ -1,7 +1,7 @@
 // DAG: core-types
 // Range type: discriminated union for datatype vs shape references
 
-import type { IRI } from "./iri.ts";
+import type { IRI } from "./iri.js";
 
 /**
  * Range constraint for a property.

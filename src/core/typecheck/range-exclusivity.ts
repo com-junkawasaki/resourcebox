@@ -1,7 +1,7 @@
 // DAG: core-typecheck
 // Compile-time check: range.datatype and range.shape are mutually exclusive
 
-import type { Range } from "../types/range.ts";
+import type { Range } from "../types/range.js";
 
 /**
  * Range exclusivity is already enforced by the discriminated union type.

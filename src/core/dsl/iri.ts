@@ -1,7 +1,7 @@
 // DAG: core-api
 // IRI helper function for creating branded IRI types
 
-import type { IRI } from "../types/iri.ts";
+import type { IRI } from "../types/iri.js";
 
 /**
  * Create a branded IRI from a string.

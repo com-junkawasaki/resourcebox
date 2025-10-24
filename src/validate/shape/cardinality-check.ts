@@ -1,8 +1,8 @@
 // DAG: validate-shape
 // Cardinality constraint checking
 
-import type { Cardinality } from "../../core/types/cardinality.ts";
-import type { ShapeViolation } from "../report/types.ts";
+import type { Cardinality } from "../../core/types/cardinality.js";
+import type { ShapeViolation } from "../report/types.js";
 
 /**
  * Check if a property value satisfies cardinality constraints.

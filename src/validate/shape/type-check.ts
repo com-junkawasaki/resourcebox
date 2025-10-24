@@ -1,8 +1,8 @@
 // DAG: validate-shape
 // @type membership checking
 
-import type { IRI } from "../../core/types/iri.ts";
-import type { ShapeViolation } from "../report/types.ts";
+import type { IRI } from "../../core/types/iri.js";
+import type { ShapeViolation } from "../report/types.js";
 
 /**
  * Check if a JSON-LD node's @type includes the expected class IRI.

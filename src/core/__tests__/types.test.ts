@@ -2,13 +2,13 @@
 // Type utilities tests
 
 import { describe, expect, it } from "vitest";
-import { cardinality } from "../dsl/cardinality.ts";
-import { iri } from "../dsl/iri.ts";
-import { range } from "../dsl/range.ts";
-import { satisfiesCardinality, validateCardinalityStructure } from "../types/cardinality.ts";
-import { getIRILocalName, getIRIPrefix, isIRI } from "../types/iri.ts";
-import { validatePropertyMeta } from "../types/property.ts";
-import { isDatatypeRange, isShapeRange } from "../types/range.ts";
+import { cardinality } from "../dsl/cardinality.js";
+import { iri } from "../dsl/iri.js";
+import { range } from "../dsl/range.js";
+import { satisfiesCardinality, validateCardinalityStructure } from "../types/cardinality.js";
+import { getIRILocalName, getIRIPrefix, isIRI } from "../types/iri.js";
+import { validatePropertyMeta } from "../types/property.js";
+import { isDatatypeRange, isShapeRange } from "../types/range.js";
 
 describe("IRI utilities", () => {
   it("should detect IRI format", () => {

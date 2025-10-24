@@ -1,5 +1,5 @@
 // DAG: core (main export)
-// @gftdcojp/shapebox-core main entry point
+// @gftdcojp/resourcebox-core main entry point
 
 // Types
 export type {
@@ -11,7 +11,7 @@ export type {
   Shape,
   ShapeSchemaType,
   ShapeDataType,
-} from "./types/index.ts";
+} from "./types/index.js";
 
 export {
   isIRI,
@@ -25,7 +25,7 @@ export {
   XSD_DATATYPES,
   RDF_DATATYPES,
   validatePropertyMeta,
-} from "./types/index.ts";
+} from "./types/index.js";
 
 // DSL API
 export {
@@ -40,9 +40,9 @@ export {
   zeroOrMore,
   range,
   defineShape,
-} from "./dsl/index.ts";
+} from "./dsl/index.js";
 
-export type { DefineShape } from "./dsl/index.ts";
+export type { DefineShape } from "./dsl/index.js";
 
 // Type-level checks (for advanced usage)
 export type {
@@ -55,13 +55,13 @@ export type {
   ValidatePropsSchemaConsistency,
   ExtraPropsKeys,
   PropsSchemaConsistencyError,
-} from "./typecheck/index.ts";
+} from "./typecheck/index.js";
 
 export {
   validateRangeExclusivityRuntime,
   validateExtendsCircularRuntime,
   validatePropsSchemaConsistencyRuntime,
-} from "./typecheck/index.ts";
+} from "./typecheck/index.js";
 
 // Context generation
 export type {
@@ -70,6 +70,6 @@ export type {
   JsonLdContextMap,
   JsonLdContext,
   BuildContextOptions,
-} from "./context/index.ts";
+} from "./context/index.js";
 
-export { buildContext, mergeContexts, extractNamespacePrefixes } from "./context/index.ts";
+export { buildContext, mergeContexts, extractNamespacePrefixes } from "./context/index.js";

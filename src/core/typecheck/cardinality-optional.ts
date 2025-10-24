@@ -2,7 +2,7 @@
 // Compile-time check: cardinality.required=true <=> schema property is not Optional
 
 import type { TOptional, TProperties, TSchema } from "@sinclair/typebox";
-import type { Cardinality } from "../types/cardinality.ts";
+import type { Cardinality } from "../types/cardinality.js";
 
 /**
  * Check if a TypeBox schema is Optional.
