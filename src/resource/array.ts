@@ -33,13 +33,13 @@ export function Array(
   return {
     kind: "Array",
     items,
-    property: options.property,
+    ...(options.property !== undefined && { property: options.property }),
     options: {
-      minItems: options.minItems,
-      maxItems: options.maxItems,
-      uniqueItems: options.uniqueItems,
-      required: options.required,
-      optional: options.optional,
+      ...(options.minItems !== undefined && { minItems: options.minItems }),
+      ...(options.maxItems !== undefined && { maxItems: options.maxItems }),
+      ...(options.uniqueItems !== undefined && { uniqueItems: options.uniqueItems }),
+      ...(options.required !== undefined && { required: options.required }),
+      ...(options.optional !== undefined && { optional: options.optional }),
     },
   };
 }

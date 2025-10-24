@@ -2,100 +2,189 @@
 // TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support
 
 // ============================================================================
-// Core exports - Shape definition and JSON-LD context generation
+// Onto - Ontology layer (OWL/RDFS)
 // ============================================================================
 
-// Types
+import * as OntoNS from "./onto/index.js";
+
+export const Onto = {
+  // Namespace
+  Namespace: OntoNS.Namespace,
+  RDF: OntoNS.RDF,
+  RDFS: OntoNS.RDFS,
+  OWL: OntoNS.OWL,
+  XSD: OntoNS.XSD,
+  FOAF: OntoNS.FOAF,
+  
+  // Class
+  Class: OntoNS.Class,
+  
+  // Property
+  Property: OntoNS.Property,
+  
+  // Datatype
+  Datatype: {
+    String: OntoNS.String,
+    Boolean: OntoNS.Boolean,
+    Decimal: OntoNS.Decimal,
+    Float: OntoNS.Float,
+    Double: OntoNS.Double,
+    Integer: OntoNS.Integer,
+    PositiveInteger: OntoNS.PositiveInteger,
+    NegativeInteger: OntoNS.NegativeInteger,
+    NonPositiveInteger: OntoNS.NonPositiveInteger,
+    NonNegativeInteger: OntoNS.NonNegativeInteger,
+    Long: OntoNS.Long,
+    Int: OntoNS.Int,
+    Short: OntoNS.Short,
+    Byte: OntoNS.Byte,
+    UnsignedLong: OntoNS.UnsignedLong,
+    UnsignedInt: OntoNS.UnsignedInt,
+    UnsignedShort: OntoNS.UnsignedShort,
+    UnsignedByte: OntoNS.UnsignedByte,
+    DateTime: OntoNS.DateTime,
+    DateTimeStamp: OntoNS.DateTimeStamp,
+    Date: OntoNS.Date,
+    Time: OntoNS.Time,
+    Duration: OntoNS.Duration,
+    YearMonthDuration: OntoNS.YearMonthDuration,
+    DayTimeDuration: OntoNS.DayTimeDuration,
+    GYear: OntoNS.GYear,
+    GMonth: OntoNS.GMonth,
+    GDay: OntoNS.GDay,
+    GYearMonth: OntoNS.GYearMonth,
+    GMonthDay: OntoNS.GMonthDay,
+    NormalizedString: OntoNS.NormalizedString,
+    Token: OntoNS.Token,
+    Language: OntoNS.Language,
+    Name: OntoNS.Name,
+    NCName: OntoNS.NCName,
+    NMTOKEN: OntoNS.NMTOKEN,
+    AnyURI: OntoNS.AnyURI,
+    Base64Binary: OntoNS.Base64Binary,
+    HexBinary: OntoNS.HexBinary,
+  },
+  
+  // Helpers
+  iri: OntoNS.iri,
+  getIRI: OntoNS.getIRI,
+  isClass: OntoNS.isClass,
+  isProperty: OntoNS.isProperty,
+  isDatatype: OntoNS.isDatatype,
+  getClassIRI: OntoNS.getClassIRI,
+  getPropertyIRI: OntoNS.getPropertyIRI,
+  getDatatypeIRI: OntoNS.getDatatypeIRI,
+};
+
+// Export Onto types
 export type {
-  IRI,
-  Cardinality,
-  Range,
-  PropertyMeta,
-  ShapeDefinition,
-  Shape,
-  ShapeSchemaType,
-  ShapeDataType,
-} from "./core/types/index.js";
-
-export {
-  isIRI,
-  getIRIPrefix,
-  getIRILocalName,
-  validateCardinalityStructure,
-  satisfiesCardinality,
-  CARDINALITY_PATTERNS,
-  isDatatypeRange,
-  isShapeRange,
-  XSD_DATATYPES,
-  RDF_DATATYPES,
-  validatePropertyMeta,
-} from "./core/types/index.js";
-
-// DSL API
-export {
-  iri,
-  classIri,
-  propertyIri,
-  datatypeIri,
-  cardinality,
-  exactlyOne,
-  optional,
-  oneOrMore,
-  zeroOrMore,
-  range,
-  defineShape,
-} from "./core/dsl/index.js";
-
-export type { DefineShape } from "./core/dsl/index.js";
-
-// Type-level checks (for advanced usage)
-export type {
-  ValidateCardinalityOptional,
-  ValidateAllCardinalityOptional,
-  CardinalityOptionalError,
-  ValidateRangeExclusivity,
-  ValidateExtendsCircular,
-  ExtendsCircularError,
-  ValidatePropsSchemaConsistency,
-  ExtraPropsKeys,
-  PropsSchemaConsistencyError,
-} from "./core/typecheck/index.js";
-
-export {
-  validateRangeExclusivityRuntime,
-  validateExtendsCircularRuntime,
-  validatePropsSchemaConsistencyRuntime,
-} from "./core/typecheck/index.js";
-
-// Context generation
-export type {
-  JsonLdTermDefinition,
-  JsonLdContextValue,
-  JsonLdContextMap,
-  JsonLdContext,
-  BuildContextOptions,
-} from "./core/context/index.js";
-
-export { buildContext, mergeContexts, extractNamespacePrefixes } from "./core/context/index.js";
+  OntoIRI,
+  NamespaceFunction,
+  OntoClass,
+  OntoProperty,
+  OntoDatatype,
+  NamespaceOptions,
+  ClassOptions,
+  PropertyOptions,
+} from "./onto/index.js";
 
 // ============================================================================
-// Validate exports - Runtime validation
+// Resource - Resource layer (data structure definition)
 // ============================================================================
 
-// Report types
+import * as ResourceNS from "./resource/index.js";
+
+export const Resource = {
+  // Primitives
+  String: ResourceNS.String,
+  Number: ResourceNS.Number,
+  Boolean: ResourceNS.Boolean,
+  
+  // Complex types
+  Array: ResourceNS.Array,
+  Object: ResourceNS.Object,
+  Ref: ResourceNS.Ref,
+  Literal: ResourceNS.Literal,
+  Optional: ResourceNS.Optional,
+  
+  // Validation
+  validate: ResourceNS.validate,
+  check: ResourceNS.check,
+  parse: ResourceNS.parse,
+  
+  // Context
+  context: ResourceNS.context,
+  extractNamespaces: ResourceNS.extractNamespaces,
+  
+  // Shaped (integrated)
+  Shaped: ResourceNS.Shaped,
+  
+  // Helpers
+  isObject: ResourceNS.isObject,
+  isOptional: ResourceNS.isOptional,
+  isRequired: ResourceNS.isRequired,
+  extractMetadata: ResourceNS.extractMetadata,
+};
+
+// Export Resource types
 export type {
+  ResourceSchema,
+  StringSchema,
+  NumberSchema,
+  BooleanSchema,
+  ArraySchema,
+  ObjectSchema,
+  RefSchema,
+  LiteralSchema,
+  OptionalSchema,
+  AnyResourceSchema,
+  ResourceMetadata,
+  StringOptions,
+  NumberOptions,
+  BooleanOptions,
+  ArrayOptions,
+  ObjectOptions,
+  RefOptions,
   ValidationResult,
   ValidationError,
-  ShapeReport,
+  ContextValue,
+  ContextMap,
+  JsonLdContext,
+  ContextOptions,
+} from "./resource/index.js";
+
+// Export Resource.Static type helper
+export type { Static } from "./resource/static.js";
+
+// Export Shaped types
+export type { ShapedOptions, ShapedResource } from "./resource/shaped.js";
+
+// ============================================================================
+// Shape - SHACL shape layer
+// ============================================================================
+
+import * as ShapeNS from "./shape/index.js";
+
+export const Shape = {
+  // Define
+  Define: ShapeNS.Define,
+  Property: ShapeNS.Property,
+  
+  // From Resource
+  fromResource: ShapeNS.fromResource,
+  
+  // Validate
+  validate: ShapeNS.validate,
+  check: ShapeNS.check,
+};
+
+// Export Shape types
+export type {
+  ShapePropertyDef,
+  ShapeNodeDef,
+  ShapeValidationResult,
   ShapeViolation,
-  ViolationCode,
-} from "./validate/report/index.js";
-
-// Structure validation
-export { validateStruct, validateStructBatch } from "./validate/struct/index.js";
-
-// Shape validation
-export { validateShape, validateShapeBatch } from "./validate/shape/index.js";
-
-// Helper functions (for advanced usage)
-export { checkCardinality, checkRange, checkType } from "./validate/shape/index.js";
+  DefineOptions,
+  PropertyOptions as ShapePropertyOptions,
+  FromResourceOptions,
+} from "./shape/index.js";

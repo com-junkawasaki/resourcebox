@@ -1,9 +1,8 @@
 // Resource.validate - Validate data against resource schema
 
-import { Type } from "@sinclair/typebox";
-import { Value } from "@sinclair/typebox/value";
 import type { AnyResourceSchema } from "./types.js";
 import { toTypeBox } from "./to-typebox.js";
+import { getAjvInstance } from "../validate/struct/ajv-setup.js";
 
 /**
  * Validation result
@@ -50,8 +49,12 @@ export function validate<S extends AnyResourceSchema>(
     // Convert to TypeBox schema
     const typeboxSchema = toTypeBox(schema);
     
-    // Validate using TypeBox Value
-    const isValid = Value.Check(typeboxSchema, data);
+    // Get Ajv instance with format support
+    const ajv = getAjvInstance();
+    
+    // Compile and validate
+    const validate = ajv.compile(typeboxSchema);
+    const isValid = validate(data);
     
     if (isValid) {
       return {
@@ -62,12 +65,14 @@ export function validate<S extends AnyResourceSchema>(
     
     // Collect errors
     const errors: ValidationError[] = [];
-    for (const error of Value.Errors(typeboxSchema, data)) {
-      errors.push({
-        path: error.path,
-        message: error.message,
-        value: error.value,
-      });
+    if (validate.errors) {
+      for (const error of validate.errors) {
+        errors.push({
+          path: error.instancePath || "/",
+          message: error.message || "Validation error",
+          value: data,
+        });
+      }
     }
     
     return {

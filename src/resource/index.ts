@@ -48,6 +48,10 @@ export type { ValidationResult, ValidationError } from "./validate.js";
 export { context, extractNamespaces } from "./context.js";
 export type { ContextValue, ContextMap, JsonLdContext, ContextOptions } from "./context.js";
 
+// Shaped (integrated API)
+export { Shaped } from "./shaped.js";
+export type { ShapedOptions, ShapedResource, ShapedPropertyDef } from "./shaped.js";
+
 // Internal helpers
 export { toTypeBox } from "./to-typebox.js";
 

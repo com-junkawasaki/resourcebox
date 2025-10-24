@@ -40,18 +40,18 @@ export interface PropertyOptions {
 export function Property(options: PropertyOptions): ShapePropertyDef {
   return {
     path: options.path,
-    datatype: options.datatype,
-    class: options.class,
-    minCount: options.minCount,
-    maxCount: options.maxCount,
-    minLength: options.minLength,
-    maxLength: options.maxLength,
-    pattern: options.pattern,
-    minInclusive: options.minInclusive,
-    maxInclusive: options.maxInclusive,
-    minExclusive: options.minExclusive,
-    maxExclusive: options.maxExclusive,
-    description: options.description,
+    ...(options.datatype !== undefined && { datatype: options.datatype }),
+    ...(options.class !== undefined && { class: options.class }),
+    ...(options.minCount !== undefined && { minCount: options.minCount }),
+    ...(options.maxCount !== undefined && { maxCount: options.maxCount }),
+    ...(options.minLength !== undefined && { minLength: options.minLength }),
+    ...(options.maxLength !== undefined && { maxLength: options.maxLength }),
+    ...(options.pattern !== undefined && { pattern: options.pattern }),
+    ...(options.minInclusive !== undefined && { minInclusive: options.minInclusive }),
+    ...(options.maxInclusive !== undefined && { maxInclusive: options.maxInclusive }),
+    ...(options.minExclusive !== undefined && { minExclusive: options.minExclusive }),
+    ...(options.maxExclusive !== undefined && { maxExclusive: options.maxExclusive }),
+    ...(options.description !== undefined && { description: options.description }),
   };
 }
 

@@ -31,10 +31,10 @@ export function Ref(
   return {
     kind: "Ref",
     target,
-    property: options.property,
+    ...(options.property !== undefined && { property: options.property }),
     options: {
-      required: options.required,
-      optional: options.optional,
+      ...(options.required !== undefined && { required: options.required }),
+      ...(options.optional !== undefined && { optional: options.optional }),
     },
   };
 }

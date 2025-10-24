@@ -30,14 +30,14 @@ export interface StringOptions {
 export function String(options: StringOptions = {}): StringSchema {
   return {
     kind: "String",
-    property: options.property,
+    ...(options.property !== undefined && { property: options.property }),
     options: {
-      minLength: options.minLength,
-      maxLength: options.maxLength,
-      pattern: options.pattern,
-      format: options.format,
-      required: options.required,
-      optional: options.optional,
+      ...(options.minLength !== undefined && { minLength: options.minLength }),
+      ...(options.maxLength !== undefined && { maxLength: options.maxLength }),
+      ...(options.pattern !== undefined && { pattern: options.pattern }),
+      ...(options.format !== undefined && { format: options.format }),
+      ...(options.required !== undefined && { required: options.required }),
+      ...(options.optional !== undefined && { optional: options.optional }),
     },
   };
 }
@@ -69,15 +69,15 @@ export interface NumberOptions {
 export function Number(options: NumberOptions = {}): NumberSchema {
   return {
     kind: "Number",
-    property: options.property,
+    ...(options.property !== undefined && { property: options.property }),
     options: {
-      minimum: options.minimum,
-      maximum: options.maximum,
-      exclusiveMinimum: options.exclusiveMinimum,
-      exclusiveMaximum: options.exclusiveMaximum,
-      multipleOf: options.multipleOf,
-      required: options.required,
-      optional: options.optional,
+      ...(options.minimum !== undefined && { minimum: options.minimum }),
+      ...(options.maximum !== undefined && { maximum: options.maximum }),
+      ...(options.exclusiveMinimum !== undefined && { exclusiveMinimum: options.exclusiveMinimum }),
+      ...(options.exclusiveMaximum !== undefined && { exclusiveMaximum: options.exclusiveMaximum }),
+      ...(options.multipleOf !== undefined && { multipleOf: options.multipleOf }),
+      ...(options.required !== undefined && { required: options.required }),
+      ...(options.optional !== undefined && { optional: options.optional }),
     },
   };
 }
@@ -104,10 +104,10 @@ export interface BooleanOptions {
 export function Boolean(options: BooleanOptions = {}): BooleanSchema {
   return {
     kind: "Boolean",
-    property: options.property,
+    ...(options.property !== undefined && { property: options.property }),
     options: {
-      required: options.required,
-      optional: options.optional,
+      ...(options.required !== undefined && { required: options.required }),
+      ...(options.optional !== undefined && { optional: options.optional }),
     },
   };
 }

@@ -47,9 +47,9 @@ export function Define(options: DefineOptions): ShapeNodeDef {
   return {
     targetClass: options.targetClass,
     property: options.property,
-    closed: options.closed,
-    ignoredProperties: options.ignoredProperties,
-    description: options.description,
+    ...(options.closed !== undefined && { closed: options.closed }),
+    ...(options.ignoredProperties !== undefined && { ignoredProperties: options.ignoredProperties }),
+    ...(options.description !== undefined && { description: options.description }),
   };
 }
 

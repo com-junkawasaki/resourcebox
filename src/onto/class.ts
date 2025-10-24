@@ -1,7 +1,6 @@
 // Onto.Class - Define OWL/RDFS classes
 
 import type { OntoClass, OntoIRI } from "./types.js";
-import { getIRI } from "./types.js";
 
 /**
  * Options for defining an ontology class
@@ -31,10 +30,10 @@ export function Class(options: ClassOptions): OntoClass {
   return {
     kind: "Class",
     iri: options.iri,
-    label: options.label,
-    comment: options.comment,
-    subClassOf: options.subClassOf,
-    disjointWith: options.disjointWith,
+    ...(options.label !== undefined && { label: options.label }),
+    ...(options.comment !== undefined && { comment: options.comment }),
+    ...(options.subClassOf !== undefined && { subClassOf: options.subClassOf }),
+    ...(options.disjointWith !== undefined && { disjointWith: options.disjointWith }),
   };
 }
 

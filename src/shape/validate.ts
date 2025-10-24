@@ -1,8 +1,6 @@
 // Shape.validate - Validate data against SHACL shape
 
 import { getClassIRI, isClass } from "../onto/class.js";
-import { getDatatypeIRI, isDatatype } from "../onto/datatype.js";
-import { getPropertyIRI, isProperty } from "../onto/property.js";
 import type { ShapeNodeDef, ShapeValidationResult, ShapeViolation } from "./types.js";
 
 /**
@@ -57,9 +55,6 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
   // Validate each property
   for (const [propKey, propShape] of Object.entries(shape.property)) {
     const value = dataObj[propKey];
-    const pathIRI = isProperty(propShape.path)
-      ? getPropertyIRI(propShape.path)
-      : propShape.path;
     
     // Check minCount
     if (propShape.minCount !== undefined) {
@@ -167,7 +162,7 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
   
   return {
     ok: violations.length === 0,
-    violations: violations.length > 0 ? violations : undefined,
+    ...(violations.length > 0 && { violations }),
   };
 }
 

@@ -1,6 +1,5 @@
 // Resource types - Core type definitions for resource layer
 
-import type { TSchema } from "@sinclair/typebox";
 import type { OntoClass, OntoIRI, OntoProperty } from "../onto/types.js";
 
 /**
@@ -170,13 +169,13 @@ export function extractMetadata(schema: AnyResourceSchema): ResourceMetadata {
         propSchema.options && "required" in propSchema.options && propSchema.options.required === true;
       
       properties[key] = {
-        property: propSchema.property,
+        ...(propSchema.property !== undefined && { property: propSchema.property }),
         required: isRequired || !isOptional,
       };
     }
     
     return {
-      class: schema.options?.class,
+      ...(schema.options?.class !== undefined && { class: schema.options.class }),
       properties,
     };
   }

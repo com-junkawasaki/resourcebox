@@ -10,7 +10,7 @@ export function Datatype(iri: OntoIRI, label?: string): OntoDatatype {
   return {
     kind: "Datatype",
     iri,
-    label,
+    ...(label !== undefined && { label }),
   };
 }
 

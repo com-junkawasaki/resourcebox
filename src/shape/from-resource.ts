@@ -1,10 +1,8 @@
 // Shape.fromResource - Generate SHACL shape from Resource schema
 
 import { getClassIRI, isClass } from "../onto/class.js";
-import { getDatatypeIRI, isDatatype } from "../onto/datatype.js";
-import { getPropertyIRI, isProperty } from "../onto/property.js";
-import type { OntoIRI } from "../onto/types.js";
-import type { ObjectSchema } from "../resource/types.js";
+import { isProperty, getPropertyIRI } from "../onto/property.js";
+import type { ObjectSchema, RefSchema } from "../resource/types.js";
 import type { ShapeNodeDef, ShapePropertyDef } from "./types.js";
 
 /**
@@ -73,52 +71,67 @@ export function fromResource(
       propSchema.options && "required" in propSchema.options && propSchema.options.required === true;
     
     // Generate property shape
-    const propShape: ShapePropertyDef = {
+    const propShapeOpts: Partial<ShapePropertyDef> = {
       path,
     };
     
     // Set cardinality
     if (options.strict) {
       if (isRequired || !isOptional) {
-        propShape.minCount = 1;
+        propShapeOpts.minCount = 1;
       } else {
-        propShape.minCount = 0;
+        propShapeOpts.minCount = 0;
       }
     }
     
     // Add type-specific constraints
     if (propSchema.kind === "String") {
       if (propSchema.options) {
-        propShape.minLength = propSchema.options.minLength;
-        propShape.maxLength = propSchema.options.maxLength;
-        propShape.pattern = propSchema.options.pattern;
+        if (propSchema.options.minLength !== undefined) {
+          propShapeOpts.minLength = propSchema.options.minLength;
+        }
+        if (propSchema.options.maxLength !== undefined) {
+          propShapeOpts.maxLength = propSchema.options.maxLength;
+        }
+        if (propSchema.options.pattern !== undefined) {
+          propShapeOpts.pattern = propSchema.options.pattern;
+        }
       }
     } else if (propSchema.kind === "Number") {
       if (propSchema.options) {
-        propShape.minInclusive = propSchema.options.minimum;
-        propShape.maxInclusive = propSchema.options.maximum;
-        propShape.minExclusive = propSchema.options.exclusiveMinimum;
-        propShape.maxExclusive = propSchema.options.exclusiveMaximum;
+        if (propSchema.options.minimum !== undefined) {
+          propShapeOpts.minInclusive = propSchema.options.minimum;
+        }
+        if (propSchema.options.maximum !== undefined) {
+          propShapeOpts.maxInclusive = propSchema.options.maximum;
+        }
+        if (propSchema.options.exclusiveMinimum !== undefined) {
+          propShapeOpts.minExclusive = propSchema.options.exclusiveMinimum;
+        }
+        if (propSchema.options.exclusiveMaximum !== undefined) {
+          propShapeOpts.maxExclusive = propSchema.options.exclusiveMaximum;
+        }
       }
     } else if (propSchema.kind === "Ref") {
       // Reference to another class
-      if (typeof propSchema.target === "object" && "kind" in propSchema.target) {
-        if (propSchema.target.kind === "Class") {
-          propShape.class = getClassIRI(propSchema.target);
+      const refSchema = propSchema as RefSchema;
+      if (typeof refSchema.target === "object" && "kind" in refSchema.target) {
+        if (refSchema.target.kind === "Class") {
+          propShapeOpts.class = getClassIRI(refSchema.target);
         }
       } else {
-        propShape.class = propSchema.target;
+        propShapeOpts.class = refSchema.target;
       }
     }
     
-    property[key] = propShape;
+    property[key] = propShapeOpts as ShapePropertyDef;
   }
   
   return {
     targetClass,
     property,
-    closed: options.closed ?? false,
-    ignoredProperties: ignoredProperties.length > 0 ? ignoredProperties : undefined,
+    ...(options.closed !== undefined && { closed: options.closed }),
+    ...(ignoredProperties.length > 0 && { ignoredProperties }),
   };
 }
 

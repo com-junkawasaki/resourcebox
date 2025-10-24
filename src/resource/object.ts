@@ -28,7 +28,7 @@ export interface ObjectOptions {
  * })
  * ```
  */
-export function Object(
+export function ObjectDef(
   properties: Record<string, AnyResourceSchema>,
   options: ObjectOptions = {}
 ): ObjectSchema {
@@ -36,11 +36,14 @@ export function Object(
     kind: "Object",
     properties,
     options: {
-      class: options.class,
-      additionalProperties: options.additionalProperties,
+      ...(options.class !== undefined && { class: options.class }),
+      ...(options.additionalProperties !== undefined && { additionalProperties: options.additionalProperties }),
     },
   };
 }
+
+// Export with name 'Object' for API consistency
+export { ObjectDef as Object };
 
 /**
  * Helper to check if a schema is an Object schema

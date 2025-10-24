@@ -11,23 +11,23 @@ export function toTypeBox(schema: AnyResourceSchema): TSchema {
   switch (schema.kind) {
     case "String": {
       const opts = schema.options || {};
-      return Type.String({
-        minLength: opts.minLength,
-        maxLength: opts.maxLength,
-        pattern: opts.pattern,
-        format: opts.format,
-      });
+      const typeOpts: Record<string, unknown> = {};
+      if (opts.minLength !== undefined) typeOpts.minLength = opts.minLength;
+      if (opts.maxLength !== undefined) typeOpts.maxLength = opts.maxLength;
+      if (opts.pattern !== undefined) typeOpts.pattern = opts.pattern;
+      if (opts.format !== undefined) typeOpts.format = opts.format;
+      return Type.String(typeOpts);
     }
     
     case "Number": {
       const opts = schema.options || {};
-      return Type.Number({
-        minimum: opts.minimum,
-        maximum: opts.maximum,
-        exclusiveMinimum: opts.exclusiveMinimum,
-        exclusiveMaximum: opts.exclusiveMaximum,
-        multipleOf: opts.multipleOf,
-      });
+      const typeOpts: Record<string, unknown> = {};
+      if (opts.minimum !== undefined) typeOpts.minimum = opts.minimum;
+      if (opts.maximum !== undefined) typeOpts.maximum = opts.maximum;
+      if (opts.exclusiveMinimum !== undefined) typeOpts.exclusiveMinimum = opts.exclusiveMinimum;
+      if (opts.exclusiveMaximum !== undefined) typeOpts.exclusiveMaximum = opts.exclusiveMaximum;
+      if (opts.multipleOf !== undefined) typeOpts.multipleOf = opts.multipleOf;
+      return Type.Number(typeOpts);
     }
     
     case "Boolean": {
@@ -36,11 +36,11 @@ export function toTypeBox(schema: AnyResourceSchema): TSchema {
     
     case "Array": {
       const opts = schema.options || {};
-      return Type.Array(toTypeBox(schema.items), {
-        minItems: opts.minItems,
-        maxItems: opts.maxItems,
-        uniqueItems: opts.uniqueItems,
-      });
+      const typeOpts: Record<string, unknown> = {};
+      if (opts.minItems !== undefined) typeOpts.minItems = opts.minItems;
+      if (opts.maxItems !== undefined) typeOpts.maxItems = opts.maxItems;
+      if (opts.uniqueItems !== undefined) typeOpts.uniqueItems = opts.uniqueItems;
+      return Type.Array(toTypeBox(schema.items), typeOpts);
     }
     
     case "Object": {
@@ -63,9 +63,11 @@ export function toTypeBox(schema: AnyResourceSchema): TSchema {
         }
       }
       
-      return Type.Object(properties, {
-        additionalProperties: schema.options?.additionalProperties,
-      });
+      const typeOpts: Record<string, unknown> = {};
+      if (schema.options?.additionalProperties !== undefined) {
+        typeOpts.additionalProperties = schema.options.additionalProperties;
+      }
+      return Type.Object(properties, typeOpts);
     }
     
     case "Ref": {
@@ -75,7 +77,11 @@ export function toTypeBox(schema: AnyResourceSchema): TSchema {
     
     case "Literal": {
       // Literal is a constant value
-      return Type.Literal(schema.value);
+      // Use Type.Const for arrays/objects, Type.Literal for primitives
+      if (Array.isArray(schema.value) || (typeof schema.value === "object" && schema.value !== null)) {
+        return Type.Unsafe({ const: schema.value });
+      }
+      return Type.Literal(schema.value as string | number | boolean);
     }
     
     case "Optional": {
