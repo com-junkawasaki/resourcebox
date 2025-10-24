@@ -2,13 +2,7 @@
 // DSL helper functions tests
 
 import { describe, expect, it } from "vitest";
-import {
-  cardinality,
-  exactlyOne,
-  oneOrMore,
-  optional,
-  zeroOrMore,
-} from "../dsl/cardinality.ts";
+import { cardinality, exactlyOne, oneOrMore, optional, zeroOrMore } from "../dsl/cardinality.ts";
 import { classIri, datatypeIri, iri, propertyIri } from "../dsl/iri.ts";
 
 describe("cardinality helpers", () => {
@@ -96,4 +90,3 @@ describe("iri helpers", () => {
     expect(uri).toBe("http://example.org/Person");
   });
 });
-

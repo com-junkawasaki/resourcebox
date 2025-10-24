@@ -10,4 +10,3 @@ describe("validate module index", () => {
     expect(validateIndex).toBeDefined();
   });
 });
-

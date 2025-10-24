@@ -185,6 +185,39 @@ describe("extractNamespacePrefixes", () => {
     expect(prefixes.has("foaf")).toBe(true);
     expect(prefixes.has("xsd")).toBe(true);
   });
+
+  it("should handle URN and full URIs", () => {
+    const Shape = defineShape({
+      classIri: iri("urn:example:Person"),
+      schema: Type.Object({
+        "@id": Type.String(),
+        "@type": Type.Array(Type.String()),
+        url: Type.String(),
+        simple: Type.String(),
+      }),
+      props: {
+        url: {
+          predicate: iri("https://schema.org/url"),
+          cardinality: cardinality({ min: 1, max: 1, required: true }),
+          range: range.datatype(iri("http://www.w3.org/2001/XMLSchema#anyURI")),
+        },
+        simple: {
+          predicate: iri("simpleProp"),
+          cardinality: cardinality({ min: 0, max: 1, required: false }),
+          range: range.datatype(iri("xsd:string")),
+        },
+      },
+    });
+
+    const prefixes = extractNamespacePrefixes([Shape]);
+
+    // URNs and full URIs should not appear as prefixes
+    expect(prefixes.has("urn")).toBe(false);
+    expect(prefixes.has("https")).toBe(false);
+    expect(prefixes.has("http")).toBe(false);
+    // But xsd should appear
+    expect(prefixes.has("xsd")).toBe(true);
+  });
 });
 
 describe("buildContext edge cases", () => {

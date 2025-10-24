@@ -10,4 +10,3 @@ describe("core module index", () => {
     expect(coreIndex).toBeDefined();
   });
 });
-

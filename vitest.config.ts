@@ -20,6 +20,7 @@ export default defineConfig({
         "src/**/types.ts", // Type-only files
         "src/core/types/shape.ts", // Type-only file
         "src/core/typecheck/cardinality-optional.ts", // Type-level only
+        "src/validate/report/index.ts", // Type-only file
       ],
       all: true,
       lines: 100,

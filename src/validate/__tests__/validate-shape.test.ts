@@ -291,4 +291,28 @@ describe("validateShapeBatch", () => {
     // Should not validate @id, @type, @context as regular properties
     expect(report.ok).toBe(true);
   });
+
+  it("should handle shape with undefined propMeta", () => {
+    const shape = {
+      classIri: iri("ex:Test"),
+      shapeId: "Test",
+      schema: Type.Object({
+        "@id": Type.String(),
+        "@type": Type.Array(Type.String()),
+        name: Type.String(),
+      }),
+      props: {
+        name: undefined, // Explicitly undefined
+      },
+    } as unknown as ReturnType<typeof defineShape>;
+
+    const report = validateShape(shape, {
+      "@id": "ex:test",
+      "@type": ["ex:Test"],
+      name: "Test Name",
+    });
+
+    // Should skip undefined propMeta
+    expect(report.ok).toBe(true);
+  });
 });

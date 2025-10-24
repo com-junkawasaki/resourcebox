@@ -32,10 +32,14 @@ describe("IRI utilities", () => {
   });
 
   it("should handle edge cases in getIRILocalName", () => {
-    // Full URI without # or /
-    expect(getIRILocalName(iri("http://example.org"))).toBe("http://example.org");
+    // Full URI without # or trailing /
+    expect(getIRILocalName(iri("http://example.org"))).toBe("example.org");
     // IRI without colon
     expect(getIRILocalName(iri("Person"))).toBe("Person");
+    // URN (returns from last colon)
+    expect(getIRILocalName(iri("urn:uuid:12345"))).toBe("uuid:12345");
+    // Full URI without any path component at all (edge case where slashIndex <= 0 after protocol)
+    expect(getIRILocalName(iri("https://example.com"))).toBe("example.com");
   });
 });
 

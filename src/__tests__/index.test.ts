@@ -45,4 +45,3 @@ describe("shapebox main entry point", () => {
     expect(shapebox.validatePropsSchemaConsistencyRuntime).toBeDefined();
   });
 });
-

@@ -140,4 +140,3 @@ describe("validatePropsSchemaConsistencyRuntime", () => {
     expect(error).toContain("phone");
   });
 });
-
