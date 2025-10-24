@@ -1,9 +1,9 @@
 // DAG: validate-test
 // validateStruct tests
 
-import { describe, it, expect } from "vitest";
+import { cardinality, defineShape, iri, range } from "@gftdcojp/shapebox-core";
 import { Type } from "@sinclair/typebox";
-import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
+import { describe, expect, it } from "vitest";
 import { validateStruct } from "../struct/validate-struct.ts";
 
 describe("validateStruct", () => {
@@ -28,7 +28,7 @@ describe("validateStruct", () => {
       },
     },
   });
-  
+
   it("should validate valid data", () => {
     const result = validateStruct(Person, {
       "@id": "http://example.org/john",
@@ -36,65 +36,68 @@ describe("validateStruct", () => {
       email: "john@example.com",
       age: 30,
     });
-    
+
     expect(result.ok).toBe(true);
     expect(result.errors).toHaveLength(0);
   });
-  
+
   it("should accept data without optional fields", () => {
     const result = validateStruct(Person, {
       "@id": "http://example.org/john",
       "@type": ["ex:Person"],
       email: "john@example.com",
     });
-    
+
     expect(result.ok).toBe(true);
   });
-  
+
   it("should reject missing required field", () => {
     const result = validateStruct(Person, {
       "@id": "http://example.org/john",
       "@type": ["ex:Person"],
       // missing email
     });
-    
+
     expect(result.ok).toBe(false);
-    expect(result.errors.some((e) => e.path.includes("email"))).toBe(true);
+    // Check for "required" error keyword rather than path
+    expect(
+      result.errors.some((e) => e.keyword === "required" || e.message?.includes("email"))
+    ).toBe(true);
   });
-  
+
   it("should reject invalid email format", () => {
     const result = validateStruct(Person, {
       "@id": "http://example.org/john",
       "@type": ["ex:Person"],
       email: "not-an-email",
     });
-    
+
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.keyword === "format")).toBe(true);
   });
-  
+
   it("should reject invalid URI format", () => {
     const result = validateStruct(Person, {
       "@id": "not a uri",
       "@type": ["ex:Person"],
       email: "john@example.com",
     });
-    
+
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.path === "/@id")).toBe(true);
   });
-  
+
   it("should reject wrong type", () => {
     const result = validateStruct(Person, {
       "@id": "http://example.org/john",
       "@type": ["ex:Person"],
       email: 123, // should be string
     });
-    
+
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.keyword === "type")).toBe(true);
   });
-  
+
   it("should reject negative age", () => {
     const result = validateStruct(Person, {
       "@id": "http://example.org/john",
@@ -102,20 +105,19 @@ describe("validateStruct", () => {
       email: "john@example.com",
       age: -5,
     });
-    
+
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.keyword === "minimum")).toBe(true);
   });
-  
+
   it("should reject empty @type array", () => {
     const result = validateStruct(Person, {
       "@id": "http://example.org/john",
       "@type": [],
       email: "john@example.com",
     });
-    
+
     expect(result.ok).toBe(false);
     expect(result.errors.some((e) => e.keyword === "minItems")).toBe(true);
   });
 });
-

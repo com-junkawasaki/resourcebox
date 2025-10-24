@@ -3,7 +3,7 @@
 
 /**
  * JSON-LD term definition.
- * 
+ *
  * @see https://www.w3.org/TR/json-ld11/#context-definitions
  */
 export interface JsonLdTermDefinition {
@@ -11,17 +11,17 @@ export interface JsonLdTermDefinition {
    * IRI that the term maps to.
    */
   readonly "@id": string;
-  
+
   /**
    * Type of the value (for literals) or "@id" for IRI references.
    */
   readonly "@type"?: string | "@id";
-  
+
   /**
    * Whether this term represents a container (e.g., @set, @list).
    */
   readonly "@container"?: "@set" | "@list" | "@language" | "@index" | "@id" | "@type";
-  
+
   /**
    * Language tag for literal values.
    */
@@ -42,7 +42,7 @@ export interface JsonLdContextMap {
 
 /**
  * Complete JSON-LD context structure.
- * 
+ *
  * @example
  * ```json
  * {
@@ -75,23 +75,22 @@ export interface BuildContextOptions {
    * Default: false (assumes prefixes are already defined externally).
    */
   readonly includeNamespaces?: boolean;
-  
+
   /**
    * Namespace map (prefix -> URI).
    * Only used if includeNamespaces is true.
    */
   readonly namespaces?: Record<string, string>;
-  
+
   /**
    * Include class term definitions (e.g., "Person": "ex:Person").
    * Default: true.
    */
   readonly includeClasses?: boolean;
-  
+
   /**
    * Include property term definitions.
    * Default: true.
    */
   readonly includeProperties?: boolean;
 }
-

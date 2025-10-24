@@ -5,22 +5,22 @@ import type { IRI } from "./iri.ts";
 
 /**
  * Range constraint for a property.
- * 
+ *
  * This is a discriminated union representing either:
  * - A datatype range (RDF literal type, e.g., xsd:string, xsd:integer)
  * - A shape range (reference to another Shape, e.g., ex:Person)
- * 
+ *
  * This separation enforces the semantic distinction between:
  * - Properties with literal values (datatype)
  * - Properties with IRI references to other resources (shape)
- * 
+ *
  * **The two kinds are mutually exclusive at compile time.**
- * 
+ *
  * @example
  * ```ts
  * // Datatype range (literal)
  * const emailRange: Range = { kind: "datatype", datatype: iri("xsd:string") };
- * 
+ *
  * // Shape range (IRI reference)
  * const managerRange: Range = { kind: "shape", shapeId: "ex:Person" };
  * ```
@@ -66,4 +66,3 @@ export const RDF_DATATYPES = {
   HTML: "rdf:HTML" as IRI<"Datatype">,
   XML_LITERAL: "rdf:XMLLiteral" as IRI<"Datatype">,
 } as const;
-

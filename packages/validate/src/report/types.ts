@@ -9,7 +9,7 @@ export interface ValidationResult {
    * Whether validation passed.
    */
   readonly ok: boolean;
-  
+
   /**
    * Validation errors (if any).
    * These are Ajv-style errors.
@@ -26,22 +26,22 @@ export interface ValidationError {
    * E.g., "/email", "/@type/0"
    */
   readonly path: string;
-  
+
   /**
    * Error message.
    */
   readonly message: string;
-  
+
   /**
    * Error keyword (e.g., "type", "format", "required").
    */
   readonly keyword?: string;
-  
+
   /**
    * Schema path that failed.
    */
   readonly schemaPath?: string;
-  
+
   /**
    * Additional error params.
    */
@@ -56,7 +56,7 @@ export interface ShapeReport {
    * Whether shape validation passed.
    */
   readonly ok: boolean;
-  
+
   /**
    * Shape violations (if any).
    */
@@ -71,22 +71,22 @@ export interface ShapeViolation {
    * Property path that violated the constraint.
    */
   readonly path: string;
-  
+
   /**
    * Violation code.
    */
   readonly code: ViolationCode;
-  
+
   /**
    * Human-readable message.
    */
   readonly message: string;
-  
+
   /**
    * Expected value or constraint.
    */
   readonly expected?: unknown;
-  
+
   /**
    * Actual value (if relevant).
    */
@@ -105,4 +105,3 @@ export type ViolationCode =
   | "DATATYPE_MISMATCH" // literal value doesn't match expected datatype
   | "SHAPE_REFERENCE_INVALID" // IRI reference is not a valid IRI
   | "UNKNOWN"; // other violations
-

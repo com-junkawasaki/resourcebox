@@ -23,4 +23,3 @@ export type { PropertyMeta } from "./property.ts";
 export { validatePropertyMeta } from "./property.ts";
 
 export type { ShapeDefinition, Shape, ShapeSchemaType, ShapeDataType } from "./shape.ts";
-

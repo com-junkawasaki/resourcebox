@@ -1,9 +1,9 @@
 // DAG: validate-test
 // validateShape tests
 
-import { describe, it, expect } from "vitest";
+import { cardinality, defineShape, iri, range } from "@gftdcojp/shapebox-core";
 import { Type } from "@sinclair/typebox";
-import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
+import { describe, expect, it } from "vitest";
 import { validateShape } from "../shape/validate-shape.ts";
 
 describe("validateShape", () => {
@@ -34,7 +34,7 @@ describe("validateShape", () => {
       },
     },
   });
-  
+
   it("should validate valid shape", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
@@ -43,22 +43,22 @@ describe("validateShape", () => {
       email: "john@example.com",
       manager: "ex:jane",
     });
-    
+
     expect(report.ok).toBe(true);
     expect(report.violations).toHaveLength(0);
   });
-  
+
   it("should reject missing @type", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
       name: "John Doe",
       email: "john@example.com",
     });
-    
+
     expect(report.ok).toBe(false);
     expect(report.violations.some((v) => v.code === "TYPE_MISMATCH")).toBe(true);
   });
-  
+
   it("should reject wrong @type", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
@@ -66,11 +66,11 @@ describe("validateShape", () => {
       name: "John Doe",
       email: "john@example.com",
     });
-    
+
     expect(report.ok).toBe(false);
     expect(report.violations.some((v) => v.code === "TYPE_MISMATCH")).toBe(true);
   });
-  
+
   it("should accept @type with multiple values including expected class", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
@@ -78,10 +78,10 @@ describe("validateShape", () => {
       name: "John Doe",
       email: "john@example.com",
     });
-    
+
     expect(report.ok).toBe(true);
   });
-  
+
   it("should reject missing required property", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
@@ -89,11 +89,11 @@ describe("validateShape", () => {
       name: "John Doe",
       // missing email
     });
-    
+
     expect(report.ok).toBe(false);
     expect(report.violations.some((v) => v.code === "CARDINALITY_REQUIRED")).toBe(true);
   });
-  
+
   it("should accept optional property omitted", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
@@ -102,10 +102,10 @@ describe("validateShape", () => {
       email: "john@example.com",
       // manager omitted
     });
-    
+
     expect(report.ok).toBe(true);
   });
-  
+
   it("should reject invalid IRI for shape reference", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
@@ -114,11 +114,11 @@ describe("validateShape", () => {
       email: "john@example.com",
       manager: "not-an-iri", // invalid IRI
     });
-    
+
     expect(report.ok).toBe(false);
     expect(report.violations.some((v) => v.code === "SHAPE_REFERENCE_INVALID")).toBe(true);
   });
-  
+
   it("should reject object value for datatype range", () => {
     const report = validateShape(Person, {
       "@id": "ex:john",
@@ -126,16 +126,15 @@ describe("validateShape", () => {
       name: { value: "John" }, // should be string, not object
       email: "john@example.com",
     });
-    
+
     expect(report.ok).toBe(false);
     expect(report.violations.some((v) => v.code === "DATATYPE_MISMATCH")).toBe(true);
   });
-  
+
   it("should reject non-object data", () => {
     const report = validateShape(Person, "not an object");
-    
+
     expect(report.ok).toBe(false);
     expect(report.violations).toHaveLength(1);
   });
 });
-

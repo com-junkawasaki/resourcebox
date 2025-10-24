@@ -15,12 +15,12 @@ type ValidPropertyKeys<TProps extends TProperties> = Exclude<keyof TProps, JsonL
 
 /**
  * Check if all keys in TMetas exist in TProps (ignoring JSON-LD special keys).
- * 
+ *
  * @template TProps - Properties from TypeBox schema
  * @template TMetas - Property metadata map
- * 
+ *
  * @returns never if any key in TMetas is not in TProps, void if consistent
- * 
+ *
  * @example
  * ```ts
  * // ✅ OK: email and name are in schema
@@ -28,7 +28,7 @@ type ValidPropertyKeys<TProps extends TProperties> = Exclude<keyof TProps, JsonL
  *   { "@id": TString; email: TString; name: TString },
  *   { email: PropertyMeta; name: PropertyMeta }
  * >; // void
- * 
+ *
  * // ❌ ERROR: age is in props but not in schema
  * type Invalid = ValidatePropsSchemaConsistency<
  *   { "@id": TString; email: TString },
@@ -50,7 +50,7 @@ export type ValidatePropsSchemaConsistency<
 /**
  * Extract keys from TMetas that are not in TProps.
  * Used for generating helpful error messages.
- * 
+ *
  * @template TProps - Properties from TypeBox schema
  * @template TMetas - Property metadata map
  */
@@ -67,7 +67,7 @@ export type PropsSchemaConsistencyError<TExtraKeys extends string> =
 
 /**
  * Runtime check for props-schema consistency.
- * 
+ *
  * @param schemaKeys - Keys from TypeBox schema
  * @param propsKeys - Keys from property metadata map
  * @returns Error message if inconsistent, undefined if consistent
@@ -79,15 +79,14 @@ export function validatePropsSchemaConsistencyRuntime(
   const validSchemaKeys = new Set(
     schemaKeys.filter((k) => k !== "@id" && k !== "@type" && k !== "@context")
   );
-  
+
   const extraKeys = propsKeys.filter(
     (k) => !validSchemaKeys.has(k) && k !== "@id" && k !== "@type" && k !== "@context"
   );
-  
+
   if (extraKeys.length > 0) {
     return `Property metadata keys [${extraKeys.join(", ")}] do not exist in schema`;
   }
-  
+
   return undefined;
 }
-

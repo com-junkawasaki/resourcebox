@@ -18,4 +18,3 @@ export { validateShape, validateShapeBatch } from "./shape/index.ts";
 
 // Helper functions (for advanced usage)
 export { checkCardinality, checkRange, checkType } from "./shape/index.ts";
-

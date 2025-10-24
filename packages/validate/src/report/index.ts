@@ -8,4 +8,3 @@ export type {
   ShapeViolation,
   ViolationCode,
 } from "./types.ts";
-

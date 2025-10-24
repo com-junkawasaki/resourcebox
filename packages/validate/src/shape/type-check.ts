@@ -6,17 +6,14 @@ import type { ShapeViolation } from "../report/types.ts";
 
 /**
  * Check if a JSON-LD node's @type includes the expected class IRI.
- * 
+ *
  * @param data - JSON-LD node data
  * @param expectedClassIri - Expected class IRI
  * @returns Array of violations (empty if valid)
  */
-export function checkType(
-  data: unknown,
-  expectedClassIri: IRI<"Class">
-): ShapeViolation[] {
+export function checkType(data: unknown, expectedClassIri: IRI<"Class">): ShapeViolation[] {
   const violations: ShapeViolation[] = [];
-  
+
   // Ensure data is an object
   if (typeof data !== "object" || data === null) {
     violations.push({
@@ -28,12 +25,12 @@ export function checkType(
     });
     return violations;
   }
-  
+
   const obj = data as Record<string, unknown>;
-  
+
   // Get @type field
   const typeValue = obj["@type"];
-  
+
   // @type can be string or array of strings
   let types: string[];
   if (typeof typeValue === "string") {
@@ -50,7 +47,7 @@ export function checkType(
     });
     return violations;
   }
-  
+
   // Check if expected class IRI is in @type array
   if (!types.includes(expectedClassIri)) {
     violations.push({
@@ -61,7 +58,6 @@ export function checkType(
       actual: types,
     });
   }
-  
+
   return violations;
 }
-

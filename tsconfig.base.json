@@ -7,7 +7,7 @@
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    
+
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
@@ -16,15 +16,15 @@
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "exactOptionalPropertyTypes": true,
-    
+
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    
+
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    
+
     "baseUrl": ".",
     "paths": {
       "@gftdcojp/shapebox-core": ["./packages/core/src/index.ts"],
@@ -33,4 +33,3 @@
   },
   "exclude": ["node_modules", "dist", ".next"]
 }
-

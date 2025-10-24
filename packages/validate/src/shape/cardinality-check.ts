@@ -6,7 +6,7 @@ import type { ShapeViolation } from "../report/types.ts";
 
 /**
  * Check if a property value satisfies cardinality constraints.
- * 
+ *
  * @param propName - Property name
  * @param value - Property value (can be undefined, single value, or array)
  * @param cardinality - Cardinality constraint
@@ -18,7 +18,7 @@ export function checkCardinality(
   cardinality: Cardinality
 ): ShapeViolation[] {
   const violations: ShapeViolation[] = [];
-  
+
   // Count occurrences
   let count = 0;
   if (value === undefined || value === null) {
@@ -28,7 +28,7 @@ export function checkCardinality(
   } else {
     count = 1;
   }
-  
+
   // Check required
   if (cardinality.required && count === 0) {
     violations.push({
@@ -40,7 +40,7 @@ export function checkCardinality(
     });
     return violations; // Don't check min/max if required fails
   }
-  
+
   // Check min
   if (count < cardinality.min) {
     violations.push({
@@ -51,7 +51,7 @@ export function checkCardinality(
       actual: count,
     });
   }
-  
+
   // Check max
   if (cardinality.max !== undefined && count > cardinality.max) {
     violations.push({
@@ -62,7 +62,6 @@ export function checkCardinality(
       actual: count,
     });
   }
-  
+
   return violations;
 }
-

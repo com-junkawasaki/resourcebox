@@ -1,12 +1,12 @@
 // DAG: examples
 // Project shape example
 
+import { cardinality, defineShape, iri, range } from "@gftdcojp/shapebox-core";
 import { Type } from "@sinclair/typebox";
-import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
 
 /**
  * Project shape definition.
- * 
+ *
  * This demonstrates:
  * - Multiple properties with different cardinalities
  * - Array properties (members: one or more)
@@ -14,18 +14,18 @@ import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
  */
 export const Project = defineShape({
   classIri: iri("ex:Project"),
-  
+
   schema: Type.Object({
     "@id": Type.String({ format: "uri" }),
     "@type": Type.Array(Type.String({ format: "uri" }), { minItems: 1 }),
-    
+
     title: Type.String(),
-    
+
     description: Type.Optional(Type.String()),
-    
+
     members: Type.Array(Type.String({ format: "uri" }), { minItems: 1 }),
   }),
-  
+
   props: {
     title: {
       predicate: iri("ex:hasTitle"),
@@ -46,7 +46,7 @@ export const Project = defineShape({
       description: "Project members (references to Person)",
     },
   },
-  
+
   description: "A project entity",
   label: "Project",
 });
@@ -57,9 +57,5 @@ export const alphaProject = {
   "@type": ["ex:Project"],
   title: "Project Alpha",
   description: "A sample project",
-  members: [
-    "http://example.org/person/john",
-    "http://example.org/person/jane",
-  ],
+  members: ["http://example.org/person/john", "http://example.org/person/jane"],
 };
-

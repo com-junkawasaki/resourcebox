@@ -1,11 +1,11 @@
 // DAG: core-test
 // defineShape API tests
 
-import { describe, it, expect } from "vitest";
 import { Type } from "@sinclair/typebox";
+import { describe, expect, it } from "vitest";
+import { cardinality } from "../dsl/cardinality.ts";
 import { defineShape } from "../dsl/define-shape.ts";
 import { iri } from "../dsl/iri.ts";
-import { cardinality } from "../dsl/cardinality.ts";
 import { range } from "../dsl/range.ts";
 
 describe("defineShape", () => {
@@ -26,13 +26,13 @@ describe("defineShape", () => {
       },
       description: "A person entity",
     });
-    
+
     expect(Person.classIri).toBe("ex:Person");
     expect(Person.shapeId).toBe("Person");
     expect(Person.description).toBe("A person entity");
     expect(Person.props.email?.predicate).toBe("ex:hasEmail");
   });
-  
+
   it("should use custom shapeId if provided", () => {
     const Custom = defineShape({
       classIri: iri("ex:MyClass"),
@@ -43,10 +43,10 @@ describe("defineShape", () => {
       props: {},
       shapeId: "CustomId",
     });
-    
+
     expect(Custom.shapeId).toBe("CustomId");
   });
-  
+
   it("should throw on self-extending class", () => {
     expect(() => {
       defineShape({
@@ -60,7 +60,7 @@ describe("defineShape", () => {
       });
     }).toThrow(/circular/i);
   });
-  
+
   it("should throw on props-schema inconsistency", () => {
     expect(() => {
       defineShape({
@@ -76,7 +76,8 @@ describe("defineShape", () => {
             cardinality: cardinality({ min: 1, max: 1, required: true }),
             range: range.datatype(iri("xsd:string")),
           },
-          age: { // age is not in schema
+          age: {
+            // age is not in schema
             predicate: iri("ex:hasAge"),
             cardinality: cardinality({ min: 0, max: 1, required: false }),
             range: range.datatype(iri("xsd:integer")),
@@ -85,7 +86,7 @@ describe("defineShape", () => {
       });
     }).toThrow(/do not exist in schema/i);
   });
-  
+
   it("should throw on invalid PropertyMeta", () => {
     expect(() => {
       defineShape({
@@ -106,7 +107,7 @@ describe("defineShape", () => {
       });
     }).toThrow(/Functional/i);
   });
-  
+
   it("should allow shape with extends", () => {
     const Agent = defineShape({
       classIri: iri("ex:Agent"),
@@ -123,7 +124,7 @@ describe("defineShape", () => {
         },
       },
     });
-    
+
     const Person = defineShape({
       classIri: iri("ex:Person"),
       schema: Type.Object({
@@ -146,8 +147,7 @@ describe("defineShape", () => {
       },
       extends: [Agent.classIri],
     });
-    
+
     expect(Person.extends).toContain("ex:Agent");
   });
 });
-

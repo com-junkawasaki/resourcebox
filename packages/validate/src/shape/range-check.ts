@@ -7,36 +7,32 @@ import type { ShapeViolation } from "../report/types.ts";
 
 /**
  * Check if a property value satisfies range constraints.
- * 
+ *
  * This performs basic checks:
  * - For datatype range: check that value is a primitive (string, number, boolean)
  * - For shape range: check that value is a valid IRI string
- * 
+ *
  * This does NOT:
  * - Validate literal values against XSD datatypes (e.g., xsd:integer format)
  * - Check if IRI references actually exist (that's external I/O)
  * - Validate referenced shape structure (that's recursive validation)
- * 
+ *
  * @param propName - Property name
  * @param value - Property value
  * @param range - Range constraint
  * @returns Array of violations (empty if valid)
  */
-export function checkRange(
-  propName: string,
-  value: unknown,
-  range: Range
-): ShapeViolation[] {
+export function checkRange(propName: string, value: unknown, range: Range): ShapeViolation[] {
   const violations: ShapeViolation[] = [];
-  
+
   // Skip undefined/null (cardinality should catch this)
   if (value === undefined || value === null) {
     return violations;
   }
-  
+
   // Handle array values
   const values = Array.isArray(value) ? value : [value];
-  
+
   for (const val of values) {
     if (range.kind === "datatype") {
       // Datatype range: value should be a primitive
@@ -70,7 +66,6 @@ export function checkRange(
       }
     }
   }
-  
+
   return violations;
 }
-

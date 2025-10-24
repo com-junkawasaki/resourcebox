@@ -12,4 +12,3 @@ export {
 export { range } from "./range.ts";
 export { defineShape } from "./define-shape.ts";
 export type { DefineShape } from "./define-shape.ts";
-

@@ -6,12 +6,12 @@ import addFormats from "ajv-formats";
 
 /**
  * Create a configured Ajv instance for shapebox validation.
- * 
+ *
  * This instance is configured with:
  * - Strict mode disabled (for flexibility with TypeBox schemas)
  * - All errors collection
  * - Format validation enabled (uri, email, date-time, etc.)
- * 
+ *
  * @returns Configured Ajv instance
  */
 export function createAjvInstance(): Ajv {
@@ -21,10 +21,10 @@ export function createAjvInstance(): Ajv {
     validateFormats: true,
     coerceTypes: false, // Strict type checking
   });
-  
+
   // Add format validators (email, uri, date-time, etc.)
   addFormats(ajv);
-  
+
   return ajv;
 }
 
@@ -37,7 +37,7 @@ let ajvInstance: Ajv | undefined;
 /**
  * Get the shared Ajv instance.
  * Creates it on first call, then returns the cached instance.
- * 
+ *
  * @returns Ajv instance
  */
 export function getAjvInstance(): Ajv {
@@ -46,4 +46,3 @@ export function getAjvInstance(): Ajv {
   }
   return ajvInstance;
 }
-

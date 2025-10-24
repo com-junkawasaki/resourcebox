@@ -22,4 +22,3 @@ export type {
   PropsSchemaConsistencyError,
 } from "./props-schema-consistency.ts";
 export { validatePropsSchemaConsistencyRuntime } from "./props-schema-consistency.ts";
-

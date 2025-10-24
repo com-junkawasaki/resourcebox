@@ -1,12 +1,12 @@
 // DAG: examples
 // Person shape example from design document
 
+import { cardinality, defineShape, iri, range } from "@gftdcojp/shapebox-core";
 import { Type } from "@sinclair/typebox";
-import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
 
 /**
  * Person shape definition.
- * 
+ *
  * This demonstrates:
  * - Class IRI definition (ex:Person)
  * - TypeBox schema with required and optional properties
@@ -17,16 +17,16 @@ import { defineShape, iri, cardinality, range } from "@gftdcojp/shapebox-core";
  */
 export const Person = defineShape({
   classIri: iri("ex:Person"),
-  
+
   schema: Type.Object({
     "@id": Type.String({ format: "uri" }),
     "@type": Type.Array(Type.String({ format: "uri" }), { minItems: 1 }),
-    
+
     email: Type.String({ format: "email" }),
-    
+
     manager: Type.Optional(Type.String({ format: "uri" })),
   }),
-  
+
   props: {
     email: {
       predicate: iri("ex:hasEmail"),
@@ -41,9 +41,9 @@ export const Person = defineShape({
       description: "Person's manager (also a Person)",
     },
   },
-  
+
   extends: [iri("ex:Agent")],
-  
+
   description: "A person entity",
   label: "Person",
 });
@@ -69,4 +69,3 @@ export const wrongTypePerson = {
   "@type": ["ex:Project"], // should be ex:Person
   email: "wrong@example.com",
 };
-

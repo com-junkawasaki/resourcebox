@@ -2,8 +2,8 @@
 // Complete usage example demonstrating the shapebox workflow
 
 import { buildContext } from "@gftdcojp/shapebox-core";
-import { validateStruct, validateShape } from "@gftdcojp/shapebox-validate";
-import { Person, johnDoe, invalidPerson } from "./person.ts";
+import { validateShape, validateStruct } from "@gftdcojp/shapebox-validate";
+import { Person, invalidPerson, johnDoe } from "./person.ts";
 import { Project, alphaProject } from "./project.ts";
 
 // ============================================================================
@@ -79,14 +79,14 @@ function validateNode(shape: typeof Person | typeof Project, data: unknown): boo
     console.error("Structure validation failed:", structResult.errors);
     return false;
   }
-  
+
   // Step 2: Shape validation
   const shapeResult = validateShape(shape, data);
   if (!shapeResult.ok) {
     console.error("Shape validation failed:", shapeResult.violations);
     return false;
   }
-  
+
   console.log("✓ Node passed all validations");
   return true;
 }
@@ -115,4 +115,3 @@ console.log("- Perform OWL reasoning or inference");
 console.log("- Execute SPARQL queries");
 console.log("- Validate external IRI references (no I/O)");
 console.log("- Handle data fetching (use Comunica + GraphQL-LD for that)");
-
