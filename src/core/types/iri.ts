@@ -81,5 +81,5 @@ export function getIRILocalName(iri: IRI): string {
 
   // For prefixed IRIs, extract after colon
   const colonIndex = iri.indexOf(":");
-  return colonIndex > 0 ? iri.slice(colonIndex + 1) : iri;
+  return colonIndex >= 0 ? iri.slice(colonIndex + 1) : iri;
 }
