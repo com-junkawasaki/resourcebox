@@ -105,11 +105,16 @@ export interface Restriction {
   readonly someValuesFrom?: OntoIRI | OntoClass | ClassExpression;
   readonly allValuesFrom?: OntoIRI | OntoClass | ClassExpression;
   readonly hasValue?: string | number | boolean | OntoIRI;
+  // Qualified cardinalities
   readonly minQualifiedCardinality?: number;
   readonly maxQualifiedCardinality?: number;
   readonly qualifiedCardinality?: number;
   readonly onClass?: OntoIRI | OntoClass | ClassExpression;
   readonly onDatatype?: OntoIRI; // typically XSD datatypes
+  // Unqualified cardinalities
+  readonly minCardinality?: number;
+  readonly maxCardinality?: number;
+  readonly cardinality?: number;
 }
 
 /** Discriminated unions for class expressions */

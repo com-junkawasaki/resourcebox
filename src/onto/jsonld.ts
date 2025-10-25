@@ -120,8 +120,7 @@ function propertyToNode(prop: OntoProperty): Record<string, unknown> {
     node[OWL("equivalentProperty")] = prop.equivalentProperty.map(getIRI);
   }
   if (prop.propertyChain && prop.propertyChain.length > 0) {
-    node[OWL("propertyChainAxiom")] = [{ [RDF("first")]: getIRI(prop.propertyChain[0]) }];
-    // For brevity, we flatten to list head only; full RDF list encoding omitted.
+    node[OWL("propertyChainAxiom")] = toRdfList(prop.propertyChain.map(getIRI));
   }
   if (prop.annotations) for (const ann of prop.annotations) addAnnotation(node, ann);
   return node;
@@ -133,13 +132,13 @@ function expressionToValue(expr: OntoIRI | OntoClass | ClassExpression): unknown
   const ce = expr as ClassExpression;
   switch (ce.kind) {
     case "Union":
-      return { [OWL("unionOf")]: ce.operands.map(expressionToValue) };
+      return { [OWL("unionOf")]: toJsonLdList(ce.operands.map(expressionToValue)) };
     case "Intersection":
-      return { [OWL("intersectionOf")]: ce.operands.map(expressionToValue) };
+      return { [OWL("intersectionOf")]: toJsonLdList(ce.operands.map(expressionToValue)) };
     case "Complement":
       return { [OWL("complementOf")]: expressionToValue(ce.of) };
     case "OneOf":
-      return { [OWL("oneOf")]: ce.individuals };
+      return { [OWL("oneOf")]: toJsonLdList(ce.individuals) };
     case "Restriction":
       return restrictionToNode(ce);
   }
@@ -155,13 +154,34 @@ function restrictionToNode(r: Restriction): Record<string, unknown> {
   if (r.maxQualifiedCardinality !== undefined)
     node[OWL("maxQualifiedCardinality")] = r.maxQualifiedCardinality;
   if (r.qualifiedCardinality !== undefined) node[OWL("qualifiedCardinality")] = r.qualifiedCardinality;
+  if (r.minCardinality !== undefined) node[OWL("minCardinality")] = r.minCardinality;
+  if (r.maxCardinality !== undefined) node[OWL("maxCardinality")] = r.maxCardinality;
+  if (r.cardinality !== undefined) node[OWL("cardinality")] = r.cardinality;
   if (r.onClass) node[OWL("onClass")] = expressionToValue(r.onClass);
   if (r.onDatatype) node[OWL("onDataRange")] = r.onDatatype;
   return node;
 }
 
+// JSON-LD representation of RDF list: nested objects with rdf:first/rest ... rdf:nil
+function toRdfList(items: ReadonlyArray<OntoIRI>): unknown {
+  if (items.length === 0) return RDF("nil");
+  const head = { [RDF("first")]: items[0] } as Record<string, unknown>;
+  let cursor = head;
+  for (let i = 1; i < items.length; i++) {
+    const next = { [RDF("first")]: items[i] } as Record<string, unknown>;
+    cursor[RDF("rest")] = next;
+    cursor = next;
+  }
+  cursor[RDF("rest")] = RDF("nil");
+  return head;
+}
+
 function addAnnotation(node: Record<string, unknown>, ann: Annotation): void {
   node[ann.property] = ann.value as unknown;
+}
+
+function toJsonLdList(items: ReadonlyArray<unknown>): { "@list": ReadonlyArray<unknown> } {
+  return { "@list": items };
 }
 
 
