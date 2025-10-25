@@ -2,7 +2,8 @@ import { describe, it, expect } from "vitest";
 import { Ontology as OntologyContainer } from "../ontology.js";
 import { toJsonLd } from "../jsonld.js";
 import { Namespace, OWL } from "../namespace.js";
-import { Class, Property } from "../class.js";
+import { Class } from "../class.js";
+import { Property } from "../property.js";
 import { Union } from "../expressions.js";
 import { QualifiedCardinality } from "../expressions.js";
 
@@ -30,10 +31,12 @@ describe("onto jsonld export", () => {
     expect(graph.some((n) => n["@id"] === ex("dodaf"))).toBe(true);
     expect(graph.some((n) => n["@id"] === ex("Artifact"))).toBe(true);
     const cls = graph.find((n) => n["@id"] === ex("Artifact")) as Record<string, unknown>;
-    const eq = cls["owl:equivalentClass"] as ReadonlyArray<Record<string, unknown>>;
-    // unionOf should be @list-based
-    const union = eq[0]["owl:unionOf"] as { "@list": unknown[] };
-    expect(Array.isArray(union["@list"])) .toBe(true);
+    const eq = cls && (cls["owl:equivalentClass"] as ReadonlyArray<Record<string, unknown>>);
+    expect(eq).toBeDefined();
+    const unionHolder = eq && (eq[0] as Record<string, unknown>);
+    expect(unionHolder).toBeDefined();
+    const union = unionHolder && (unionHolder["owl:unionOf"] as { "@list": unknown[] });
+    expect(Array.isArray(union && union["@list"])) .toBe(true);
   });
 
   it("exports propertyChainAxiom as RDF list and unqualified cardinalities in restriction", () => {
@@ -55,8 +58,8 @@ describe("onto jsonld export", () => {
     });
     const json = toJsonLd(ont) as { [k: string]: unknown };
     const graph = json["@graph"] as ReadonlyArray<Record<string, unknown>>;
-    const pNode = graph.find((n) => n["@id"] === ex("p")) as Record<string, unknown>;
-    expect(pNode["owl:propertyChainAxiom"]).toBeTruthy();
+    const pNode = graph.find((n) => n["@id"] === ex("p")) as Record<string, unknown> | undefined;
+    expect(pNode && pNode["owl:propertyChainAxiom"]).toBeTruthy();
   });
 });
 

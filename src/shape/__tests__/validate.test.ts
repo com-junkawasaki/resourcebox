@@ -202,7 +202,8 @@ describe("Shape.validate", () => {
       },
     });
 
-    expect(validate(shape, { v: "Ab" }).ok).toBe(false); // both satisfied -> fail
+    // "Ab" : pattern and minLength are both satisfied → count=2 → fail
+    expect(validate(shape, { v: "Abc" }).ok).toBe(false);
     expect(validate(shape, { v: "abc" }).ok).toBe(true);  // only minLength
     expect(validate(shape, { v: "A" }).ok).toBe(true);    // only pattern
   });

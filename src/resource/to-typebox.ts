@@ -92,8 +92,9 @@ export function toTypeBox(schema: AnyResourceSchema): TSchema {
     }
 
     case "Optional": {
-      // Optional wraps another schema
-      return Type.Optional(toTypeBox(schema.schema));
+      // Optional wraps another schema (TypeBox emits anyOf [T, null])
+      const inner = toTypeBox(schema.schema);
+      return Type.Unsafe({ anyOf: [inner, { const: undefined }] }) as unknown as TSchema;
     }
 
     default: {
