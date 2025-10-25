@@ -97,5 +97,3 @@ export function QualifiedCardinality(args: {
     ...(args.onDatatype !== undefined && { onDatatype: args.onDatatype }),
   };
 }
-
-

@@ -1,6 +1,12 @@
 // Ontology container (no reasoning)
 
-import type { OntoClass, OntoProperty, Ontology as OntologyType, OntoIRI, Annotation } from "./types.js";
+import type {
+  Annotation,
+  OntoClass,
+  OntoIRI,
+  OntoProperty,
+  Ontology as OntologyType,
+} from "./types.js";
 
 export interface OntologyOptions {
   readonly iri: OntoIRI;
@@ -19,5 +25,3 @@ export function Ontology(options: OntologyOptions): OntologyType {
     ...(options.properties !== undefined && { properties: options.properties }),
   };
 }
-
-

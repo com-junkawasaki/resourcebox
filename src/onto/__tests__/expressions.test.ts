@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { Namespace } from "../namespace.js";
 import { Class } from "../class.js";
 import {
-  Union,
-  Intersection,
-  Complement,
-  OneOf,
-  SomeValuesFrom,
   AllValuesFrom,
-  MinQualifiedCardinality,
+  Complement,
+  Intersection,
   MaxQualifiedCardinality,
+  MinQualifiedCardinality,
+  OneOf,
   QualifiedCardinality,
+  SomeValuesFrom,
+  Union,
 } from "../expressions.js";
+import { Namespace } from "../namespace.js";
 
 const ex = Namespace({ prefix: "ex", uri: "http://example.org/" });
 
@@ -25,12 +25,13 @@ describe("Onto.Expressions builders", () => {
     const o = OneOf([ex("a1"), ex("a2")]);
 
     expect(u.kind).toBe("Union");
-    expect((u as any).operands.length).toBe(2);
+    expect(u.operands.length).toBe(2);
     expect(i.kind).toBe("Intersection");
+    expect(i.operands.length).toBe(2);
     expect(c.kind).toBe("Complement");
-    expect((c as any).of).toBeDefined();
+    expect(c.of).toBeDefined();
     expect(o.kind).toBe("OneOf");
-    expect((o as any).individuals.length).toBe(2);
+    expect(o.individuals.length).toBe(2);
   });
 
   it("builds restrictions (some/all/qualified cardinalities)", () => {
@@ -42,16 +43,14 @@ describe("Onto.Expressions builders", () => {
     const q = QualifiedCardinality({ onProperty: ex("p"), exact: 3, onDatatype: ex("dt") });
 
     expect(some.kind).toBe("Restriction");
-    expect((some as any).someValuesFrom).toBeDefined();
+    expect(some.someValuesFrom).toBeDefined();
     expect(all.kind).toBe("Restriction");
-    expect((all as any).allValuesFrom).toBeDefined();
+    expect(all.allValuesFrom).toBeDefined();
     expect(minQ.kind).toBe("Restriction");
-    expect((minQ as any).minQualifiedCardinality).toBe(1);
+    expect(minQ.minQualifiedCardinality).toBe(1);
     expect(maxQ.kind).toBe("Restriction");
-    expect((maxQ as any).maxQualifiedCardinality).toBe(2);
+    expect(maxQ.maxQualifiedCardinality).toBe(2);
     expect(q.kind).toBe("Restriction");
-    expect((q as any).qualifiedCardinality).toBe(3);
+    expect(q.qualifiedCardinality).toBe(3);
   });
 });
-
-

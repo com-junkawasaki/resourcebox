@@ -1,7 +1,12 @@
 // Shape.validate - Validate data against SHACL shape
 
 import { getClassIRI, isClass } from "../onto/class.js";
-import type { ShapeNodeDef, ShapeValidationResult, ShapeViolation } from "./types.js";
+import type {
+  ShapeNodeDef,
+  ShapePropertyDef,
+  ShapeValidationResult,
+  ShapeViolation,
+} from "./types.js";
 
 /**
  * Validate data against SHACL shape
@@ -228,7 +233,10 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
     }
 
     if (propShape.xone && propShape.xone.length > 0) {
-      const count = propShape.xone.reduce((acc, alt) => acc + (satisfiesValueConstraints(value, alt) ? 1 : 0), 0);
+      const count = propShape.xone.reduce(
+        (acc, alt) => acc + (satisfiesValueConstraints(value, alt) ? 1 : 0),
+        0
+      );
       if (count !== 1) {
         violations.push({
           path: `/${propKey}`,
@@ -269,7 +277,7 @@ function satisfiesValueConstraints(value: unknown, def: Partial<ShapePropertyDef
   if (typeof value === "string") {
     if (def.minLength !== undefined && value.length < def.minLength) return false;
     if (def.maxLength !== undefined && value.length > def.maxLength) return false;
-    if (def.pattern !== undefined && !(new RegExp(def.pattern)).test(value)) return false;
+    if (def.pattern !== undefined && !new RegExp(def.pattern).test(value)) return false;
   }
   // numbers
   if (typeof value === "number") {

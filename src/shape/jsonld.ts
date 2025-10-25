@@ -1,9 +1,11 @@
 // JSON-LD exporter for SHACL shapes (structural only)
 
-import type { ShapeNodeDef, ShapePropertyDef } from "./types.js";
 import { RDF, RDFS } from "../onto/namespace.js";
+import type { ShapeNodeDef, ShapePropertyDef } from "./types.js";
 
-export function toJsonLd(shape: ShapeNodeDef | ReadonlyArray<ShapeNodeDef>): Record<string, unknown> {
+export function toJsonLd(
+  shape: ShapeNodeDef | ReadonlyArray<ShapeNodeDef>
+): Record<string, unknown> {
   const shapes = Array.isArray(shape) ? shape : [shape];
   const graph: Record<string, unknown>[] = shapes.map(nodeToJson);
   return {
@@ -36,7 +38,8 @@ function propertyToJson(prop: ShapePropertyDef): Record<string, unknown> {
   const p: Record<string, unknown> = {
     "sh:path": typeof prop.path === "string" ? prop.path : prop.path.iri,
   };
-  if (prop.datatype) p["sh:datatype"] = typeof prop.datatype === "string" ? prop.datatype : prop.datatype.iri;
+  if (prop.datatype)
+    p["sh:datatype"] = typeof prop.datatype === "string" ? prop.datatype : prop.datatype.iri;
   if (prop.class) p["sh:class"] = typeof prop.class === "string" ? prop.class : prop.class.iri;
   if (prop.minCount !== undefined) p["sh:minCount"] = prop.minCount;
   if (prop.maxCount !== undefined) p["sh:maxCount"] = prop.maxCount;
@@ -56,5 +59,3 @@ function propertyToJson(prop: ShapePropertyDef): Record<string, unknown> {
   if (prop.description) p[RDFS("comment")] = prop.description;
   return p;
 }
-
-

@@ -5,6 +5,7 @@ import { Class } from "../../onto/class.js";
 import { FOAF } from "../../onto/namespace.js";
 import { Define } from "../define.js";
 import { Property } from "../property.js";
+import type { ShapePropertyDef } from "../types.js";
 import { check, validate } from "../validate.js";
 
 describe("Shape.validate", () => {
@@ -176,9 +177,9 @@ describe("Shape.validate", () => {
         v: Property({
           path: FOAF("value"),
           or: [
-            { minLength: 3 },
-            { pattern: "^[A-Z]" },
-          ] as any,
+            Property({ path: FOAF("value"), minLength: 3 }),
+            Property({ path: FOAF("value"), pattern: "^[A-Z]" }),
+          ] as ShapePropertyDef[],
         }),
       },
     });
@@ -195,17 +196,16 @@ describe("Shape.validate", () => {
         v: Property({
           path: FOAF("value"),
           xone: [
-            { pattern: "^[A-Z]" },
-            { minLength: 3 },
-          ] as any,
+            Property({ path: FOAF("value"), pattern: "^[A-Z]" }),
+            Property({ path: FOAF("value"), minLength: 3 }),
+          ] as ShapePropertyDef[],
         }),
       },
     });
 
-    // "Ab" : pattern and minLength are both satisfied → count=2 → fail
-    expect(validate(shape, { v: "Abc" }).ok).toBe(false);
-    expect(validate(shape, { v: "abc" }).ok).toBe(true);  // only minLength
-    expect(validate(shape, { v: "A" }).ok).toBe(true);    // only pattern
+    expect(validate(shape, { v: "Abc" }).ok).toBe(false); // both satisfied -> fail
+    expect(validate(shape, { v: "abc" }).ok).toBe(true); // only minLength
+    expect(validate(shape, { v: "A" }).ok).toBe(true); // only pattern
   });
 
   it("should validate nodeKind/in/hasValue constraints", () => {
@@ -214,7 +214,7 @@ describe("Shape.validate", () => {
       property: {
         iriRef: Property({ path: FOAF("knows"), nodeKind: "IRI" }),
         email: Property({ path: FOAF("mbox"), nodeKind: "Literal", in: ["a@ex.org", "b@ex.org"] }),
-        pinned: Property({ path: FOAF("pinned"), hasValue: true as any }),
+        pinned: Property({ path: FOAF("pinned"), hasValue: true }),
       },
     });
 

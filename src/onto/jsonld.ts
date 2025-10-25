@@ -4,7 +4,6 @@ import type {
   Annotation,
   ClassExpression,
   OntoClass,
-  OntoDatatype,
   OntoIRI,
   OntoProperty,
   Ontology,
@@ -145,7 +144,10 @@ function expressionToValue(expr: OntoIRI | OntoClass | ClassExpression): unknown
 }
 
 function restrictionToNode(r: Restriction): Record<string, unknown> {
-  const node: Record<string, unknown> = { "@type": OWL("Restriction"), ["owl:onProperty"]: getIRI(r.onProperty) };
+  const node: Record<string, unknown> = {
+    "@type": OWL("Restriction"),
+    ["owl:onProperty"]: getIRI(r.onProperty),
+  };
   if (r.someValuesFrom) node["owl:someValuesFrom"] = expressionToValue(r.someValuesFrom);
   if (r.allValuesFrom) node["owl:allValuesFrom"] = expressionToValue(r.allValuesFrom);
   if (r.hasValue !== undefined) node["owl:hasValue"] = r.hasValue;
@@ -153,7 +155,8 @@ function restrictionToNode(r: Restriction): Record<string, unknown> {
     node["owl:minQualifiedCardinality"] = r.minQualifiedCardinality;
   if (r.maxQualifiedCardinality !== undefined)
     node["owl:maxQualifiedCardinality"] = r.maxQualifiedCardinality;
-  if (r.qualifiedCardinality !== undefined) node["owl:qualifiedCardinality"] = r.qualifiedCardinality;
+  if (r.qualifiedCardinality !== undefined)
+    node["owl:qualifiedCardinality"] = r.qualifiedCardinality;
   if (r.minCardinality !== undefined) node["owl:minCardinality"] = r.minCardinality;
   if (r.maxCardinality !== undefined) node["owl:maxCardinality"] = r.maxCardinality;
   if (r.cardinality !== undefined) node["owl:cardinality"] = r.cardinality;
@@ -183,5 +186,3 @@ function addAnnotation(node: Record<string, unknown>, ann: Annotation): void {
 function toJsonLdList(items: ReadonlyArray<unknown>): { "@list": ReadonlyArray<unknown> } {
   return { "@list": items };
 }
-
-

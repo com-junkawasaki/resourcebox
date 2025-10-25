@@ -104,4 +104,9 @@ export type ViolationCode =
   | "TYPE_MISMATCH" // @type doesn't include expected class IRI
   | "DATATYPE_MISMATCH" // literal value doesn't match expected datatype
   | "SHAPE_REFERENCE_INVALID" // IRI reference is not a valid IRI
+  | "NODE_KIND"
+  | "IN"
+  | "HAS_VALUE"
+  | "OR"
+  | "XONE"
   | "UNKNOWN"; // other violations

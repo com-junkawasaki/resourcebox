@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { Define } from "../define.js";
-import { Property } from "../property.js";
-import { toJsonLd } from "../jsonld.js";
+import { describe, expect, it } from "vitest";
 import { Namespace } from "../../onto/namespace.js";
+import { Define } from "../define.js";
+import { toJsonLd } from "../jsonld.js";
+import { Property } from "../property.js";
 
 const ex = Namespace({ prefix: "ex", uri: "http://example.org/" });
 
@@ -35,5 +35,3 @@ describe("shape jsonld export", () => {
     expect(Array.isArray(node["sh:property"]).toBeTruthy);
   });
 });
-
-
