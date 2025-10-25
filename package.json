@@ -8,11 +8,27 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "resourcebox": "./dist/cli/index.js"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./resource": {
+      "import": "./dist/resource/index.js",
+      "types": "./dist/resource/index.d.ts"
+    },
+    "./onto": {
+      "import": "./dist/onto/index.js",
+      "types": "./dist/onto/index.d.ts"
+    },
+    "./shape": {
+      "import": "./dist/shape/index.js",
+      "types": "./dist/shape/index.d.ts"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -30,6 +46,12 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "clean": "rm -rf dist coverage",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "changeset publish",
+    "docs:start": "pnpm --dir docs-site start",
+    "docs:build": "pnpm --dir docs-site build",
+    "docs:serve": "pnpm --dir docs-site serve",
     "prepublishOnly": "pnpm clean && pnpm build && pnpm test && pnpm lint"
   },
   "dependencies": {
@@ -39,6 +61,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
+    "@changesets/cli": "^2.29.7",
     "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "2.1.9",
     "typescript": "^5.7.2",
