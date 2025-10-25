@@ -88,43 +88,13 @@ export type {
   PropertyOptions,
 } from "./onto/index.js";
 
-// ============================================================================
+// ==========================================================================
 // Resource - Resource layer (data structure definition)
-// ============================================================================
+// ==========================================================================
 
 import * as ResourceNS from "./resource/index.js";
 
-export const Resource = {
-  // Primitives
-  String: ResourceNS.String,
-  Number: ResourceNS.Number,
-  Boolean: ResourceNS.Boolean,
-
-  // Complex types
-  Array: ResourceNS.Array,
-  Object: ResourceNS.Object,
-  Ref: ResourceNS.Ref,
-  Literal: ResourceNS.Literal,
-  Optional: ResourceNS.Optional,
-
-  // Validation
-  validate: ResourceNS.validate,
-  check: ResourceNS.check,
-  parse: ResourceNS.parse,
-
-  // Context
-  context: ResourceNS.context,
-  extractNamespaces: ResourceNS.extractNamespaces,
-
-  // Shaped (integrated)
-  Shaped: ResourceNS.Shaped,
-
-  // Helpers
-  isObject: ResourceNS.isObject,
-  isOptional: ResourceNS.isOptional,
-  isRequired: ResourceNS.isRequired,
-  extractMetadata: ResourceNS.extractMetadata,
-};
+export const Resource = ResourceNS.Resource;
 
 // Export Resource types
 export type {

@@ -5,13 +5,17 @@ import { Array as ResourceArray } from "../array.js";
 import { Literal } from "../literal.js";
 import { Object as ResourceObject } from "../object.js";
 import { Optional } from "../optional.js";
-import { Boolean as RBBool, Number as RBNumber, String as RBString } from "../primitives.js";
+import {
+  Boolean as ResourceBoolean,
+  Number as ResourceNumber,
+  String as ResourceString,
+} from "../primitives.js";
 import { Ref } from "../ref.js";
 import { toTypeBox } from "../to-typebox.js";
 
 describe("Resource.toTypeBox", () => {
   it("should convert String schema", () => {
-    const schema = RBString({ minLength: 5, format: "email" });
+    const schema = ResourceString({ minLength: 5, format: "email" });
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -19,7 +23,7 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Number schema", () => {
-    const schema = RBNumber({ minimum: 0, maximum: 100 });
+    const schema = ResourceNumber({ minimum: 0, maximum: 100 });
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -27,7 +31,7 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Boolean schema", () => {
-    const schema = RBBool();
+    const schema = ResourceBoolean();
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -35,7 +39,7 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Array schema", () => {
-    const schema = ResourceArray(RBString());
+    const schema = ResourceArray(ResourceString());
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -44,8 +48,8 @@ describe("Resource.toTypeBox", () => {
 
   it("should convert Object schema", () => {
     const schema = ResourceObject({
-      name: RBString(),
-      age: RBNumber({ optional: true }),
+      name: ResourceString(),
+      age: ResourceNumber({ optional: true }),
     });
     const typebox = toTypeBox(schema);
 
@@ -79,10 +83,10 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Optional schema", () => {
-    const schema = Optional(RBString());
-    const typebox = toTypeBox(schema);
+    const schema = Optional(ResourceString());
+    const typebox = toTypeBox(schema) as { anyOf?: unknown[]; [key: string]: unknown };
 
     expect(typebox).toBeDefined();
-    expect(typebox.anyOf).toBeDefined();
+    expect(typebox.anyOf ?? typebox["anyOf"]).toBeDefined();
   });
 });

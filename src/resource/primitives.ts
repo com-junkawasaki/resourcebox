@@ -19,16 +19,8 @@ export interface StringOptions {
 
 /**
  * Create a String resource schema
- *
- * @example
- * ```ts
- * Resource.String({ minLength: 1, maxLength: 100 })
- * Resource.String({ property: foaf("name"), required: true })
- * Resource.String({ format: "email", optional: true })
- * ```
  */
-// biome-ignore lint/suspicious/noShadowRestrictedNames: API uses TypeBox-like naming
-export function String(options: StringOptions = {}): StringSchema {
+export function ResourceString(options: StringOptions = {}): StringSchema {
   return {
     kind: "String",
     ...(options.property !== undefined && { property: options.property }),
@@ -60,15 +52,8 @@ export interface NumberOptions {
 
 /**
  * Create a Number resource schema
- *
- * @example
- * ```ts
- * Resource.Number({ minimum: 0, maximum: 150 })
- * Resource.Number({ property: foaf("age"), required: true })
- * ```
  */
-// biome-ignore lint/suspicious/noShadowRestrictedNames: API uses TypeBox-like naming
-export function Number(options: NumberOptions = {}): NumberSchema {
+export function ResourceNumber(options: NumberOptions = {}): NumberSchema {
   return {
     kind: "Number",
     ...(options.property !== undefined && { property: options.property }),
@@ -96,15 +81,8 @@ export interface BooleanOptions {
 
 /**
  * Create a Boolean resource schema
- *
- * @example
- * ```ts
- * Resource.Boolean()
- * Resource.Boolean({ property: ex("verified"), required: true })
- * ```
  */
-// biome-ignore lint/suspicious/noShadowRestrictedNames: API uses TypeBox-like naming
-export function Boolean(options: BooleanOptions = {}): BooleanSchema {
+export function ResourceBoolean(options: BooleanOptions = {}): BooleanSchema {
   return {
     kind: "Boolean",
     ...(options.property !== undefined && { property: options.property }),
@@ -114,3 +92,11 @@ export function Boolean(options: BooleanOptions = {}): BooleanSchema {
     },
   };
 }
+
+// TypeBox互換API名を維持
+// biome-ignore lint/suspicious/noShadowRestrictedNames: APIとしてTypeBoxと同名関数を提供する
+export const String = ResourceString;
+// biome-ignore lint/suspicious/noShadowRestrictedNames: APIとしてTypeBoxと同名関数を提供する
+export const Number = ResourceNumber;
+// biome-ignore lint/suspicious/noShadowRestrictedNames: APIとしてTypeBoxと同名関数を提供する
+export const Boolean = ResourceBoolean;

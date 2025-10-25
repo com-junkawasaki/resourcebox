@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { Class } from "../../onto/class.js";
 import { FOAF } from "../../onto/namespace.js";
 import { Literal } from "../literal.js";
-import { ObjectDef as ResourceObject } from "../object.js";
+import { ResourceObject } from "../object.js";
 import { String as RBString } from "../primitives.js";
 
 describe("Resource.Object", () => {

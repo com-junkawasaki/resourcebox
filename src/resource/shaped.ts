@@ -2,7 +2,7 @@
 
 import type { OntoClass, OntoIRI } from "../onto/types.js";
 import type { ShapeNodeDef } from "../shape/types.js";
-import { ObjectDef as ResourceObject } from "./object.js";
+import { ResourceObject } from "./object.js";
 import type { AnyResourceSchema, ObjectSchema } from "./types.js";
 
 /**

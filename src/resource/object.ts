@@ -15,20 +15,8 @@ export interface ObjectOptions {
 /**
  * Create an Object resource schema
  * Similar to TypeBox's Type.Object()
- *
- * @example
- * ```ts
- * Resource.Object({
- *   "@id": Resource.String({ format: "uri" }),
- *   "@type": Resource.Literal(["foaf:Person"]),
- *   name: Resource.String({ property: foaf("name"), required: true }),
- *   email: Resource.String({ property: foaf("mbox"), format: "email", optional: true })
- * }, {
- *   class: foaf("Person")
- * })
- * ```
  */
-export function ObjectDef(
+export function ResourceObject(
   properties: Record<string, AnyResourceSchema>,
   options: ObjectOptions = {}
 ): ObjectSchema {
@@ -45,7 +33,7 @@ export function ObjectDef(
 }
 
 // Export with name 'Object' for API consistency
-export { ObjectDef as Object };
+export { ResourceObject as Object };
 
 /**
  * Helper to check if a schema is an Object schema

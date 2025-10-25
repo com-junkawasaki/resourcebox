@@ -2,16 +2,16 @@
 
 import { describe, expect, it } from "vitest";
 import { FOAF } from "../../onto/namespace.js";
-import { Boolean as RBBool, Number as RBNumber, String as RBString } from "../primitives.js";
+import { ResourceBoolean, ResourceNumber, ResourceString } from "../primitives.js";
 
 describe("Resource.String", () => {
   it("should create a string schema", () => {
-    const schema = RBString();
+    const schema = ResourceString();
     expect(schema.kind).toBe("String");
   });
 
   it("should accept options", () => {
-    const schema = RBString({
+    const schema = ResourceString({
       minLength: 1,
       maxLength: 100,
       format: "email",
@@ -23,7 +23,7 @@ describe("Resource.String", () => {
   });
 
   it("should support property reference", () => {
-    const schema = RBString({
+    const schema = ResourceString({
       property: FOAF("name"),
       required: true,
     });
@@ -35,12 +35,12 @@ describe("Resource.String", () => {
 
 describe("Resource.Number", () => {
   it("should create a number schema", () => {
-    const schema = RBNumber();
+    const schema = ResourceNumber();
     expect(schema.kind).toBe("Number");
   });
 
   it("should accept options", () => {
-    const schema = RBNumber({
+    const schema = ResourceNumber({
       minimum: 0,
       maximum: 150,
     });
@@ -52,7 +52,7 @@ describe("Resource.Number", () => {
 
 describe("Resource.Boolean", () => {
   it("should create a boolean schema", () => {
-    const schema = RBBool();
+    const schema = ResourceBoolean();
     expect(schema.kind).toBe("Boolean");
   });
 });

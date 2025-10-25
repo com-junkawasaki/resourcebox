@@ -40,3 +40,5 @@ export function ResourceArray(items: AnyResourceSchema, options: ArrayOptions = 
     },
   };
 }
+
+export { ResourceArray as Array };
