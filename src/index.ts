@@ -74,6 +74,11 @@ export const Onto = {
   getClassIRI: OntoNS.getClassIRI,
   getPropertyIRI: OntoNS.getPropertyIRI,
   getDatatypeIRI: OntoNS.getDatatypeIRI,
+  
+  // OWL Class Expressions & Ontology Container & JSON-LD
+  Expressions: OntoNS.Expressions,
+  OntologyContainer: OntoNS.OntologyContainer,
+  toJsonLd: OntoNS.toJsonLd,
 };
 
 // Export Onto types
@@ -146,6 +151,9 @@ export const Shape = {
   // Validate
   validate: ShapeNS.validate,
   check: ShapeNS.check,
+  
+  // JSON-LD export
+  toJsonLd: ShapeNS.toJsonLd,
 };
 
 // Export Shape types

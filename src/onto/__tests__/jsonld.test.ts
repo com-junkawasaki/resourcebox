@@ -6,6 +6,7 @@ import { Class } from "../class.js";
 import { Property } from "../property.js";
 import { Union } from "../expressions.js";
 import { QualifiedCardinality } from "../expressions.js";
+import { Complement } from "../expressions.js";
 
 const ex = Namespace({ prefix: "ex", uri: "http://example.org/" });
 
@@ -60,6 +61,35 @@ describe("onto jsonld export", () => {
     const graph = json["@graph"] as ReadonlyArray<Record<string, unknown>>;
     const pNode = graph.find((n) => n["@id"] === ex("p")) as Record<string, unknown> | undefined;
     expect(pNode && pNode["owl:propertyChainAxiom"]).toBeTruthy();
+  });
+
+  it("exports equivalentClass with complementOf expression", () => {
+    const A = Class({ iri: ex("A") });
+    const C = Class({ iri: ex("C"), equivalentClass: [Complement(A)] });
+
+    const ont = OntologyContainer({ iri: ex("o2"), classes: [A, C] });
+    const json = toJsonLd(ont) as { [k: string]: unknown };
+    const graph = json["@graph"] as ReadonlyArray<Record<string, unknown>>;
+    const cNode = graph.find((n) => n["@id"] === ex("C")) as Record<string, unknown> | undefined;
+    const eq = cNode && (cNode["owl:equivalentClass"] as ReadonlyArray<Record<string, unknown>>);
+    const holder = eq && (eq[0] as Record<string, unknown>);
+    expect(holder && holder["owl:complementOf"]).toBeDefined();
+  });
+
+  it("exports restriction with owl:onDataRange when onDatatype is set", () => {
+    const D = Class({
+      iri: ex("D"),
+      equivalentClass: [
+        QualifiedCardinality({ onProperty: ex("p"), exact: 1, onDatatype: "xsd:string" as any }),
+      ],
+    });
+    const ont = OntologyContainer({ iri: ex("o3"), classes: [D] });
+    const json = toJsonLd(ont) as { [k: string]: unknown };
+    const graph = json["@graph"] as ReadonlyArray<Record<string, unknown>>;
+    const dNode = graph.find((n) => n["@id"] === ex("D")) as Record<string, unknown> | undefined;
+    const eq = dNode && (dNode["owl:equivalentClass"] as ReadonlyArray<Record<string, unknown>>);
+    const holder = eq && (eq[0] as Record<string, unknown>);
+    expect(holder && holder["owl:onDataRange"]).toBeDefined();
   });
 });
 
