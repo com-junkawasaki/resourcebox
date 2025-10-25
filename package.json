@@ -30,7 +30,12 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist", "src", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
@@ -50,15 +55,20 @@
     "prepublishOnly": "pnpm clean && pnpm build && pnpm test && pnpm lint"
   },
   "dependencies": {
+    "@rdfjs/data-model": "^2.1.1",
+    "@rdfjs/dataset": "^2.0.2",
     "@sinclair/typebox": "^0.32.35",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "commander": "^14.0.1"
+    "commander": "^14.0.1",
+    "jsonld": "^8.3.3",
+    "rdfxml-streaming-parser": "^3.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@changesets/cli": "^2.29.7",
     "@types/node": "^22.10.2",
+    "@types/rdf-js": "^4.0.2",
     "@vitest/coverage-v8": "2.1.9",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

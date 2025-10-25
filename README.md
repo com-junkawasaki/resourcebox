@@ -467,6 +467,16 @@ pnpm construct
    ```
 5. **oRPC** では `rpcMap` 情報を IRI ベースのルーティングに利用可能。
 
+### RDF/XML Integration Flow
+1. **RDF/XML 取り込み**: `const context = await Process.Rpc.importContextFromRdfXml(xmlSource, { namespaces: { foaf: "http://xmlns.com/foaf/0.1/" } });`
+2. **RPC メタデータ生成**: `const rpcMap = Process.Rpc.expandContextMap(context["@context"]);`
+3. **用途**:
+   - JSON-LD context を UI / CLI へ渡す
+   - RPC procedure のメタ情報（IRI、datatype）として利用
+   - SHACL 変換 (`Shape.fromResource`) と組み合わせて整合性を検証
+
+> RDF/XML はストリーム/文字列どちらからも取り込めます。`importContextFromStream` を使うと外部エンドポイントからの直接読み込みが可能です。
+
 ## Comparison with Other Libraries
 
 | Feature | ResourceBox | TypeBox | ShEx | SHACL-JS |

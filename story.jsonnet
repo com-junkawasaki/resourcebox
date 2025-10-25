@@ -1,6 +1,6 @@
 // DAG: resourcebox-story
 // ResourceBox プロセスネットワーク DAG 定義
-// トポロジカルソート: init → tooling → ontology → resource → shape → process_rpc → validation → cli → examples → docs → ci_cd → complete
+// トポロジカルソート: init → tooling → ontology → resource → shape → process_import → process_rpc → validation → cli → examples → docs → ci_cd → complete
 
 local dag = {
   // 0. プロジェクト基盤初期化
@@ -80,11 +80,23 @@ local dag = {
     ],
   },
 
-  // 5. RPC プロセス層
+  // 5. RDF/XML インポート層
+  process_import: {
+    id: "process_import",
+    description: "RDF/XML から JSON-LD コンテキストを抽出しプロセス層へ連携する内部モジュール",
+    dependencies: ["shape"],
+    outputs: [
+      "src/_internal/process/importers/rdfxml.ts",
+      "src/_internal/process/importers/index.ts",
+      "src/_internal/process/importers/__tests__/rdfxml.test.ts",
+    ],
+  },
+
+  // 6. RPC プロセス層
   process_rpc: {
     id: "process_rpc",
     description: "JSON-LD コンテキストから RPC 型安全性を導出する内部モジュール",
-    dependencies: ["shape"],
+    dependencies: ["process_import"],
     outputs: [
       "src/_internal/process/rpc/context-types.ts",
       "src/_internal/process/rpc/index.ts",
@@ -92,10 +104,10 @@ local dag = {
     ],
   },
 
-  // 6. 検証・テスト統合
+  // 7. 検証・テスト統合
   validation: {
     id: "validation",
-    description: "Resource / Shape / Process RPC 統合テストと toTypeBox 連携",
+    description: "Resource / Shape / Process 統合テストと toTypeBox 連携",
     dependencies: ["process_rpc"],
     outputs: [
       "src/resource/__tests__",
@@ -104,7 +116,7 @@ local dag = {
     ],
   },
 
-  // 7. CLI 実装
+  // 8. CLI 実装
   cli: {
     id: "cli",
     description: "Commander ベースの CLI (context / shape 生成)",
@@ -115,7 +127,7 @@ local dag = {
     ],
   },
 
-  // 8. Examples / SPARQL 連携
+  // 9. Examples / SPARQL 連携
   examples: {
     id: "examples",
     description: "Comunica + 各種 SPARQL DB 例、CLI デモ",
@@ -129,7 +141,7 @@ local dag = {
     ],
   },
 
-  // 9. ドキュメントサイト
+  // 10. ドキュメントサイト
   docs: {
     id: "docs",
     description: "Docs site 初版 (Docusaurus v3 ベース) と README 連携",
@@ -140,7 +152,7 @@ local dag = {
     ],
   },
 
-  // 10. CI/CD 拡張
+  // 11. CI/CD 拡張
   ci_cd: {
     id: "ci_cd",
     description: "Lint / Typecheck / Test / Coverage / Changesets / Publish ワークフロー",
@@ -152,7 +164,7 @@ local dag = {
     ],
   },
 
-  // 11. 完了
+  // 12. 完了
   complete: {
     id: "complete",
     description: "パッケージ公開準備と story.jsonnet 更新",
@@ -201,8 +213,8 @@ local topoSort(dag) =
 
   metrics: {
     totalNodes: std.length(std.objectFields(dag)),
-    maxDepth: 11,
-    avgDependencies: 1.1,
-    structure: "ontology-resource-shape-process unified",
+    maxDepth: 12,
+    avgDependencies: 1.18,
+    structure: "ontology-resource-shape-process-import unified",
   },
 }
