@@ -16,7 +16,7 @@ export interface RefOptions {
 /**
  * Create a Ref (IRI reference) resource schema
  * References another resource by IRI
- * 
+ *
  * @example
  * ```ts
  * Resource.Ref(Person)
@@ -38,4 +38,3 @@ export function Ref(
     },
   };
 }
-

@@ -1,8 +1,8 @@
 // Resource.validate - Validate data against resource schema
 
-import type { AnyResourceSchema } from "./types.js";
-import { toTypeBox } from "./to-typebox.js";
 import { getAjvInstance } from "../validate/struct/ajv-setup.js";
+import { toTypeBox } from "./to-typebox.js";
+import type { AnyResourceSchema } from "./types.js";
 
 /**
  * Validation result
@@ -25,14 +25,14 @@ export interface ValidationError {
 /**
  * Validate data against resource schema
  * Returns validation result with typed data
- * 
+ *
  * @example
  * ```ts
  * const Person = Resource.Object({
  *   name: Resource.String({ minLength: 1 }),
  *   age: Resource.Number({ minimum: 0 })
  * })
- * 
+ *
  * const result = Resource.validate(Person, data)
  * if (result.ok) {
  *   console.log(result.data)  // Typed data
@@ -41,28 +41,25 @@ export interface ValidationError {
  * }
  * ```
  */
-export function validate<S extends AnyResourceSchema>(
-  schema: S,
-  data: unknown
-): ValidationResult {
+export function validate<S extends AnyResourceSchema>(schema: S, data: unknown): ValidationResult {
   try {
     // Convert to TypeBox schema
     const typeboxSchema = toTypeBox(schema);
-    
+
     // Get Ajv instance with format support
     const ajv = getAjvInstance();
-    
+
     // Compile and validate
     const validate = ajv.compile(typeboxSchema);
     const isValid = validate(data);
-    
+
     if (isValid) {
       return {
         ok: true,
         data: data as unknown,
       };
     }
-    
+
     // Collect errors
     const errors: ValidationError[] = [];
     if (validate.errors) {
@@ -74,7 +71,7 @@ export function validate<S extends AnyResourceSchema>(
         });
       }
     }
-    
+
     return {
       ok: false,
       errors,
@@ -94,7 +91,7 @@ export function validate<S extends AnyResourceSchema>(
 
 /**
  * Check if data matches schema (boolean result)
- * 
+ *
  * @example
  * ```ts
  * if (Resource.check(Person, data)) {
@@ -102,33 +99,26 @@ export function validate<S extends AnyResourceSchema>(
  * }
  * ```
  */
-export function check<S extends AnyResourceSchema>(
-  schema: S,
-  data: unknown
-): boolean {
+export function check<S extends AnyResourceSchema>(schema: S, data: unknown): boolean {
   const result = validate(schema, data);
   return result.ok;
 }
 
 /**
  * Parse data and throw if invalid
- * 
+ *
  * @example
  * ```ts
  * const person = Resource.parse(Person, data)  // Throws if invalid
  * ```
  */
-export function parse<S extends AnyResourceSchema>(
-  schema: S,
-  data: unknown
-): unknown {
+export function parse<S extends AnyResourceSchema>(schema: S, data: unknown): unknown {
   const result = validate(schema, data);
-  
+
   if (!result.ok) {
-    const errorMessages = result.errors?.map(e => `${e.path}: ${e.message}`).join("\n");
+    const errorMessages = result.errors?.map((e) => `${e.path}: ${e.message}`).join("\n");
     throw new Error(`Validation failed:\n${errorMessages}`);
   }
-  
+
   return result.data;
 }
-

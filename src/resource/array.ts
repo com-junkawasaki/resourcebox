@@ -1,7 +1,7 @@
 // Resource.Array - Array/collection resource schema
 
 import type { OntoIRI, OntoProperty } from "../onto/types.js";
-import type { ArraySchema, AnyResourceSchema } from "./types.js";
+import type { AnyResourceSchema, ArraySchema } from "./types.js";
 
 /**
  * Array options
@@ -18,7 +18,7 @@ export interface ArrayOptions {
 
 /**
  * Create an Array resource schema
- * 
+ *
  * @example
  * ```ts
  * Resource.Array(Resource.String())
@@ -26,10 +26,7 @@ export interface ArrayOptions {
  * Resource.Array(Resource.String(), { property: ex("tags"), uniqueItems: true })
  * ```
  */
-export function Array(
-  items: AnyResourceSchema,
-  options: ArrayOptions = {}
-): ArraySchema {
+export function ResourceArray(items: AnyResourceSchema, options: ArrayOptions = {}): ArraySchema {
   return {
     kind: "Array",
     items,
@@ -43,4 +40,3 @@ export function Array(
     },
   };
 }
-

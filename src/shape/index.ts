@@ -22,4 +22,3 @@ export type { FromResourceOptions } from "./from-resource.js";
 
 // Validate
 export { validate, check } from "./validate.js";
-

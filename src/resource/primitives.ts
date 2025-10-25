@@ -1,7 +1,7 @@
 // Resource primitives - String, Number, Boolean
 
+import type { BooleanSchema, NumberSchema, StringSchema } from "./types.js";
 import type { OntoIRI, OntoProperty } from "../onto/types.js";
-import type { StringSchema, NumberSchema, BooleanSchema } from "./types.js";
 
 /**
  * String options
@@ -19,7 +19,7 @@ export interface StringOptions {
 
 /**
  * Create a String resource schema
- * 
+ *
  * @example
  * ```ts
  * Resource.String({ minLength: 1, maxLength: 100 })
@@ -27,7 +27,7 @@ export interface StringOptions {
  * Resource.String({ format: "email", optional: true })
  * ```
  */
-export function String(options: StringOptions = {}): StringSchema {
+export function ResourceString(options: StringOptions = {}): StringSchema {
   return {
     kind: "String",
     ...(options.property !== undefined && { property: options.property }),
@@ -59,14 +59,14 @@ export interface NumberOptions {
 
 /**
  * Create a Number resource schema
- * 
+ *
  * @example
  * ```ts
  * Resource.Number({ minimum: 0, maximum: 150 })
  * Resource.Number({ property: foaf("age"), required: true })
  * ```
  */
-export function Number(options: NumberOptions = {}): NumberSchema {
+export function ResourceNumber(options: NumberOptions = {}): NumberSchema {
   return {
     kind: "Number",
     ...(options.property !== undefined && { property: options.property }),
@@ -94,14 +94,14 @@ export interface BooleanOptions {
 
 /**
  * Create a Boolean resource schema
- * 
+ *
  * @example
  * ```ts
  * Resource.Boolean()
  * Resource.Boolean({ property: ex("verified"), required: true })
  * ```
  */
-export function Boolean(options: BooleanOptions = {}): BooleanSchema {
+export function ResourceBoolean(options: BooleanOptions = {}): BooleanSchema {
   return {
     kind: "Boolean",
     ...(options.property !== undefined && { property: options.property }),
@@ -112,3 +112,4 @@ export function Boolean(options: BooleanOptions = {}): BooleanSchema {
   };
 }
 
+// Note: Named functions are exported directly; `resource/index.ts` re-exports them under Resource.String/Number/Boolean.

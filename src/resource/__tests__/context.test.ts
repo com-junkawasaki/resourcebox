@@ -1,24 +1,27 @@
 // Resource.context tests
 
 import { describe, expect, it } from "vitest";
+import { Class } from "../../onto/class.js";
+import { FOAF } from "../../onto/namespace.js";
+import { ResourceArray } from "../array.js";
 import { context, extractNamespaces } from "../context.js";
 import { Object as ResourceObject } from "../object.js";
-import { String } from "../primitives.js";
-import { Array } from "../array.js";
+import { String as RBString } from "../primitives.js";
 import { Ref } from "../ref.js";
-import { FOAF } from "../../onto/namespace.js";
-import { Class } from "../../onto/class.js";
 
 describe("Resource.context", () => {
   const Person = Class({ iri: FOAF("Person") });
 
   it("should generate context from object schema", () => {
-    const schema = ResourceObject({
-      name: String({ property: FOAF("name") }),
-      email: String({ property: FOAF("mbox") }),
-    }, {
-      class: Person,
-    });
+    const schema = ResourceObject(
+      {
+        name: RBString({ property: FOAF("name") }),
+        email: RBString({ property: FOAF("mbox") }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const result = context(schema);
     expect(result["@context"]).toBeDefined();
@@ -28,7 +31,7 @@ describe("Resource.context", () => {
 
   it("should include namespaces when requested", () => {
     const schema = ResourceObject({
-      name: String({ property: FOAF("name") }),
+      name: RBString({ property: FOAF("name") }),
     });
 
     const result = context(schema, {
@@ -42,7 +45,7 @@ describe("Resource.context", () => {
 
   it("should handle array properties", () => {
     const schema = ResourceObject({
-      friends: Array(Ref(Person), { property: FOAF("knows") }),
+      friends: ResourceArray(Ref(Person), { property: FOAF("knows") }),
     });
 
     const result = context(schema);
@@ -54,7 +57,7 @@ describe("Resource.context", () => {
 
   it("should handle simple array properties", () => {
     const schema = ResourceObject({
-      tags: Array(String(), { property: FOAF("topic_interest") }),
+      tags: ResourceArray(RBString(), { property: FOAF("topic_interest") }),
     });
 
     const result = context(schema);
@@ -63,8 +66,8 @@ describe("Resource.context", () => {
 
   it("should skip properties without IRI mapping", () => {
     const schema = ResourceObject({
-      name: String({ property: FOAF("name") }),
-      internalId: String(), // No property mapping
+      name: RBString({ property: FOAF("name") }),
+      internalId: RBString(), // No property mapping
     });
 
     const result = context(schema);
@@ -74,10 +77,10 @@ describe("Resource.context", () => {
 
   it("should skip JSON-LD reserved properties", () => {
     const schema = ResourceObject({
-      "@id": String(),
-      "@type": String(),
-      "@context": String(),
-      name: String({ property: FOAF("name") }),
+      "@id": RBString(),
+      "@type": RBString(),
+      "@context": RBString(),
+      name: RBString({ property: FOAF("name") }),
     });
 
     const result = context(schema);
@@ -91,7 +94,7 @@ describe("Resource.context", () => {
 describe("Resource.extractNamespaces", () => {
   it("should extract namespaces from properties", () => {
     const schema = ResourceObject({
-      name: String({ property: "foaf:name" }),
+      name: RBString({ property: "foaf:name" }),
       knows: Ref("foaf:Person"),
     });
 
@@ -100,11 +103,14 @@ describe("Resource.extractNamespaces", () => {
   });
 
   it("should extract namespaces from class", () => {
-    const schema = ResourceObject({
-      name: String(),
-    }, {
-      class: "foaf:Person",
-    });
+    const schema = ResourceObject(
+      {
+        name: RBString(),
+      },
+      {
+        class: "foaf:Person",
+      }
+    );
 
     const namespaces = extractNamespaces(schema);
     expect(namespaces.has("foaf")).toBe(true);
@@ -112,7 +118,7 @@ describe("Resource.extractNamespaces", () => {
 
   it("should return empty set for schema without namespaces", () => {
     const schema = ResourceObject({
-      name: String(),
+      name: RBString(),
     });
 
     const namespaces = extractNamespaces(schema);
@@ -121,7 +127,7 @@ describe("Resource.extractNamespaces", () => {
 
   it("should handle prefixed IRIs", () => {
     const schema = ResourceObject({
-      name: String({ property: "foaf:name" }),
+      name: RBString({ property: "foaf:name" }),
     });
 
     const namespaces = extractNamespaces(schema);
@@ -130,11 +136,10 @@ describe("Resource.extractNamespaces", () => {
 
   it("should not extract from full URIs", () => {
     const schema = ResourceObject({
-      name: String({ property: "http://xmlns.com/foaf/0.1/name" }),
+      name: RBString({ property: "http://xmlns.com/foaf/0.1/name" }),
     });
 
     const namespaces = extractNamespaces(schema);
     expect(namespaces.has("foaf")).toBe(false);
   });
 });
-

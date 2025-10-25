@@ -13,14 +13,14 @@ export interface NamespaceOptions {
 
 /**
  * Create a namespace function for convenient IRI generation
- * 
+ *
  * @example
  * ```ts
  * const foaf = Onto.Namespace({
  *   prefix: "foaf",
  *   uri: "http://xmlns.com/foaf/0.1/"
  * })
- * 
+ *
  * foaf("Person")  // → "http://xmlns.com/foaf/0.1/Person"
  * foaf.prefix     // → "foaf"
  * foaf.uri        // → "http://xmlns.com/foaf/0.1/"
@@ -28,15 +28,15 @@ export interface NamespaceOptions {
  */
 export function Namespace(options: NamespaceOptions): NamespaceFunction {
   const { prefix, uri } = options;
-  
+
   // Ensure URI ends with / or #
   const baseUri = uri.endsWith("/") || uri.endsWith("#") ? uri : `${uri}/`;
-  
+
   // Create function with properties
   const fn = ((localName: string): OntoIRI => {
     return iri(`${baseUri}${localName}`);
   }) as NamespaceFunction;
-  
+
   // Attach metadata as read-only properties
   Object.defineProperty(fn, "prefix", {
     value: prefix,
@@ -44,14 +44,14 @@ export function Namespace(options: NamespaceOptions): NamespaceFunction {
     enumerable: true,
     configurable: false,
   });
-  
+
   Object.defineProperty(fn, "uri", {
     value: baseUri,
     writable: false,
     enumerable: true,
     configurable: false,
   });
-  
+
   return fn;
 }
 
@@ -82,4 +82,3 @@ export const FOAF = Namespace({
   prefix: "foaf",
   uri: "http://xmlns.com/foaf/0.1/",
 });
-

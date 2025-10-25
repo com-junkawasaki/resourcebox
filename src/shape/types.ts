@@ -49,4 +49,3 @@ export interface ShapeViolation {
   readonly value?: unknown;
   readonly constraint: string;
 }
-

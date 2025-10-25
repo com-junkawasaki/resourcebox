@@ -15,13 +15,13 @@ export const Onto = {
   OWL: OntoNS.OWL,
   XSD: OntoNS.XSD,
   FOAF: OntoNS.FOAF,
-  
+
   // Class
   Class: OntoNS.Class,
-  
+
   // Property
   Property: OntoNS.Property,
-  
+
   // Datatype
   Datatype: {
     String: OntoNS.String,
@@ -64,7 +64,7 @@ export const Onto = {
     Base64Binary: OntoNS.Base64Binary,
     HexBinary: OntoNS.HexBinary,
   },
-  
+
   // Helpers
   iri: OntoNS.iri,
   getIRI: OntoNS.getIRI,
@@ -99,26 +99,26 @@ export const Resource = {
   String: ResourceNS.String,
   Number: ResourceNS.Number,
   Boolean: ResourceNS.Boolean,
-  
+
   // Complex types
   Array: ResourceNS.Array,
   Object: ResourceNS.Object,
   Ref: ResourceNS.Ref,
   Literal: ResourceNS.Literal,
   Optional: ResourceNS.Optional,
-  
+
   // Validation
   validate: ResourceNS.validate,
   check: ResourceNS.check,
   parse: ResourceNS.parse,
-  
+
   // Context
   context: ResourceNS.context,
   extractNamespaces: ResourceNS.extractNamespaces,
-  
+
   // Shaped (integrated)
   Shaped: ResourceNS.Shaped,
-  
+
   // Helpers
   isObject: ResourceNS.isObject,
   isOptional: ResourceNS.isOptional,
@@ -169,10 +169,10 @@ export const Shape = {
   // Define
   Define: ShapeNS.Define,
   Property: ShapeNS.Property,
-  
+
   // From Resource
   fromResource: ShapeNS.fromResource,
-  
+
   // Validate
   validate: ShapeNS.validate,
   check: ShapeNS.check,

@@ -15,7 +15,7 @@ export interface ClassOptions {
 
 /**
  * Define an OWL/RDFS Class
- * 
+ *
  * @example
  * ```ts
  * const Person = Onto.Class({
@@ -42,10 +42,7 @@ export function Class(options: ClassOptions): OntoClass {
  */
 export function isClass(entity: unknown): entity is OntoClass {
   return (
-    typeof entity === "object" &&
-    entity !== null &&
-    "kind" in entity &&
-    entity.kind === "Class"
+    typeof entity === "object" && entity !== null && "kind" in entity && entity.kind === "Class"
   );
 }
 
@@ -55,4 +52,3 @@ export function isClass(entity: unknown): entity is OntoClass {
 export function getClassIRI(classEntity: OntoClass | OntoIRI): OntoIRI {
   return typeof classEntity === "string" ? classEntity : classEntity.iri;
 }
-

@@ -5,7 +5,7 @@ import type { AnyResourceSchema, OptionalSchema } from "./types.js";
 /**
  * Mark a resource schema as optional
  * Alternative to using { optional: true } in options
- * 
+ *
  * @example
  * ```ts
  * Resource.Optional(Resource.String())
@@ -48,4 +48,3 @@ export function isRequired(schema: AnyResourceSchema): boolean {
   // Default: required unless marked optional
   return true;
 }
-

@@ -147,10 +147,13 @@ export type AnyResourceSchema =
  */
 export interface ResourceMetadata {
   readonly class?: OntoIRI | OntoClass;
-  readonly properties: Record<string, {
-    readonly property?: OntoIRI | OntoProperty;
-    readonly required: boolean;
-  }>;
+  readonly properties: Record<
+    string,
+    {
+      readonly property?: OntoIRI | OntoProperty;
+      readonly required: boolean;
+    }
+  >;
 }
 
 /**
@@ -159,29 +162,32 @@ export interface ResourceMetadata {
 export function extractMetadata(schema: AnyResourceSchema): ResourceMetadata {
   if (schema.kind === "Object") {
     const properties: Record<string, { property?: OntoIRI | OntoProperty; required: boolean }> = {};
-    
+
     for (const [key, propSchema] of Object.entries(schema.properties)) {
-      const isOptional = 
+      const isOptional =
         propSchema.kind === "Optional" ||
-        (propSchema.options && "optional" in propSchema.options && propSchema.options.optional === true);
-      
+        (propSchema.options &&
+          "optional" in propSchema.options &&
+          propSchema.options.optional === true);
+
       const isRequired =
-        propSchema.options && "required" in propSchema.options && propSchema.options.required === true;
-      
+        propSchema.options &&
+        "required" in propSchema.options &&
+        propSchema.options.required === true;
+
       properties[key] = {
         ...(propSchema.property !== undefined && { property: propSchema.property }),
         required: isRequired || !isOptional,
       };
     }
-    
+
     return {
       ...(schema.options?.class !== undefined && { class: schema.options.class }),
       properties,
     };
   }
-  
+
   return {
     properties: {},
   };
 }
-

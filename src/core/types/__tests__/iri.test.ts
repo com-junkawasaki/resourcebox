@@ -1,7 +1,7 @@
 // Core types IRI tests
 
 import { describe, expect, it } from "vitest";
-import { getIRIPrefix, getIRILocalName } from "../iri.js";
+import { getIRILocalName, getIRIPrefix } from "../iri.js";
 
 describe("getIRIPrefix", () => {
   it("should extract prefix from prefixed IRI", () => {

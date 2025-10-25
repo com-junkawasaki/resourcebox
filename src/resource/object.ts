@@ -1,7 +1,7 @@
 // Resource.Object - Object/record resource schema
 
 import type { OntoClass, OntoIRI } from "../onto/types.js";
-import type { ObjectSchema, AnyResourceSchema } from "./types.js";
+import type { AnyResourceSchema, ObjectSchema } from "./types.js";
 
 /**
  * Object options
@@ -15,7 +15,7 @@ export interface ObjectOptions {
 /**
  * Create an Object resource schema
  * Similar to TypeBox's Type.Object()
- * 
+ *
  * @example
  * ```ts
  * Resource.Object({
@@ -37,7 +37,9 @@ export function ObjectDef(
     properties,
     options: {
       ...(options.class !== undefined && { class: options.class }),
-      ...(options.additionalProperties !== undefined && { additionalProperties: options.additionalProperties }),
+      ...(options.additionalProperties !== undefined && {
+        additionalProperties: options.additionalProperties,
+      }),
     },
   };
 }
@@ -51,4 +53,3 @@ export { ObjectDef as Object };
 export function isObject(schema: AnyResourceSchema): schema is ObjectSchema {
   return schema.kind === "Object";
 }
-

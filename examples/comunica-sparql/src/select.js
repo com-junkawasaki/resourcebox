@@ -1,5 +1,5 @@
-import { newEngine } from '@comunica/query-sparql';
-import { endpointSources } from './util.js';
+import { newEngine } from "@comunica/query-sparql";
+import { endpointSources } from "./util.js";
 
 const query = `
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -20,7 +20,7 @@ async function main() {
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

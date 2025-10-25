@@ -1,7 +1,16 @@
 // Onto.Datatype tests
 
 import { describe, expect, it } from "vitest";
-import { Datatype, String, Integer, Boolean, Date, DateTime, isDatatype, getDatatypeIRI } from "../datatype.js";
+import {
+  Datatype,
+  Integer,
+  Boolean as OntoBoolean,
+  Date as OntoDate,
+  DateTime as OntoDateTime,
+  String as OntoString,
+  getDatatypeIRI,
+  isDatatype,
+} from "../datatype.js";
 
 describe("Onto.Datatype", () => {
   it("should create a custom datatype", () => {
@@ -20,9 +29,9 @@ describe("Onto.Datatype", () => {
 
   describe("Built-in XSD datatypes", () => {
     it("should provide String datatype", () => {
-      expect(String.kind).toBe("Datatype");
-      expect(String.iri).toBe("http://www.w3.org/2001/XMLSchema#string");
-      expect(String.label).toBe("string");
+      expect(OntoString.kind).toBe("Datatype");
+      expect(OntoString.iri).toBe("http://www.w3.org/2001/XMLSchema#string");
+      expect(OntoString.label).toBe("string");
     });
 
     it("should provide Integer datatype", () => {
@@ -32,28 +41,28 @@ describe("Onto.Datatype", () => {
     });
 
     it("should provide Boolean datatype", () => {
-      expect(Boolean.kind).toBe("Datatype");
-      expect(Boolean.iri).toBe("http://www.w3.org/2001/XMLSchema#boolean");
-      expect(Boolean.label).toBe("boolean");
+      expect(OntoBoolean.kind).toBe("Datatype");
+      expect(OntoBoolean.iri).toBe("http://www.w3.org/2001/XMLSchema#boolean");
+      expect(OntoBoolean.label).toBe("boolean");
     });
 
     it("should provide Date datatype", () => {
-      expect(Date.kind).toBe("Datatype");
-      expect(Date.iri).toBe("http://www.w3.org/2001/XMLSchema#date");
-      expect(Date.label).toBe("date");
+      expect(OntoDate.kind).toBe("Datatype");
+      expect(OntoDate.iri).toBe("http://www.w3.org/2001/XMLSchema#date");
+      expect(OntoDate.label).toBe("date");
     });
 
     it("should provide DateTime datatype", () => {
-      expect(DateTime.kind).toBe("Datatype");
-      expect(DateTime.iri).toBe("http://www.w3.org/2001/XMLSchema#dateTime");
-      expect(DateTime.label).toBe("dateTime");
+      expect(OntoDateTime.kind).toBe("Datatype");
+      expect(OntoDateTime.iri).toBe("http://www.w3.org/2001/XMLSchema#dateTime");
+      expect(OntoDateTime.label).toBe("dateTime");
     });
   });
 });
 
 describe("Onto.isDatatype", () => {
   it("should return true for datatype entities", () => {
-    expect(isDatatype(String)).toBe(true);
+    expect(isDatatype(OntoString)).toBe(true);
     expect(isDatatype(Integer)).toBe(true);
   });
 
@@ -66,7 +75,7 @@ describe("Onto.isDatatype", () => {
 
 describe("Onto.getDatatypeIRI", () => {
   it("should return IRI from datatype", () => {
-    expect(getDatatypeIRI(String)).toBe("http://www.w3.org/2001/XMLSchema#string");
+    expect(getDatatypeIRI(OntoString)).toBe("http://www.w3.org/2001/XMLSchema#string");
   });
 
   it("should return IRI string as-is", () => {

@@ -1,11 +1,11 @@
 // Resource.Ref tests
 
 import { describe, expect, it } from "vitest";
-import { Ref } from "../ref.js";
-import { Object as ResourceObject } from "../object.js";
-import { String } from "../primitives.js";
-import { FOAF } from "../../onto/namespace.js";
 import { Class } from "../../onto/class.js";
+import { FOAF } from "../../onto/namespace.js";
+import { Object as ResourceObject } from "../object.js";
+import { String as RBString } from "../primitives.js";
+import { Ref } from "../ref.js";
 
 describe("Resource.Ref", () => {
   const Person = Class({
@@ -25,11 +25,14 @@ describe("Resource.Ref", () => {
   });
 
   it("should create a ref schema with ObjectSchema", () => {
-    const PersonObject = ResourceObject({
-      name: String(),
-    }, {
-      class: Person,
-    });
+    const PersonObject = ResourceObject(
+      {
+        name: RBString(),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const schema = Ref(PersonObject);
     expect(schema.kind).toBe("Ref");
@@ -51,4 +54,3 @@ describe("Resource.Ref", () => {
     expect(schema.options?.optional).toBe(true);
   });
 });
-

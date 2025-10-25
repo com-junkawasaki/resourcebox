@@ -1,8 +1,8 @@
 // Onto.Property tests
 
 import { describe, expect, it } from "vitest";
-import { Property, isProperty, getPropertyIRI } from "../property.js";
 import { FOAF } from "../../onto/namespace.js";
+import { Property, getPropertyIRI, isProperty } from "../property.js";
 
 describe("Onto.Property", () => {
   it("should create a property definition", () => {

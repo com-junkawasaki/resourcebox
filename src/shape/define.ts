@@ -17,12 +17,12 @@ export interface DefineOptions {
 /**
  * Define a SHACL Node Shape
  * Specifies constraints for a class of resources
- * 
+ *
  * @example
  * ```ts
  * const PersonShape = Shape.Define({
  *   targetClass: Person,
- *   
+ *
  *   property: {
  *     name: Shape.Property({
  *       path: foaf("name"),
@@ -30,7 +30,7 @@ export interface DefineOptions {
  *       minCount: 1,
  *       maxCount: 1
  *     }),
- *     
+ *
  *     email: Shape.Property({
  *       path: foaf("mbox"),
  *       datatype: Onto.Datatype.String,
@@ -38,7 +38,7 @@ export interface DefineOptions {
  *       pattern: "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
  *     })
  *   },
- *   
+ *
  *   closed: true
  * })
  * ```
@@ -48,8 +48,9 @@ export function Define(options: DefineOptions): ShapeNodeDef {
     targetClass: options.targetClass,
     property: options.property,
     ...(options.closed !== undefined && { closed: options.closed }),
-    ...(options.ignoredProperties !== undefined && { ignoredProperties: options.ignoredProperties }),
+    ...(options.ignoredProperties !== undefined && {
+      ignoredProperties: options.ignoredProperties,
+    }),
     ...(options.description !== undefined && { description: options.description }),
   };
 }
-

@@ -1,27 +1,24 @@
 #!/usr/bin/env node
-import { Command } from 'commander';
-import { Resource, Shape } from '../index.js';
-import { promises as fs } from 'node:fs';
-import { resolve } from 'node:path';
+import { promises as fs } from "node:fs";
+import { resolve } from "node:path";
+import { Command } from "commander";
+import { Resource, Shape } from "../index.js";
 
 const program = new Command();
-program
-  .name('resourcebox')
-  .description('ResourceBox CLI utilities')
-  .version('0.2.0');
+program.name("resourcebox").description("ResourceBox CLI utilities").version("0.2.0");
 
 async function loadModule(path: string) {
   const mod = await import(resolve(path));
   if (!mod.default) {
-    throw new Error('Module must export default Resource schema');
+    throw new Error("Module must export default Resource schema");
   }
   return mod.default;
 }
 
 program
-  .command('context <module>')
-  .description('Generate JSON-LD context from a Resource module (default export)')
-  .option('-o, --out <file>', 'Output file', 'context.jsonld')
+  .command("context <module>")
+  .description("Generate JSON-LD context from a Resource module (default export)")
+  .option("-o, --out <file>", "Output file", "context.jsonld")
   .action(async (modulePath: string, options: { out: string }) => {
     const resource = await loadModule(modulePath);
     const ctx = Resource.context(resource, {
@@ -32,10 +29,10 @@ program
   });
 
 program
-  .command('shape <module>')
-  .description('Generate SHACL shape from a Resource module (default export)')
-  .option('-o, --out <file>', 'Output file', 'shape.json')
-  .option('--strict', 'Use strict cardinality', false)
+  .command("shape <module>")
+  .description("Generate SHACL shape from a Resource module (default export)")
+  .option("-o, --out <file>", "Output file", "shape.json")
+  .option("--strict", "Use strict cardinality", false)
   .action(async (modulePath: string, options: { out: string; strict?: boolean }) => {
     const resource = await loadModule(modulePath);
     const shape = Shape.fromResource(resource, { strict: Boolean(options.strict) });

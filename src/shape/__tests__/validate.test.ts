@@ -1,11 +1,11 @@
 // Shape.validate tests
 
 import { describe, expect, it } from "vitest";
-import { validate, check } from "../validate.js";
+import { Class } from "../../onto/class.js";
+import { FOAF } from "../../onto/namespace.js";
 import { Define } from "../define.js";
 import { Property } from "../property.js";
-import { FOAF } from "../../onto/namespace.js";
-import { Class } from "../../onto/class.js";
+import { check, validate } from "../validate.js";
 
 describe("Shape.validate", () => {
   const Person = Class({ iri: FOAF("Person") });
@@ -155,7 +155,7 @@ describe("Shape.validate", () => {
     const result = validate(shape, "not an object");
     expect(result.ok).toBe(false);
     expect(result.violations).toBeDefined();
-    expect(result.violations![0].message).toContain("must be an object");
+    expect(result.violations?.[0].message).toContain("must be an object");
   });
 
   it("should handle validation errors gracefully", () => {
@@ -198,4 +198,3 @@ describe("Shape.check", () => {
     expect(check(shape, data)).toBe(false);
   });
 });
-

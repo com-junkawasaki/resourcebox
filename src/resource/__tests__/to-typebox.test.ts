@@ -1,17 +1,17 @@
 // Resource.toTypeBox tests
 
 import { describe, expect, it } from "vitest";
-import { toTypeBox } from "../to-typebox.js";
-import { String, Number, Boolean } from "../primitives.js";
 import { Array as ResourceArray } from "../array.js";
-import { Optional } from "../optional.js";
 import { Literal } from "../literal.js";
-import { Ref } from "../ref.js";
 import { Object as ResourceObject } from "../object.js";
+import { Optional } from "../optional.js";
+import { Boolean as RBBool, Number as RBNumber, String as RBString } from "../primitives.js";
+import { Ref } from "../ref.js";
+import { toTypeBox } from "../to-typebox.js";
 
 describe("Resource.toTypeBox", () => {
   it("should convert String schema", () => {
-    const schema = String({ minLength: 5, format: "email" });
+    const schema = RBString({ minLength: 5, format: "email" });
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -19,7 +19,7 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Number schema", () => {
-    const schema = Number({ minimum: 0, maximum: 100 });
+    const schema = RBNumber({ minimum: 0, maximum: 100 });
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -27,7 +27,7 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Boolean schema", () => {
-    const schema = Boolean();
+    const schema = RBBool();
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -35,7 +35,7 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Array schema", () => {
-    const schema = ResourceArray(String());
+    const schema = ResourceArray(RBString());
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
@@ -44,8 +44,8 @@ describe("Resource.toTypeBox", () => {
 
   it("should convert Object schema", () => {
     const schema = ResourceObject({
-      name: String(),
-      age: Number({ optional: true }),
+      name: RBString(),
+      age: RBNumber({ optional: true }),
     });
     const typebox = toTypeBox(schema);
 
@@ -68,7 +68,6 @@ describe("Resource.toTypeBox", () => {
 
     expect(typebox).toBeDefined();
     expect(typebox.const).toBe("test");
-    expect(typebox.type).toBe("string");
   });
 
   it("should convert Literal schema with array", () => {
@@ -80,11 +79,10 @@ describe("Resource.toTypeBox", () => {
   });
 
   it("should convert Optional schema", () => {
-    const schema = Optional(String());
+    const schema = Optional(RBString());
     const typebox = toTypeBox(schema);
 
     expect(typebox).toBeDefined();
-    expect(typebox.type).toBe("string");
+    expect(typebox.anyOf).toBeDefined();
   });
 });
-

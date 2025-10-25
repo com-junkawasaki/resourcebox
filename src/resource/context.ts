@@ -34,7 +34,7 @@ export interface ContextOptions {
 
 /**
  * Generate JSON-LD @context from resource schema
- * 
+ *
  * @example
  * ```ts
  * const Person = Resource.Object({
@@ -43,7 +43,7 @@ export interface ContextOptions {
  * }, {
  *   class: foaf("Person")
  * })
- * 
+ *
  * const context = Resource.context(Person, {
  *   includeNamespaces: true,
  *   namespaces: {
@@ -59,24 +59,21 @@ export interface ContextOptions {
  * // }
  * ```
  */
-export function context(
-  schema: AnyResourceSchema,
-  options: ContextOptions = {}
-): JsonLdContext {
+export function context(schema: AnyResourceSchema, options: ContextOptions = {}): JsonLdContext {
   const contextMap: Record<string, ContextValue> = {};
-  
+
   // Add namespaces if requested
   if (options.includeNamespaces && options.namespaces) {
     for (const [prefix, uri] of Object.entries(options.namespaces)) {
       contextMap[prefix] = uri;
     }
   }
-  
+
   // Process object schema
   if (schema.kind === "Object") {
     extractContextFromObject(schema, contextMap);
   }
-  
+
   return {
     "@context": contextMap,
   };
@@ -85,21 +82,24 @@ export function context(
 /**
  * Extract context from object schema
  */
-function extractContextFromObject(schema: ObjectSchema, contextMap: Record<string, ContextValue>): void {
+function extractContextFromObject(
+  schema: ObjectSchema,
+  contextMap: Record<string, ContextValue>
+): void {
   for (const [key, propSchema] of Object.entries(schema.properties)) {
     // Skip JSON-LD reserved properties
     if (key === "@id" || key === "@type" || key === "@context") {
       continue;
     }
-    
+
     // Extract property IRI
     const property = propSchema.property;
     if (!property) {
       continue;
     }
-    
+
     const propertyIRI = isProperty(property) ? getPropertyIRI(property) : property;
-    
+
     // Determine type based on schema kind
     if (propSchema.kind === "Ref") {
       // Reference to another resource
@@ -109,7 +109,10 @@ function extractContextFromObject(schema: ObjectSchema, contextMap: Record<strin
       };
     } else if (propSchema.kind === "Array") {
       // Array property
-      if ("items" in propSchema && (propSchema as {items: AnyResourceSchema}).items.kind === "Ref") {
+      if (
+        "items" in propSchema &&
+        (propSchema as { items: AnyResourceSchema }).items.kind === "Ref"
+      ) {
         contextMap[key] = {
           "@id": propertyIRI,
           "@type": "@id",
@@ -129,27 +132,27 @@ function extractContextFromObject(schema: ObjectSchema, contextMap: Record<strin
  */
 export function extractNamespaces(schema: AnyResourceSchema): Set<string> {
   const prefixes = new Set<string>();
-  
+
   if (schema.kind === "Object") {
     // Extract from class
     if (schema.options?.class) {
-      const classIRI = isClass(schema.options.class) 
+      const classIRI = isClass(schema.options.class)
         ? getClassIRI(schema.options.class)
         : schema.options.class;
-      
+
       const prefix = extractPrefix(classIRI);
       if (prefix) {
         prefixes.add(prefix);
       }
     }
-    
+
     // Extract from properties
     for (const propSchema of Object.values(schema.properties)) {
       if (propSchema.property) {
         const propertyIRI = isProperty(propSchema.property)
           ? getPropertyIRI(propSchema.property)
           : propSchema.property;
-        
+
         const prefix = extractPrefix(propertyIRI);
         if (prefix) {
           prefixes.add(prefix);
@@ -157,7 +160,7 @@ export function extractNamespaces(schema: AnyResourceSchema): Set<string> {
       }
     }
   }
-  
+
   return prefixes;
 }
 
@@ -174,4 +177,3 @@ function extractPrefix(iri: OntoIRI): string | undefined {
   }
   return undefined;
 }
-

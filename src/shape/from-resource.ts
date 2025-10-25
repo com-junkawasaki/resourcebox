@@ -10,14 +10,14 @@ import type { ShapeNodeDef, ShapePropertyDef } from "./types.js";
  * Options for shape generation from resource
  */
 export interface FromResourceOptions {
-  readonly strict?: boolean;  // Strict cardinality constraints
-  readonly closed?: boolean;  // Closed shape
+  readonly strict?: boolean; // Strict cardinality constraints
+  readonly closed?: boolean; // Closed shape
 }
 
 /**
  * Generate SHACL shape from Resource schema
  * Automatically infers constraints from resource definition
- * 
+ *
  * @example
  * ```ts
  * const Person = Resource.Object({
@@ -26,7 +26,7 @@ export interface FromResourceOptions {
  * }, {
  *   class: foaf("Person")
  * })
- * 
+ *
  * const PersonShape = Shape.fromResource(Person, { strict: true })
  * ```
  */
@@ -38,50 +38,54 @@ export function fromResource(
   if (!schema.options?.class) {
     throw new Error("Cannot generate shape: resource schema must have a class");
   }
-  
+
   const targetClass = isClass(schema.options.class)
     ? getClassIRI(schema.options.class)
     : schema.options.class;
-  
+
   // Generate property shapes
   const property: Record<string, ShapePropertyDef> = {};
   const ignoredProperties: OntoIRI[] = [];
-  
+
   for (const [key, propSchema] of Object.entries(schema.properties)) {
     // Skip JSON-LD reserved properties
     if (key === "@id" || key === "@type" || key === "@context") {
       continue;
     }
-    
+
     // Skip properties without RDF property mapping
     if (!propSchema.property) {
       continue;
     }
-    
+
     // Extract property IRI
     const path = isProperty(propSchema.property)
       ? getPropertyIRI(propSchema.property)
       : propSchema.property;
-    
+
     // Determine required/optional
     const isOptional =
       propSchema.kind === "Optional" ||
-      (propSchema.options && "optional" in propSchema.options && propSchema.options.optional === true);
-    
+      (propSchema.options &&
+        "optional" in propSchema.options &&
+        propSchema.options.optional === true);
+
     const isRequired =
-      propSchema.options && "required" in propSchema.options && propSchema.options.required === true;
-    
+      propSchema.options &&
+      "required" in propSchema.options &&
+      propSchema.options.required === true;
+
     // Generate property shape - base options
     let propShapeOpts: Partial<ShapePropertyDef> = {
       path,
     };
-    
+
     // Set cardinality
     if (options.strict) {
-      const minCount = (isRequired || !isOptional) ? 1 : 0;
+      const minCount = isRequired || !isOptional ? 1 : 0;
       propShapeOpts = { ...propShapeOpts, minCount };
     }
-    
+
     // Add type-specific constraints
     if (propSchema.kind === "String" && propSchema.options) {
       const opts = { ...propShapeOpts };
@@ -97,7 +101,7 @@ export function fromResource(
       property[key] = opts as ShapePropertyDef;
       continue;
     }
-    
+
     if (propSchema.kind === "Number" && propSchema.options) {
       const opts = { ...propShapeOpts };
       if (propSchema.options.minimum !== undefined) {
@@ -115,7 +119,7 @@ export function fromResource(
       property[key] = opts as ShapePropertyDef;
       continue;
     }
-    
+
     if (propSchema.kind === "Ref") {
       // Reference to another class
       const refSchema = propSchema as RefSchema;
@@ -130,10 +134,10 @@ export function fromResource(
       property[key] = opts as ShapePropertyDef;
       continue;
     }
-    
+
     property[key] = propShapeOpts as ShapePropertyDef;
   }
-  
+
   return {
     targetClass,
     property,
@@ -141,4 +145,3 @@ export function fromResource(
     ...(ignoredProperties.length > 0 && { ignoredProperties }),
   };
 }
-

@@ -11,13 +11,13 @@ describe("Onto.Class", () => {
       label: "Person",
       comment: "A person",
     });
-    
+
     expect(Person.kind).toBe("Class");
     expect(Person.iri).toBe(FOAF("Person"));
     expect(Person.label).toBe("Person");
     expect(Person.comment).toBe("A person");
   });
-  
+
   it("should support subClassOf", () => {
     const Agent = Class({
       iri: FOAF("Agent"),
@@ -53,14 +53,13 @@ describe("Onto.Class", () => {
     expect(Person.subClassOf).toBeUndefined();
     expect(Person.disjointWith).toBeUndefined();
   });
-  
+
   it("should identify class entities", () => {
     const Person = Class({
       iri: FOAF("Person"),
     });
-    
+
     expect(isClass(Person)).toBe(true);
     expect(isClass("not a class")).toBe(false);
   });
 });
-

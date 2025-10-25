@@ -1,22 +1,25 @@
 // Shape.fromResource tests
 
 import { describe, expect, it } from "vitest";
-import { fromResource } from "../from-resource.js";
-import { Object as ResourceObject } from "../../resource/object.js";
-import { String, Number } from "../../resource/primitives.js";
-import { Ref } from "../../resource/ref.js";
-import { FOAF } from "../../onto/namespace.js";
 import { Class } from "../../onto/class.js";
+import { FOAF } from "../../onto/namespace.js";
+import { Object as ResourceObject } from "../../resource/object.js";
+import { Number as RBNumber, String as RBString } from "../../resource/primitives.js";
+import { Ref } from "../../resource/ref.js";
+import { fromResource } from "../from-resource.js";
 
 describe("Shape.fromResource", () => {
   const Person = Class({ iri: FOAF("Person") });
 
   it("should generate shape from resource schema", () => {
-    const resource = ResourceObject({
-      name: String({ property: FOAF("name"), required: true }),
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        name: RBString({ property: FOAF("name"), required: true }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource);
     expect(shape.targetClass).toBe(FOAF("Person"));
@@ -25,7 +28,7 @@ describe("Shape.fromResource", () => {
 
   it("should require class in resource schema", () => {
     const resource = ResourceObject({
-      name: String(),
+      name: RBString(),
     });
 
     expect(() => {
@@ -34,38 +37,47 @@ describe("Shape.fromResource", () => {
   });
 
   it("should handle required properties", () => {
-    const resource = ResourceObject({
-      name: String({ property: FOAF("name"), required: true }),
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        name: RBString({ property: FOAF("name"), required: true }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource, { strict: true });
     expect(shape.property.name.minCount).toBe(1);
   });
 
   it("should handle optional properties", () => {
-    const resource = ResourceObject({
-      email: String({ property: FOAF("mbox"), optional: true }),
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        email: RBString({ property: FOAF("mbox"), optional: true }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource, { strict: true });
     expect(shape.property.email.minCount).toBe(0);
   });
 
   it("should handle string constraints", () => {
-    const resource = ResourceObject({
-      name: String({
-        property: FOAF("name"),
-        minLength: 2,
-        maxLength: 50,
-        pattern: "^[A-Z]",
-      }),
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        name: RBString({
+          property: FOAF("name"),
+          minLength: 2,
+          maxLength: 50,
+          pattern: "^[A-Z]",
+        }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource);
     expect(shape.property.name.minLength).toBe(2);
@@ -74,16 +86,19 @@ describe("Shape.fromResource", () => {
   });
 
   it("should handle number constraints", () => {
-    const resource = ResourceObject({
-      age: Number({
-        property: FOAF("age"),
-        minimum: 0,
-        maximum: 150,
-        exclusiveMinimum: -1,
-      }),
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        age: RBNumber({
+          property: FOAF("age"),
+          minimum: 0,
+          maximum: 150,
+          exclusiveMinimum: -1,
+        }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource);
     expect(shape.property.age.minInclusive).toBe(0);
@@ -92,38 +107,46 @@ describe("Shape.fromResource", () => {
   });
 
   it("should handle Ref constraints", () => {
-    const resource = ResourceObject({
-      friend: Ref(Person, { property: FOAF("knows") }),
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        friend: Ref(Person, { property: FOAF("knows") }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource);
     expect(shape.property.friend.class).toBe(FOAF("Person"));
   });
 
   it("should support closed option", () => {
-    const resource = ResourceObject({
-      name: String({ property: FOAF("name") }),
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        name: RBString({ property: FOAF("name") }),
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource, { closed: true });
     expect(shape.closed).toBe(true);
   });
 
   it("should skip properties without IRI mapping", () => {
-    const resource = ResourceObject({
-      name: String({ property: FOAF("name") }),
-      internalId: String(), // No property mapping
-    }, {
-      class: Person,
-    });
+    const resource = ResourceObject(
+      {
+        name: RBString({ property: FOAF("name") }),
+        internalId: RBString(), // No property mapping
+      },
+      {
+        class: Person,
+      }
+    );
 
     const shape = fromResource(resource);
     expect(shape.property.name).toBeDefined();
     expect(shape.property.internalId).toBeUndefined();
   });
 });
-

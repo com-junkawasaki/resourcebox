@@ -27,7 +27,8 @@
     }
   },
   "files": {
-    "ignoreUnknown": true
+    "ignoreUnknown": true,
+    "ignore": ["dist", ".changeset"]
   },
   "javascript": {
     "formatter": {

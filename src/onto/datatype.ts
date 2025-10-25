@@ -1,7 +1,7 @@
 // Onto.Datatype - XSD and RDF datatype definitions
 
-import type { OntoDatatype, OntoIRI } from "./types.js";
 import { XSD } from "./namespace.js";
+import type { OntoDatatype, OntoIRI } from "./types.js";
 
 /**
  * Create a custom datatype
@@ -18,7 +18,9 @@ export function Datatype(iri: OntoIRI, label?: string): OntoDatatype {
  * Common XSD datatypes
  * https://www.w3.org/TR/xmlschema-2/
  */
+// biome-ignore lint/suspicious/noShadowRestrictedNames: API naming matches XSD datatype identifiers
 export const String = Datatype(XSD("string"), "string");
+// biome-ignore lint/suspicious/noShadowRestrictedNames: API naming matches XSD datatype identifiers
 export const Boolean = Datatype(XSD("boolean"), "boolean");
 export const Decimal = Datatype(XSD("decimal"), "decimal");
 export const Float = Datatype(XSD("float"), "float");
@@ -38,9 +40,10 @@ export const UnsignedShort = Datatype(XSD("unsignedShort"), "unsignedShort");
 export const UnsignedByte = Datatype(XSD("unsignedByte"), "unsignedByte");
 
 // Date and time types
+// biome-ignore lint/suspicious/noShadowRestrictedNames: API naming matches XSD datatype identifiers
+export const Date = Datatype(XSD("date"), "date");
 export const DateTime = Datatype(XSD("dateTime"), "dateTime");
 export const DateTimeStamp = Datatype(XSD("dateTimeStamp"), "dateTimeStamp");
-export const Date = Datatype(XSD("date"), "date");
 export const Time = Datatype(XSD("time"), "time");
 export const Duration = Datatype(XSD("duration"), "duration");
 export const YearMonthDuration = Datatype(XSD("yearMonthDuration"), "yearMonthDuration");
@@ -69,10 +72,7 @@ export const HexBinary = Datatype(XSD("hexBinary"), "hexBinary");
  */
 export function isDatatype(entity: unknown): entity is OntoDatatype {
   return (
-    typeof entity === "object" &&
-    entity !== null &&
-    "kind" in entity &&
-    entity.kind === "Datatype"
+    typeof entity === "object" && entity !== null && "kind" in entity && entity.kind === "Datatype"
   );
 }
 
@@ -82,4 +82,3 @@ export function isDatatype(entity: unknown): entity is OntoDatatype {
 export function getDatatypeIRI(datatypeEntity: OntoDatatype | OntoIRI): OntoIRI {
   return typeof datatypeEntity === "string" ? datatypeEntity : datatypeEntity.iri;
 }
-

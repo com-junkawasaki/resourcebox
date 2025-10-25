@@ -25,7 +25,7 @@ export interface PropertyOptions {
 /**
  * Define a SHACL Property Shape
  * Specifies constraints for a property in a Node Shape
- * 
+ *
  * @example
  * ```ts
  * Shape.Property({
@@ -54,4 +54,3 @@ export function Property(options: PropertyOptions): ShapePropertyDef {
     ...(options.description !== undefined && { description: options.description }),
   };
 }
-

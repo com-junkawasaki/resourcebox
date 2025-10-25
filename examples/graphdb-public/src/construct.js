@@ -1,5 +1,5 @@
-import { newEngine } from '@comunica/query-sparql';
-import { graphdbSources } from './util.js';
+import { newEngine } from "@comunica/query-sparql";
+import { graphdbSources } from "./util.js";
 
 const query = `
 CONSTRUCT {
@@ -21,7 +21,7 @@ async function main() {
   }
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error(err);
   process.exit(1);
 });

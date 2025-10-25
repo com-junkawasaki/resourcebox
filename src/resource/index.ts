@@ -20,11 +20,11 @@ export type {
 export { extractMetadata } from "./types.js";
 
 // Primitives
-export { String, Number, Boolean } from "./primitives.js";
+export { ResourceString as String, ResourceNumber as Number, ResourceBoolean as Boolean } from "./primitives.js";
 export type { StringOptions, NumberOptions, BooleanOptions } from "./primitives.js";
 
 // Complex types
-export { Array } from "./array.js";
+export { ResourceArray as Array } from "./array.js";
 export type { ArrayOptions } from "./array.js";
 
 export { Object, isObject } from "./object.js";
@@ -54,4 +54,3 @@ export type { ShapedOptions, ShapedResource, ShapedPropertyDef } from "./shaped.
 
 // Internal helpers
 export { toTypeBox } from "./to-typebox.js";
-

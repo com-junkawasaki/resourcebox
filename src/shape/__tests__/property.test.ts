@@ -105,4 +105,3 @@ describe("Shape.Property", () => {
     expect(prop.description).toBeUndefined();
   });
 });
-

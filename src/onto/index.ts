@@ -69,4 +69,3 @@ export {
   Base64Binary,
   HexBinary,
 } from "./datatype.js";
-

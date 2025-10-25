@@ -12,7 +12,7 @@ export interface PropertyOptions {
   readonly domain?: ReadonlyArray<OntoIRI | OntoClass>;
   readonly range?: ReadonlyArray<OntoIRI | OntoClass | OntoDatatype>;
   readonly subPropertyOf?: ReadonlyArray<OntoIRI | OntoProperty>;
-  
+
   // OWL characteristics
   readonly functional?: boolean;
   readonly inverseFunctional?: boolean;
@@ -26,7 +26,7 @@ export interface PropertyOptions {
 
 /**
  * Define an RDF Property (OWL ObjectProperty or DatatypeProperty)
- * 
+ *
  * @example
  * ```ts
  * const name = Onto.Property({
@@ -36,7 +36,7 @@ export interface PropertyOptions {
  *   range: [Onto.Datatype.String],
  *   functional: true
  * })
- * 
+ *
  * const knows = Onto.Property({
  *   iri: foaf("knows"),
  *   label: "knows",
@@ -56,7 +56,9 @@ export function Property(options: PropertyOptions): OntoProperty {
     ...(options.range !== undefined && { range: options.range }),
     ...(options.subPropertyOf !== undefined && { subPropertyOf: options.subPropertyOf }),
     ...(options.functional !== undefined && { functional: options.functional }),
-    ...(options.inverseFunctional !== undefined && { inverseFunctional: options.inverseFunctional }),
+    ...(options.inverseFunctional !== undefined && {
+      inverseFunctional: options.inverseFunctional,
+    }),
     ...(options.transitive !== undefined && { transitive: options.transitive }),
     ...(options.symmetric !== undefined && { symmetric: options.symmetric }),
     ...(options.asymmetric !== undefined && { asymmetric: options.asymmetric }),
@@ -71,10 +73,7 @@ export function Property(options: PropertyOptions): OntoProperty {
  */
 export function isProperty(entity: unknown): entity is OntoProperty {
   return (
-    typeof entity === "object" &&
-    entity !== null &&
-    "kind" in entity &&
-    entity.kind === "Property"
+    typeof entity === "object" && entity !== null && "kind" in entity && entity.kind === "Property"
   );
 }
 
@@ -84,4 +83,3 @@ export function isProperty(entity: unknown): entity is OntoProperty {
 export function getPropertyIRI(propertyEntity: OntoProperty | OntoIRI): OntoIRI {
   return typeof propertyEntity === "string" ? propertyEntity : propertyEntity.iri;
 }
-

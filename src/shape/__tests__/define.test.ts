@@ -77,4 +77,3 @@ describe("Shape.Define", () => {
     expect(shape.description).toBeUndefined();
   });
 });
-

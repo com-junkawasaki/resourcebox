@@ -1,16 +1,16 @@
 // Resource.Shaped tests
 
 import { describe, expect, it } from "vitest";
-import { Shaped } from "../shaped.js";
-import { String } from "../primitives.js";
 import { FOAF } from "../../onto/namespace.js";
+import { String as RBString } from "../primitives.js";
+import { Shaped } from "../shaped.js";
 
 describe("Resource.Shaped", () => {
   it("should create a shaped resource", () => {
     const shaped = Shaped({
       class: FOAF("Person"),
       properties: {
-        name: String({ required: true }),
+        name: RBString({ required: true }),
       },
     });
 
@@ -23,8 +23,8 @@ describe("Resource.Shaped", () => {
     const shaped = Shaped({
       class: FOAF("Person"),
       properties: {
-        name: String({ property: FOAF("name"), required: true }),
-        age: String({ property: FOAF("age"), optional: true }),
+        name: RBString({ property: FOAF("name"), required: true }),
+        age: RBString({ property: FOAF("age"), optional: true }),
       },
     });
 
@@ -36,7 +36,7 @@ describe("Resource.Shaped", () => {
     const shaped = Shaped({
       class: FOAF("Person"),
       properties: {
-        name: String(),
+        name: RBString(),
       },
       shape: {
         closed: true,
@@ -44,14 +44,14 @@ describe("Resource.Shaped", () => {
     });
 
     expect(shaped.resource.kind).toBe("Object");
-    expect(shaped.shape).toBeUndefined(); // TODO: Shape generation not implemented yet
+    expect(shaped.shape).toBeUndefined();
   });
 
   it("should support empty shape options", () => {
     const shaped = Shaped({
       class: FOAF("Person"),
       properties: {
-        name: String(),
+        name: RBString(),
       },
       shape: {},
     });
@@ -60,4 +60,3 @@ describe("Resource.Shaped", () => {
     expect(shaped.shape).toBeUndefined();
   });
 });
-

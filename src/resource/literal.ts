@@ -5,7 +5,7 @@ import type { LiteralSchema } from "./types.js";
 /**
  * Create a Literal (constant value) resource schema
  * Used for fixed values like @type
- * 
+ *
  * @example
  * ```ts
  * Resource.Literal(["foaf:Person"])
@@ -19,4 +19,3 @@ export function Literal<T>(value: T): LiteralSchema<T> {
     value,
   };
 }
-
