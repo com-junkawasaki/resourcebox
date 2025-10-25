@@ -158,12 +158,127 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
         });
       }
     }
+
+    // SHACL-lite: nodeKind
+    if (propShape.nodeKind) {
+      const values = Array.isArray(value) ? value : [value];
+      for (const v of values) {
+        const isIri = typeof v === "string" && /^([a-zA-Z][a-zA-Z0-9+.-]*:)/.test(v);
+        if (propShape.nodeKind === "IRI" && !isIri) {
+          violations.push({
+            path: `/${propKey}`,
+            message: "Expected IRI nodeKind",
+            value: v,
+            constraint: "nodeKind",
+          });
+        }
+        if (propShape.nodeKind === "Literal" && (typeof v === "object" || isIri)) {
+          violations.push({
+            path: `/${propKey}`,
+            message: "Expected Literal nodeKind",
+            value: v,
+            constraint: "nodeKind",
+          });
+        }
+      }
+    }
+
+    // SHACL-lite: in
+    if (propShape.in) {
+      const allowed = new Set(propShape.in as ReadonlyArray<unknown>);
+      const values = Array.isArray(value) ? value : [value];
+      for (const v of values) {
+        if (!allowed.has(v)) {
+          violations.push({
+            path: `/${propKey}`,
+            message: "Value not in allowed set",
+            value: v,
+            constraint: "in",
+          });
+        }
+      }
+    }
+
+    // SHACL-lite: hasValue
+    if (propShape.hasValue !== undefined) {
+      const expectedVal = propShape.hasValue as unknown;
+      const values = Array.isArray(value) ? value : [value];
+      const ok = values.some((v) => v === expectedVal);
+      if (!ok) {
+        violations.push({
+          path: `/${propKey}`,
+          message: `Expected hasValue = ${String(expectedVal)}`,
+          value,
+          constraint: "hasValue",
+        });
+      }
+    }
+
+    // SHACL: or / xone (evaluate against sub-defs on the same value)
+    if (propShape.or && propShape.or.length > 0) {
+      const satisfied = propShape.or.some((alt) => satisfiesValueConstraints(value, alt));
+      if (!satisfied) {
+        violations.push({
+          path: `/${propKey}`,
+          message: "No alternative in sh:or satisfied",
+          value,
+          constraint: "or",
+        });
+      }
+    }
+
+    if (propShape.xone && propShape.xone.length > 0) {
+      const count = propShape.xone.reduce((acc, alt) => acc + (satisfiesValueConstraints(value, alt) ? 1 : 0), 0);
+      if (count !== 1) {
+        violations.push({
+          path: `/${propKey}`,
+          message: `Exactly one alternative in sh:xone must be satisfied (got ${count})`,
+          value,
+          constraint: "xone",
+        });
+      }
+    }
   }
 
   return {
     ok: violations.length === 0,
     ...(violations.length > 0 && { violations }),
   };
+}
+
+// Check only value-level constraints (no cardinality) for or/xone branches
+function satisfiesValueConstraints(value: unknown, def: Partial<ShapePropertyDef>): boolean {
+  // nodeKind
+  if (def.nodeKind) {
+    const isIri = typeof value === "string" && /^([a-zA-Z][a-zA-Z0-9+.-]*:)/.test(value);
+    if (def.nodeKind === "IRI" && !isIri) return false;
+    if (def.nodeKind === "Literal" && (typeof value === "object" || isIri)) return false;
+  }
+  // in
+  if (def.in) {
+    const allowed = new Set(def.in as ReadonlyArray<unknown>);
+    const values = Array.isArray(value) ? value : [value];
+    if (!values.every((v) => allowed.has(v))) return false;
+  }
+  // hasValue
+  if (def.hasValue !== undefined) {
+    const values = Array.isArray(value) ? value : [value];
+    if (!values.some((v) => v === def.hasValue)) return false;
+  }
+  // strings
+  if (typeof value === "string") {
+    if (def.minLength !== undefined && value.length < def.minLength) return false;
+    if (def.maxLength !== undefined && value.length > def.maxLength) return false;
+    if (def.pattern !== undefined && !(new RegExp(def.pattern)).test(value)) return false;
+  }
+  // numbers
+  if (typeof value === "number") {
+    if (def.minInclusive !== undefined && value < def.minInclusive) return false;
+    if (def.maxInclusive !== undefined && value > def.maxInclusive) return false;
+    if (def.minExclusive !== undefined && value <= def.minExclusive) return false;
+    if (def.maxExclusive !== undefined && value >= def.maxExclusive) return false;
+  }
+  return true;
 }
 
 /**

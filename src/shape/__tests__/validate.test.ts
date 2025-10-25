@@ -168,6 +168,62 @@ describe("Shape.validate", () => {
     expect(result.ok).toBe(false);
     expect(result.violations).toBeDefined();
   });
+
+  it("should validate or constraint (one alternative satisfied)", () => {
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        v: Property({
+          path: FOAF("value"),
+          or: [
+            { minLength: 3 },
+            { pattern: "^[A-Z]" },
+          ] as any,
+        }),
+      },
+    });
+
+    expect(validate(shape, { v: "Ab" }).ok).toBe(true); // pattern ok
+    expect(validate(shape, { v: "abc" }).ok).toBe(true); // minLength ok
+    expect(validate(shape, { v: "a" }).ok).toBe(false);
+  });
+
+  it("should validate xone constraint (exactly one alternative)", () => {
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        v: Property({
+          path: FOAF("value"),
+          xone: [
+            { pattern: "^[A-Z]" },
+            { minLength: 3 },
+          ] as any,
+        }),
+      },
+    });
+
+    expect(validate(shape, { v: "Ab" }).ok).toBe(false); // both satisfied -> fail
+    expect(validate(shape, { v: "abc" }).ok).toBe(true);  // only minLength
+    expect(validate(shape, { v: "A" }).ok).toBe(true);    // only pattern
+  });
+
+  it("should validate nodeKind/in/hasValue constraints", () => {
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        iriRef: Property({ path: FOAF("knows"), nodeKind: "IRI" }),
+        email: Property({ path: FOAF("mbox"), nodeKind: "Literal", in: ["a@ex.org", "b@ex.org"] }),
+        pinned: Property({ path: FOAF("pinned"), hasValue: true as any }),
+      },
+    });
+
+    expect(validate(shape, { iriRef: "http://example.org/x" }).ok).toBe(true);
+    expect(validate(shape, { iriRef: 123 }).ok).toBe(false);
+    expect(validate(shape, { email: "a@ex.org" }).ok).toBe(true);
+    expect(validate(shape, { email: "x@ex.org" }).ok).toBe(false);
+    expect(validate(shape, { pinned: true }).ok).toBe(true);
+    expect(validate(shape, { pinned: false }).ok).toBe(false);
+  });
 });
 
 describe("Shape.check", () => {
