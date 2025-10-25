@@ -135,6 +135,26 @@ Onto.Datatype.Boolean
 Onto.Datatype.Date
 Onto.Datatype.DateTime
 // ... and more
+// OWL class expressions (no reasoning, JSON-LD export only)
+const ActivityOrCapability = Onto.Expressions.Union([
+  ex("Activity"),
+  ex("Capability"),
+]);
+
+const Artifact = Onto.Class({
+  iri: ex("Artifact"),
+  equivalentClass: [ActivityOrCapability],
+});
+
+// Ontology container + JSON-LD export
+const ont = Onto.OntologyContainer({
+  iri: ex("dodaf"),
+  imports: [Onto.OWL("Thing")],
+  classes: [Person, Artifact],
+  properties: [age],
+});
+
+const owlJsonLd = Onto.toJsonLd(ont);
 ```
 
 ### 2. Resource Layer (Data Structure)
@@ -289,6 +309,29 @@ const Person = Resource.Shaped({
     closed: true
   }
 });
+
+// SHACL-lite extensions and JSON-LD export
+const ExtendedShape = Shape.Define({
+  targetClass: Person,
+  property: {
+    email: Shape.Property({
+      path: foaf("mbox"),
+      nodeKind: "Literal",
+      in: ["john@example.org", "jane@example.org"],
+      pattern: "@",
+      minCount: 1,
+      maxCount: 1,
+    }),
+    knows: Shape.Property({
+      path: foaf("knows"),
+      nodeKind: "IRI",
+      hasValue: "http://example.org/alice",
+    }),
+  },
+  closed: true,
+});
+
+const shaclJsonLd = Shape.toJsonLd(ExtendedShape);
 ```
 
 ## Examples

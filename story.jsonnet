@@ -32,7 +32,7 @@ local dag = {
   // 2. Ontology レイヤー
   ontology: {
     id: "ontology",
-    description: "Onto.Namespace / Onto.Class / Onto.Property / Onto.Datatype 実装",
+    description: "Onto.Namespace / Onto.Class / Onto.Property / Onto.Datatype / OWL Expressions / Ontology Container / JSON-LD Export 実装",
     dependencies: ["tooling"],
     outputs: [
       "src/onto/namespace.ts",
@@ -40,6 +40,9 @@ local dag = {
       "src/onto/property.ts",
       "src/onto/datatype.ts",
       "src/onto/index.ts",
+      "src/onto/expressions.ts",
+      "src/onto/ontology.ts",
+      "src/onto/jsonld.ts",
     ],
   },
 
@@ -65,7 +68,7 @@ local dag = {
   // 4. SHACL Shape レイヤー
   shape: {
     id: "shape",
-    description: "Shape.Define / Shape.Property / Shape.fromResource / Shape.validate",
+    description: "Shape.Define / Shape.Property / Shape.fromResource / Shape.validate / SHACL JSON-LD Export / SHACL-lite",
     dependencies: ["resource"],
     outputs: [
       "src/shape/define.ts",
@@ -73,6 +76,7 @@ local dag = {
       "src/shape/from-resource.ts",
       "src/shape/validate.ts",
       "src/shape/index.ts",
+      "src/shape/jsonld.ts",
     ],
   },
 
