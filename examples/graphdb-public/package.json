@@ -1,0 +1,14 @@
+{
+  "name": "@gftdcojp/resourcebox-graphdb-example",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": {
+    "select": "node src/select.js",
+    "construct": "node src/construct.js"
+  },
+  "dependencies": {
+    "@comunica/query-sparql": "^3.0.0",
+    "dotenv": "^16.4.5"
+  }
+}

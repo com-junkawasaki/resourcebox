@@ -1,36 +1,57 @@
 # Comunica SPARQL Examples
 
-This example shows how to query SPARQL endpoints (Neptune, Stardog, Ontotext GraphDB, Apache Jena Fuseki, SAP HANA, Oracle RDF) using Comunica.
+Query RDF stores with Comunica. Supports Amazon Neptune, Stardog, Ontotext GraphDB, Apache Jena Fuseki, SAP HANA, Oracle RDF, etc.
 
-- SELECT / CONSTRUCT queries
-- SPARQL UPDATE
-- Optional Basic Auth (via env)
-- Local Jena Fuseki via Docker Compose
+## Structure
+- `select.js`, `construct.js` — Comunica queries
+- `update.js` — SPARQL Update (undici)
+- `.env` — endpoint & optional Basic auth
+- `docker-compose.yml` — local Jena Fuseki
 
-## Setup
+## Quick Start
 
 ```bash
 cd examples/comunica-sparql
 pnpm i
-cp .env.example .env # then edit endpoints and credentials if needed
-```
-
-## Run local Fuseki (for quick try)
-
-```bash
-pnpm fuseki
-# to stop
+cp .env.example .env
+pnpm fuseki        # start Fuseki on 3030
+pnpm update        # insert sample triples
+pnpm select
+pnpm construct
 pnpm fuseki:down
 ```
 
-## Run examples
+## Provider-specific notes
 
-```bash
-pnpm select
-pnpm construct
-pnpm update
+### Amazon Neptune
+- Require VPC access + SigV4 signing (see `examples/neptune-vpc-proxy/README.md`)
+- Use AWS CLI (`aws neptune-db execute-sparql`) or sign requests manually
+- Set `SPARQL_ENDPOINT=https://.../sparql`, no Basic auth
+
+### Stardog
+- Supports Basic auth (see `examples/stardog-basic-auth`)
+- `.env`: `SPARQL_USER`, `SPARQL_PASSWORD`
+- Update endpoint: `/update`
+
+### GraphDB
+- Public demo endpoints (read-only) — see `examples/graphdb-public`
+- No auth, just set `SPARQL_ENDPOINT`
+
+### Apache Jena Fuseki
+- Provided via docker-compose, open by default
+- For secured deployments, configure Basic auth similar to Stardog
+
+### SAP HANA / Oracle RDF
+- Typically require Basic or SAML-based auth; adapt header generation in `src/util.js`
+- Ensure TLS and network connectivity
+
+## Environment variables
+
+```
+SPARQL_ENDPOINT=http://localhost:3030/ds/sparql
+SPARQL_UPDATE_ENDPOINT=http://localhost:3030/ds/update
+SPARQL_USER=
+SPARQL_PASSWORD=
 ```
 
-## Notes
-- For Neptune or private endpoints, ensure network access and auth headers are configured.
-- For Stardog, set SPARQL_USER / SPARQL_PASSWORD for Basic Auth.
+Modify `src/util.js` for custom headers (e.g., API Keys, Bearer tokens).

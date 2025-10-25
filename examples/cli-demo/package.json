@@ -1,0 +1,17 @@
+{
+  "name": "@gftdcojp/resourcebox-cli-demo",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": {
+    "context": "node src/generate-context.js",
+    "shape": "node src/generate-shape.js",
+    "query": "node src/run-query.js"
+  },
+  "dependencies": {
+    "@comunica/query-sparql": "^3.0.0",
+    "@gftdcojp/resourcebox": "workspace:*",
+    "dotenv": "^16.4.5",
+    "fs-extra": "^11.2.0"
+  }
+}

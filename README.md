@@ -369,6 +369,13 @@ pnpm select   # query triples
 pnpm construct
 ```
 
+### Additional Example Suites
+
+- `examples/stardog-basic-auth` — Comunica with Stardog (Basic Auth) complete with SELECT / CONSTRUCT / UPDATE scripts
+- `examples/graphdb-public` — Comunica against public Ontotext GraphDB datasets (read-only)
+- `examples/neptune-vpc-proxy` — Notes for Amazon Neptune (VPC access + SigV4 signing)
+- `examples/cli-demo` — End-to-end CLI: define ResourceBox model → generate JSON-LD context / SHACL → query via Comunica
+
 ## Design Principles
 
 1. **TypeScript-first**: Leverage TypeScript's type system for compile-time safety
