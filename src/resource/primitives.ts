@@ -1,7 +1,7 @@
 // Resource primitives - String, Number, Boolean
 
-import type { BooleanSchema, NumberSchema, StringSchema } from "./types.js";
 import type { OntoIRI, OntoProperty } from "../onto/types.js";
+import type { BooleanSchema, NumberSchema, StringSchema } from "./types.js";
 
 /**
  * String options
@@ -27,7 +27,8 @@ export interface StringOptions {
  * Resource.String({ format: "email", optional: true })
  * ```
  */
-export function ResourceString(options: StringOptions = {}): StringSchema {
+// biome-ignore lint/suspicious/noShadowRestrictedNames: API uses TypeBox-like naming
+export function String(options: StringOptions = {}): StringSchema {
   return {
     kind: "String",
     ...(options.property !== undefined && { property: options.property }),
@@ -66,7 +67,8 @@ export interface NumberOptions {
  * Resource.Number({ property: foaf("age"), required: true })
  * ```
  */
-export function ResourceNumber(options: NumberOptions = {}): NumberSchema {
+// biome-ignore lint/suspicious/noShadowRestrictedNames: API uses TypeBox-like naming
+export function Number(options: NumberOptions = {}): NumberSchema {
   return {
     kind: "Number",
     ...(options.property !== undefined && { property: options.property }),
@@ -101,7 +103,8 @@ export interface BooleanOptions {
  * Resource.Boolean({ property: ex("verified"), required: true })
  * ```
  */
-export function ResourceBoolean(options: BooleanOptions = {}): BooleanSchema {
+// biome-ignore lint/suspicious/noShadowRestrictedNames: API uses TypeBox-like naming
+export function Boolean(options: BooleanOptions = {}): BooleanSchema {
   return {
     kind: "Boolean",
     ...(options.property !== undefined && { property: options.property }),
@@ -111,5 +114,3 @@ export function ResourceBoolean(options: BooleanOptions = {}): BooleanSchema {
     },
   };
 }
-
-// Note: Named functions are exported directly; `resource/index.ts` re-exports them under Resource.String/Number/Boolean.

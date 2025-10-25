@@ -1,10 +1,10 @@
 // Shape.Define tests
 
 import { describe, expect, it } from "vitest";
+import { Class } from "../../onto/class.js";
+import { FOAF } from "../../onto/namespace.js";
 import { Define } from "../define.js";
 import { Property } from "../property.js";
-import { FOAF } from "../../onto/namespace.js";
-import { Class } from "../../onto/class.js";
 
 describe("Shape.Define", () => {
   const Person = Class({ iri: FOAF("Person") });

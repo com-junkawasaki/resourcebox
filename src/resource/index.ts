@@ -20,7 +20,11 @@ export type {
 export { extractMetadata } from "./types.js";
 
 // Primitives
-export { ResourceString as String, ResourceNumber as Number, ResourceBoolean as Boolean } from "./primitives.js";
+export {
+  ResourceString as String,
+  ResourceNumber as Number,
+  ResourceBoolean as Boolean,
+} from "./primitives.js";
 export type { StringOptions, NumberOptions, BooleanOptions } from "./primitives.js";
 
 // Complex types
@@ -54,3 +58,26 @@ export type { ShapedOptions, ShapedResource, ShapedPropertyDef } from "./shaped.
 
 // Internal helpers
 export { toTypeBox } from "./to-typebox.js";
+
+export const Resource = {
+  String,
+  Number,
+  Boolean,
+  Array: ResourceArray,
+  Object,
+  Ref,
+  Literal,
+  Optional,
+  validate,
+  check,
+  parse,
+  context,
+  extractNamespaces,
+  Shaped,
+  extractMetadata,
+  isOptional,
+  isRequired,
+  isObject,
+  toTypeBox,
+};
+export type ResourceStatic<T extends AnyResourceSchema> = Static<T>;

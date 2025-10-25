@@ -1,6 +1,6 @@
 // Convert ResourceSchema to TypeBox TSchema
 
-import { Type, type TSchema } from "@sinclair/typebox";
+import { type TSchema, Type } from "@sinclair/typebox";
 import type { AnyResourceSchema } from "./types.js";
 
 /**

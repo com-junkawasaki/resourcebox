@@ -1,7 +1,7 @@
 // Shape.fromResource - Generate SHACL shape from Resource schema
 
 import { getClassIRI, isClass } from "../onto/class.js";
-import { isProperty, getPropertyIRI } from "../onto/property.js";
+import { getPropertyIRI, isProperty } from "../onto/property.js";
 import type { OntoIRI } from "../onto/types.js";
 import type { ObjectSchema, RefSchema } from "../resource/types.js";
 import type { ShapeNodeDef, ShapePropertyDef } from "./types.js";

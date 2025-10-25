@@ -1,8 +1,8 @@
 // Shape.Property tests
 
 import { describe, expect, it } from "vitest";
-import { Property } from "../property.js";
 import { FOAF } from "../../onto/namespace.js";
+import { Property } from "../property.js";
 
 describe("Shape.Property", () => {
   it("should create a property definition with required path", () => {
