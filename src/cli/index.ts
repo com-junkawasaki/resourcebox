@@ -22,7 +22,7 @@ program
   .command('context <module>')
   .description('Generate JSON-LD context from a Resource module (default export)')
   .option('-o, --out <file>', 'Output file', 'context.jsonld')
-  .action(async (modulePath, options) => {
+  .action(async (modulePath: string, options: { out: string }) => {
     const resource = await loadModule(modulePath);
     const ctx = Resource.context(resource, {
       includeNamespaces: true,
@@ -36,9 +36,9 @@ program
   .description('Generate SHACL shape from a Resource module (default export)')
   .option('-o, --out <file>', 'Output file', 'shape.json')
   .option('--strict', 'Use strict cardinality', false)
-  .action(async (modulePath, options) => {
+  .action(async (modulePath: string, options: { out: string; strict?: boolean }) => {
     const resource = await loadModule(modulePath);
-    const shape = Shape.fromResource(resource, { strict: options.strict });
+    const shape = Shape.fromResource(resource, { strict: Boolean(options.strict) });
     await fs.writeFile(options.out, JSON.stringify(shape, null, 2));
     console.log(`Shape written to ${options.out}`);
   });
