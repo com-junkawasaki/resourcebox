@@ -450,6 +450,23 @@ pnpm construct
 └─────────────┴─────────────────┴────────────────────┘
 ```
 
+### RPC Integration (JSON-LD → TypeBox → tRPC/oRPC)
+
+1. **Context生成**: `const context = buildContext([Shape.fromResource(PersonResource)]);`
+2. **型抽出**: `const rpcMap = Process.Rpc.expandContextMap(context["@context"]);`
+3. **入出力定義**:
+   - Literal (`kind: "literal"`) → TypeBox primitive → `procedure.input`
+   - Reference (`kind: "reference"`) → IRI 型 → `procedure.output`
+4. **RPC登録**:
+   ```typescript
+   const router = t.router({
+     email: t.procedure.input(EmailType).output(ResultType).
+       meta({ iri: rpcMap.email.iri })
+       .query(handler),
+   });
+   ```
+5. **oRPC** では `rpcMap` 情報を IRI ベースのルーティングに利用可能。
+
 ## Comparison with Other Libraries
 
 | Feature | ResourceBox | TypeBox | ShEx | SHACL-JS |

@@ -1,6 +1,6 @@
 // DAG: resourcebox-story
 // ResourceBox プロセスネットワーク DAG 定義
-// トポロジカルソート: init → tooling → ontology → resource → shape → validation → cli → examples → docs → ci_cd → complete
+// トポロジカルソート: init → tooling → ontology → resource → shape → process_rpc → validation → cli → examples → docs → ci_cd → complete
 
 local dag = {
   // 0. プロジェクト基盤初期化
@@ -80,11 +80,23 @@ local dag = {
     ],
   },
 
-  // 5. 検証・テスト統合
+  // 5. RPC プロセス層
+  process_rpc: {
+    id: "process_rpc",
+    description: "JSON-LD コンテキストから RPC 型安全性を導出する内部モジュール",
+    dependencies: ["shape"],
+    outputs: [
+      "src/_internal/process/rpc/context-types.ts",
+      "src/_internal/process/rpc/index.ts",
+      "src/_internal/process/rpc/__tests__/context-types.test.ts",
+    ],
+  },
+
+  // 6. 検証・テスト統合
   validation: {
     id: "validation",
-    description: "Resource / Shape / Onto 統合テストと toTypeBox 連携",
-    dependencies: ["shape"],
+    description: "Resource / Shape / Process RPC 統合テストと toTypeBox 連携",
+    dependencies: ["process_rpc"],
     outputs: [
       "src/resource/__tests__",
       "src/shape/__tests__",
@@ -92,7 +104,7 @@ local dag = {
     ],
   },
 
-  // 6. CLI 実装
+  // 7. CLI 実装
   cli: {
     id: "cli",
     description: "Commander ベースの CLI (context / shape 生成)",
@@ -103,7 +115,7 @@ local dag = {
     ],
   },
 
-  // 7. Examples / SPARQL 連携
+  // 8. Examples / SPARQL 連携
   examples: {
     id: "examples",
     description: "Comunica + 各種 SPARQL DB 例、CLI デモ",
@@ -117,7 +129,7 @@ local dag = {
     ],
   },
 
-  // 8. ドキュメントサイト
+  // 9. ドキュメントサイト
   docs: {
     id: "docs",
     description: "Docs site 初版 (Docusaurus v3 ベース) と README 連携",
@@ -128,7 +140,7 @@ local dag = {
     ],
   },
 
-  // 9. CI/CD 拡張
+  // 10. CI/CD 拡張
   ci_cd: {
     id: "ci_cd",
     description: "Lint / Typecheck / Test / Coverage / Changesets / Publish ワークフロー",
@@ -140,7 +152,7 @@ local dag = {
     ],
   },
 
-  // 10. 完了
+  // 11. 完了
   complete: {
     id: "complete",
     description: "パッケージ公開準備と story.jsonnet 更新",
@@ -189,8 +201,8 @@ local topoSort(dag) =
 
   metrics: {
     totalNodes: std.length(std.objectFields(dag)),
-    maxDepth: 10,
+    maxDepth: 11,
     avgDependencies: 1.1,
-    structure: "ontology-resource-shape unified",
+    structure: "ontology-resource-shape-process unified",
   },
 }

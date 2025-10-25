@@ -166,3 +166,13 @@ export type {
   PropertyOptions as ShapePropertyOptions,
   FromResourceOptions,
 } from "./shape/index.js";
+
+// ==========================================================================
+// Internal - Process / RPC integrations
+// ==========================================================================
+
+import * as ProcessRpcNS from "./_internal/process/rpc/index.js";
+
+export const Process = {
+  Rpc: ProcessRpcNS,
+};
