@@ -7,9 +7,18 @@ export type {
   OntoClass,
   OntoProperty,
   OntoDatatype,
+  Annotation,
+  Restriction,
+  ClassExpression,
+  Ontology,
 } from "./types.js";
 
 export { iri, getIRI } from "./types.js";
+
+// Expressions & Ontology container & JSON-LD export
+export * as Expressions from "./expressions.js";
+export { Ontology as OntologyContainer } from "./ontology.js";
+export { toJsonLd } from "./jsonld.js";
 
 // Namespace
 export { Namespace, RDF, RDFS, OWL, XSD, FOAF } from "./namespace.js";

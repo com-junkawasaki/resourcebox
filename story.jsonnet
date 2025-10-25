@@ -1,131 +1,150 @@
-// DAG: story-dag
-// Shapebox プロセスネットワーク DAG 定義
-// トポロジカルソート: init → types → typecheck → api → context → validate-struct → validate-shape → test → complete
+// DAG: resourcebox-story
+// ResourceBox プロセスネットワーク DAG 定義
+// トポロジカルソート: init → tooling → ontology → resource → shape → validation → cli → examples → docs → ci_cd → complete
 
 local dag = {
-  // プロジェクト基盤初期化
+  // 0. プロジェクト基盤初期化
   init: {
-    id: 'init',
-    description: 'package.json, tsconfig.json, biome.json, .gitignore, LICENSE 作成',
+    id: "init",
+    description: "package.json, tsconfig.json, pnpm, biome など初期設定",
     dependencies: [],
     outputs: [
-      'package.json',
-      'tsconfig.json',
-      'biome.json',
-      'vitest.config.ts',
-      '.gitignore',
-      'LICENSE',
+      "package.json",
+      "tsconfig.json",
+      "biome.json",
+      "pnpm-lock.yaml",
+      ".gitignore",
     ],
   },
 
-  // Core 型定義層
-  types: {
-    id: 'types',
-    description: 'IRI, Cardinality, Range, PropertyMeta, ShapeDefinition 型定義',
-    dependencies: ['init'],
+  // 1. ツールチェーン整備
+  tooling: {
+    id: "tooling",
+    description: "Vitest / Changesets / GitHub Actions 下準備",
+    dependencies: ["init"],
     outputs: [
-      'src/core/types/iri.ts',
-      'src/core/types/cardinality.ts',
-      'src/core/types/range.ts',
-      'src/core/types/property.ts',
-      'src/core/types/shape.ts',
-      'src/core/types/index.ts',
+      "vitest.config.ts",
+      ".changeset/config.json",
+      ".github/workflows/ci.yml",
     ],
   },
 
-  // 型レベル整合性チェック
-  typecheck: {
-    id: 'typecheck',
-    description: 'Conditional types による型レベル整合性チェック実装',
-    dependencies: ['types'],
+  // 2. Ontology レイヤー
+  ontology: {
+    id: "ontology",
+    description: "Onto.Namespace / Onto.Class / Onto.Property / Onto.Datatype 実装",
+    dependencies: ["tooling"],
     outputs: [
-      'src/core/typecheck/cardinality-optional.ts',
-      'src/core/typecheck/range-exclusivity.ts',
-      'src/core/typecheck/extends-circular.ts',
-      'src/core/typecheck/props-schema-consistency.ts',
-      'src/core/typecheck/index.ts',
+      "src/onto/namespace.ts",
+      "src/onto/class.ts",
+      "src/onto/property.ts",
+      "src/onto/datatype.ts",
+      "src/onto/index.ts",
     ],
   },
 
-  // DSL API
-  api: {
-    id: 'api',
-    description: 'DSL API 実装 (iri, cardinality, range, defineShape)',
-    dependencies: ['typecheck'],
+  // 3. Resource レイヤー
+  resource: {
+    id: "resource",
+    description: "Resource.* API と JSON-LD / validation 連携",
+    dependencies: ["ontology"],
     outputs: [
-      'src/core/dsl/iri.ts',
-      'src/core/dsl/cardinality.ts',
-      'src/core/dsl/range.ts',
-      'src/core/dsl/define-shape.ts',
-      'src/core/dsl/index.ts',
+      "src/resource/primitives.ts",
+      "src/resource/object.ts",
+      "src/resource/array.ts",
+      "src/resource/ref.ts",
+      "src/resource/optional.ts",
+      "src/resource/literal.ts",
+      "src/resource/context.ts",
+      "src/resource/validate.ts",
+      "src/resource/shaped.ts",
+      "src/resource/index.ts",
     ],
   },
 
-  // JSON-LD Context 生成
-  context: {
-    id: 'context',
-    description: 'buildContext 実装 (JSON-LD @context 生成)',
-    dependencies: ['api'],
+  // 4. SHACL Shape レイヤー
+  shape: {
+    id: "shape",
+    description: "Shape.Define / Shape.Property / Shape.fromResource / Shape.validate",
+    dependencies: ["resource"],
     outputs: [
-      'src/core/context/build-context.ts',
-      'src/core/context/types.ts',
-      'src/core/context/index.ts',
+      "src/shape/define.ts",
+      "src/shape/property.ts",
+      "src/shape/from-resource.ts",
+      "src/shape/validate.ts",
+      "src/shape/index.ts",
     ],
   },
 
-  // 構造検証 (Ajv)
-  'validate-struct': {
-    id: 'validate-struct',
-    description: 'validateStruct 実装 (Ajv ベース構造検証)',
-    dependencies: ['context'],
+  // 5. 検証・テスト統合
+  validation: {
+    id: "validation",
+    description: "Resource / Shape / Onto 統合テストと toTypeBox 連携",
+    dependencies: ["shape"],
     outputs: [
-      'src/validate/struct/validate-struct.ts',
-      'src/validate/struct/ajv-setup.ts',
-      'src/validate/struct/index.ts',
-      'src/validate/report/types.ts',
-      'src/validate/report/index.ts',
+      "src/resource/__tests__",
+      "src/shape/__tests__",
+      "src/__tests__/integration.test.ts",
     ],
   },
 
-  // Shape 検証 (ShEx-like)
-  'validate-shape': {
-    id: 'validate-shape',
-    description: 'validateShape 実装 (ShEx的局所shape検証)',
-    dependencies: ['validate-struct'],
+  // 6. CLI 実装
+  cli: {
+    id: "cli",
+    description: "Commander ベースの CLI (context / shape 生成)",
+    dependencies: ["validation"],
     outputs: [
-      'src/validate/shape/validate-shape.ts',
-      'src/validate/shape/cardinality-check.ts',
-      'src/validate/shape/range-check.ts',
-      'src/validate/shape/type-check.ts',
-      'src/validate/shape/index.ts',
+      "src/cli/index.ts",
+      "package.json#bin",
     ],
   },
 
-  // テスト
-  test: {
-    id: 'test',
-    description: 'Core と Validate の統合テスト',
-    dependencies: ['validate-shape'],
+  // 7. Examples / SPARQL 連携
+  examples: {
+    id: "examples",
+    description: "Comunica + 各種 SPARQL DB 例、CLI デモ",
+    dependencies: ["cli"],
     outputs: [
-      'src/core/__tests__/types.test.ts',
-      'src/core/__tests__/define-shape.test.ts',
-      'src/core/__tests__/build-context.test.ts',
-      'src/validate/__tests__/validate-struct.test.ts',
-      'src/validate/__tests__/validate-shape.test.ts',
-      'src/validate/__tests__/cardinality.test.ts',
-      'src/validate/__tests__/range.test.ts',
+      "examples/comunica-sparql",
+      "examples/stardog-basic-auth",
+      "examples/graphdb-public",
+      "examples/neptune-vpc-proxy",
+      "examples/cli-demo",
     ],
   },
 
-  // メインエントリーポイントと完成
+  // 8. ドキュメントサイト
+  docs: {
+    id: "docs",
+    description: "Docs site 初版 (Docusaurus v3 ベース) と README 連携",
+    dependencies: ["examples"],
+    outputs: [
+      "docs/",
+      "README.md",
+    ],
+  },
+
+  // 9. CI/CD 拡張
+  ci_cd: {
+    id: "ci_cd",
+    description: "Lint / Typecheck / Test / Coverage / Changesets / Publish ワークフロー",
+    dependencies: ["docs"],
+    outputs: [
+      ".github/workflows/ci.yml",
+      ".github/workflows/release.yml",
+      "CHANGELOG.md",
+    ],
+  },
+
+  // 10. 完了
   complete: {
-    id: 'complete',
-    description: 'メインエントリーポイント (src/index.ts) と README 更新',
-    dependencies: ['test'],
+    id: "complete",
+    description: "パッケージ公開準備と story.jsonnet 更新",
+    dependencies: ["ci_cd"],
     outputs: [
-      'src/index.ts',
-      'README.md',
-      'story.jsonnet',
+      "src/index.ts",
+      "story.jsonnet",
+      "CHANGELOG.md",
     ],
   },
 };
@@ -135,7 +154,7 @@ local topoSort(dag) =
   local nodes = std.objectFields(dag);
   local visited = {};
   local sorted = [];
-  
+
   local visit(nodeId, path=[]) =
     if std.member(path, nodeId) then
       error 'Circular dependency detected: %s' % std.join(' -> ', path + [nodeId])
@@ -145,10 +164,12 @@ local topoSort(dag) =
       local node = dag[nodeId];
       local deps = node.dependencies;
       local depResults = std.flatMap(function(dep) visit(dep, path + [nodeId]), deps);
+      visited[nodeId] = true;
       depResults + [nodeId];
-  
+
   std.foldl(
-    function(acc, nodeId) acc + visit(nodeId),
+    function(acc, nodeId)
+      acc + visit(nodeId),
     nodes,
     []
   );
@@ -156,18 +177,16 @@ local topoSort(dag) =
 {
   dag: dag,
   topologicalOrder: topoSort(dag),
-  
-  // 依存関係検証
+
   validate: {
     allNodesReachable: std.length(self.topologicalOrder) == std.length(std.objectFields(dag)),
-    noCycles: true,  // topoSort がエラーを投げなければ true
+    noCycles: true,
   },
-  
-  // エントロピー最小化指標
+
   metrics: {
     totalNodes: std.length(std.objectFields(dag)),
-    maxDepth: 9,  // init -> ... -> complete
-    avgDependencies: 1.0,  // ほぼ線形依存
-    structure: 'unified',  // 統合パッケージ構造
+    maxDepth: 10,
+    avgDependencies: 1.1,
+    structure: "ontology-resource-shape unified",
   },
 }

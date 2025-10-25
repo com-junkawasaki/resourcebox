@@ -79,6 +79,69 @@ export function validateShape(shape: Shape, data: unknown): ShapeReport {
     if (propValue !== undefined && propValue !== null) {
       violations.push(...checkRange(propName, propValue, propMeta.range));
     }
+
+    // SHACL-lite: nodeKind
+    const metaNodeKind = (propMeta as unknown as { nodeKind?: string }).nodeKind;
+    if (propValue !== undefined && propValue !== null && metaNodeKind) {
+      const nodeKind = metaNodeKind;
+      const values = Array.isArray(propValue) ? propValue : [propValue];
+      for (const v of values) {
+        const isIri = typeof v === "string" && /^([a-zA-Z][a-zA-Z0-9+.-]*:)/.test(v);
+        if (nodeKind === "IRI" && !isIri) {
+          violations.push({
+            path: propName,
+            code: "NODE_KIND",
+            message: `Property '${propName}' expects IRI`,
+            expected: "IRI",
+            actual: typeof v,
+          });
+        }
+        if (nodeKind === "Literal" && (typeof v === "object" || isIri)) {
+          violations.push({
+            path: propName,
+            code: "NODE_KIND",
+            message: `Property '${propName}' expects literal`,
+            expected: "Literal",
+            actual: typeof v,
+          });
+        }
+      }
+    }
+
+    // SHACL-lite: in
+    const metaIn = (propMeta as unknown as { in?: ReadonlyArray<unknown> }).in;
+    if (metaIn && propValue !== undefined) {
+      const allowed = new Set(metaIn);
+      const values = Array.isArray(propValue) ? propValue : [propValue];
+      for (const v of values) {
+        if (!allowed.has(v)) {
+          violations.push({
+            path: propName,
+            code: "IN",
+            message: `Property '${propName}' value not in allowed set`,
+            expected: Array.from(allowed).join(","),
+            actual: v,
+          });
+        }
+      }
+    }
+
+    // SHACL-lite: hasValue
+    const metaHasValue = (propMeta as unknown as { hasValue?: unknown }).hasValue;
+    if (metaHasValue !== undefined) {
+      const expectedVal = metaHasValue;
+      const values = Array.isArray(propValue) ? propValue : [propValue];
+      const ok = values.some((v) => v === expectedVal);
+      if (!ok) {
+        violations.push({
+          path: propName,
+          code: "HAS_VALUE",
+          message: `Property '${propName}' must have value ${String(expectedVal)}`,
+          expected: expectedVal,
+          actual: propValue,
+        });
+      }
+    }
   }
 
   return {

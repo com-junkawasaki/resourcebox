@@ -1,6 +1,6 @@
 // Onto.Property - Define OWL/RDF properties
 
-import type { OntoClass, OntoDatatype, OntoIRI, OntoProperty } from "./types.js";
+import type { Annotation, OntoClass, OntoDatatype, OntoIRI, OntoProperty } from "./types.js";
 
 /**
  * Options for defining an ontology property
@@ -22,6 +22,9 @@ export interface PropertyOptions {
   readonly reflexive?: boolean;
   readonly irreflexive?: boolean;
   readonly inverseOf?: OntoIRI | OntoProperty;
+  readonly equivalentProperty?: ReadonlyArray<OntoIRI | OntoProperty>;
+  readonly propertyChain?: ReadonlyArray<OntoIRI | OntoProperty>;
+  readonly annotations?: ReadonlyArray<Annotation>;
 }
 
 /**
@@ -65,6 +68,11 @@ export function Property(options: PropertyOptions): OntoProperty {
     ...(options.reflexive !== undefined && { reflexive: options.reflexive }),
     ...(options.irreflexive !== undefined && { irreflexive: options.irreflexive }),
     ...(options.inverseOf !== undefined && { inverseOf: options.inverseOf }),
+    ...(options.equivalentProperty !== undefined && {
+      equivalentProperty: options.equivalentProperty,
+    }),
+    ...(options.propertyChain !== undefined && { propertyChain: options.propertyChain }),
+    ...(options.annotations !== undefined && { annotations: options.annotations }),
   };
 }
 

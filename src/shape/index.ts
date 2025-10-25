@@ -22,3 +22,6 @@ export type { FromResourceOptions } from "./from-resource.js";
 
 // Validate
 export { validate, check } from "./validate.js";
+
+// JSON-LD export
+export { toJsonLd } from "./jsonld.js";

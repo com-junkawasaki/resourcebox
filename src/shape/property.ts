@@ -19,6 +19,12 @@ export interface PropertyOptions {
   readonly maxInclusive?: number;
   readonly minExclusive?: number;
   readonly maxExclusive?: number;
+  readonly nodeKind?: "IRI" | "Literal" | "BlankNode";
+  readonly in?: ReadonlyArray<string | number | boolean | OntoIRI>;
+  readonly hasValue?: string | number | boolean | OntoIRI;
+  readonly propertyPath?: OntoIRI;
+  readonly or?: ReadonlyArray<PropertyOptions>;
+  readonly xone?: ReadonlyArray<PropertyOptions>;
   readonly description?: string;
 }
 
@@ -51,6 +57,12 @@ export function Property(options: PropertyOptions): ShapePropertyDef {
     ...(options.maxInclusive !== undefined && { maxInclusive: options.maxInclusive }),
     ...(options.minExclusive !== undefined && { minExclusive: options.minExclusive }),
     ...(options.maxExclusive !== undefined && { maxExclusive: options.maxExclusive }),
+    ...(options.nodeKind !== undefined && { nodeKind: options.nodeKind }),
+    ...(options.in !== undefined && { in: options.in }),
+    ...(options.hasValue !== undefined && { hasValue: options.hasValue }),
+    ...(options.propertyPath !== undefined && { propertyPath: options.propertyPath }),
+    ...(options.or !== undefined && { or: options.or as unknown as ShapePropertyDef[] }),
+    ...(options.xone !== undefined && { xone: options.xone as unknown as ShapePropertyDef[] }),
     ...(options.description !== undefined && { description: options.description }),
   };
 }

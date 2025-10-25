@@ -18,6 +18,13 @@ export interface ShapePropertyDef {
   readonly maxInclusive?: number;
   readonly minExclusive?: number;
   readonly maxExclusive?: number;
+  // SHACL-lite extensions
+  readonly nodeKind?: "IRI" | "Literal" | "BlankNode";
+  readonly in?: ReadonlyArray<string | number | boolean | OntoIRI>;
+  readonly hasValue?: string | number | boolean | OntoIRI;
+  readonly propertyPath?: OntoIRI; // simple IRI path only (no complex paths)
+  readonly or?: ReadonlyArray<ShapePropertyDef>;
+  readonly xone?: ReadonlyArray<ShapePropertyDef>;
   readonly description?: string;
 }
 
