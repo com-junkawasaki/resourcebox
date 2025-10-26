@@ -132,4 +132,3 @@ function compactIri(iri: string, namespaces: Record<string, string>): string {
 function isReservedTerm(term: string): boolean {
   return term.startsWith("@");
 }
-

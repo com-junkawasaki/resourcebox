@@ -2,7 +2,8 @@
 
 import { describe, expect, it } from "vitest";
 import { Class } from "../../onto/class.js";
-import { FOAF } from "../../onto/namespace.js";
+import { createInferenceContext } from "../../onto/inference.js";
+import { FOAF, XSD } from "../../onto/namespace.js";
 import { Define } from "../define.js";
 import { Property } from "../property.js";
 import type { ShapePropertyDef } from "../types.js";
@@ -224,6 +225,128 @@ describe("Shape.validate", () => {
     expect(validate(shape, { email: "x@ex.org" }).ok).toBe(false);
     expect(validate(shape, { pinned: true }).ok).toBe(true);
     expect(validate(shape, { pinned: false }).ok).toBe(false);
+  });
+
+  it("should validate datatype constraints", () => {
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        name: Property({
+          path: FOAF("name"),
+          datatype: XSD("string"),
+        }),
+        age: Property({
+          path: FOAF("age"),
+          datatype: XSD("integer"),
+        }),
+        active: Property({
+          path: "http://example.org/active",
+          datatype: XSD("boolean"),
+        }),
+      },
+    });
+
+    expect(validate(shape, { name: "John", age: 30, active: true }).ok).toBe(true);
+    expect(validate(shape, { name: "John", age: "30", active: true }).ok).toBe(false); // age should be number
+    expect(validate(shape, { name: "John", age: 30, active: "true" }).ok).toBe(false); // active should be boolean
+  });
+
+  it("should validate class constraints with inference context", () => {
+    const Agent = Class({ iri: FOAF("Agent") });
+    const Person = Class({ iri: FOAF("Person") });
+    const Organization = Class({ iri: "http://example.org/Organization" });
+
+    const context = createInferenceContext(
+      [
+        { iri: Person.iri, superClasses: [Agent.iri] },
+        { iri: Agent.iri, superClasses: [] },
+        { iri: Organization.iri, superClasses: [] },
+      ],
+      []
+    );
+
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        knows: Property({
+          path: FOAF("knows"),
+          class: Agent, // Should accept Person or Agent instances
+        }),
+        worksFor: Property({
+          path: "http://example.org/worksFor",
+          class: Organization, // Should only accept Organization instances
+        }),
+      },
+    });
+
+    const validData = {
+      knows: { "@type": Person.iri, name: "Jane" },
+      worksFor: { "@type": Organization.iri, name: "Acme Corp" },
+    };
+
+    const invalidData1 = {
+      knows: { "@type": "http://example.org/Unknown", name: "Jane" }, // Wrong class
+      worksFor: { "@type": Organization.iri, name: "Acme Corp" },
+    };
+
+    const invalidData2 = {
+      knows: { "@type": Person.iri, name: "Jane" },
+      worksFor: { "@type": Person.iri, name: "John" }, // Wrong class for worksFor
+    };
+
+    expect(validate(shape, validData, context).ok).toBe(true);
+    expect(validate(shape, invalidData1, context).ok).toBe(false);
+    expect(validate(shape, invalidData2, context).ok).toBe(false);
+  });
+
+  it("should work without inference context for backward compatibility", () => {
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        name: Property({
+          path: FOAF("name"),
+          datatype: XSD("string"),
+        }),
+      },
+    });
+
+    // Without context, datatype checking should still work
+    expect(validate(shape, { name: "John" }).ok).toBe(true);
+    expect(validate(shape, { name: 123 }).ok).toBe(false);
+  });
+
+  it("should validate and constraint (all alternatives satisfied)", () => {
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        value: Property({
+          path: FOAF("value"),
+          and: [
+            Property({ path: FOAF("value"), minLength: 3 }),
+            Property({ path: FOAF("value"), pattern: "^[A-Z]" }),
+          ],
+        }),
+      },
+    });
+
+    expect(validate(shape, { value: "Abc" }).ok).toBe(true); // satisfies both
+    expect(validate(shape, { value: "abc" }).ok).toBe(false); // missing pattern
+    expect(validate(shape, { value: "AB" }).ok).toBe(false); // missing minLength
+  });
+
+  it("should validate not constraint (negation)", () => {
+    const shape = Define({
+      targetClass: Person,
+      property: {
+        value: Property({
+          path: FOAF("value"),
+          not: Property({ path: FOAF("value"), pattern: "^[A-Z]" }),
+        }),
+      },
+    });
+
+    expect(validate(shape, { value: "abc" }).ok).toBe(true); // does not match pattern
+    expect(validate(shape, { value: "Abc" }).ok).toBe(false); // matches pattern (should not)
   });
 });
 

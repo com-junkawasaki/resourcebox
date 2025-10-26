@@ -25,6 +25,8 @@ export interface ShapePropertyDef {
   readonly propertyPath?: OntoIRI; // simple IRI path only (no complex paths)
   readonly or?: ReadonlyArray<ShapePropertyDef>;
   readonly xone?: ReadonlyArray<ShapePropertyDef>;
+  readonly and?: ReadonlyArray<ShapePropertyDef>;
+  readonly not?: ShapePropertyDef;
   readonly description?: string;
 }
 

@@ -23,6 +23,10 @@
         "noExplicitAny": "warn",
         "noDoubleEquals": "error",
         "noConfusingVoidType": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "noUnusedImports": "error"
       }
     }
   },

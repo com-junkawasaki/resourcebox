@@ -1,6 +1,8 @@
 // Shape.validate - Validate data against SHACL shape
 
 import { getClassIRI, isClass } from "../onto/class.js";
+import { getDatatypeIRI, isDatatype } from "../onto/datatype.js";
+import type { InferenceContext } from "../onto/inference.js";
 import type {
   ShapeNodeDef,
   ShapePropertyDef,
@@ -12,6 +14,9 @@ import type {
  * Validate data against SHACL shape
  * Checks semantic constraints (SHACL)
  *
+ * @param shape SHACL shape definition
+ * @param data Data to validate
+ * @param context Optional inference context for RDFS/OWL reasoning
  * @example
  * ```ts
  * const result = Shape.validate(PersonShape, data)
@@ -20,7 +25,11 @@ import type {
  * }
  * ```
  */
-export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationResult {
+export function validate(
+  shape: ShapeNodeDef,
+  data: unknown,
+  context?: InferenceContext
+): ShapeValidationResult {
   const violations: ShapeViolation[] = [];
 
   // Data must be an object
@@ -219,9 +228,73 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
       }
     }
 
-    // SHACL: or / xone (evaluate against sub-defs on the same value)
+    // SHACL: datatype
+    if (propShape.datatype !== undefined && value !== undefined) {
+      const expectedDatatype = isDatatype(propShape.datatype)
+        ? getDatatypeIRI(propShape.datatype)
+        : propShape.datatype;
+
+      const values = Array.isArray(value) ? value : [value];
+      for (const v of values) {
+        if (typeof v === "string" && expectedDatatype === "http://www.w3.org/2001/XMLSchema#string")
+          continue;
+        if (
+          typeof v === "number" &&
+          expectedDatatype === "http://www.w3.org/2001/XMLSchema#integer"
+        )
+          continue;
+        if (
+          typeof v === "number" &&
+          expectedDatatype === "http://www.w3.org/2001/XMLSchema#decimal"
+        )
+          continue;
+        if (
+          typeof v === "boolean" &&
+          expectedDatatype === "http://www.w3.org/2001/XMLSchema#boolean"
+        )
+          continue;
+
+        violations.push({
+          path: `/${propKey}`,
+          message: `Value must be of datatype ${expectedDatatype}`,
+          value: v,
+          constraint: "datatype",
+        });
+      }
+    }
+
+    // SHACL: class
+    if (propShape.class !== undefined && value !== undefined && context) {
+      const expectedClass = isClass(propShape.class)
+        ? getClassIRI(propShape.class)
+        : propShape.class;
+
+      const values = Array.isArray(value) ? value : [value];
+      for (const v of values) {
+        if (typeof v === "object" && v !== null && "@type" in v) {
+          const types = Array.isArray(v["@type"]) ? v["@type"] : [v["@type"]];
+          const isValid = types.some((type: string) => {
+            return context.classes.get(type)?.has(expectedClass) || type === expectedClass;
+          });
+          if (!isValid) {
+            violations.push({
+              path: `/${propKey}`,
+              message: `Value must be instance of class ${expectedClass}`,
+              value: v,
+              constraint: "class",
+            });
+          }
+        } else if (typeof v === "string") {
+          // IRI reference - check if it matches expected class
+          // Note: This assumes the IRI refers to an instance of the class
+          // Full validation would require instance data lookup
+        }
+      }
+    }
+
+    // SHACL: or / xone / and / not (evaluate against sub-defs on the same value)
     if (propShape.or && propShape.or.length > 0) {
-      const satisfied = propShape.or.some((alt) => satisfiesValueConstraints(value, alt));
+      const satisfied = propShape.or.some((alt) => satisfiesValueConstraints(value, alt, context));
       if (!satisfied) {
         violations.push({
           path: `/${propKey}`,
@@ -234,7 +307,7 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
 
     if (propShape.xone && propShape.xone.length > 0) {
       const count = propShape.xone.reduce(
-        (acc, alt) => acc + (satisfiesValueConstraints(value, alt) ? 1 : 0),
+        (acc, alt) => acc + (satisfiesValueConstraints(value, alt, context) ? 1 : 0),
         0
       );
       if (count !== 1) {
@@ -243,6 +316,31 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
           message: `Exactly one alternative in sh:xone must be satisfied (got ${count})`,
           value,
           constraint: "xone",
+        });
+      }
+    }
+
+    if (propShape.and && propShape.and.length > 0) {
+      const allSatisfied = propShape.and.every((constraint) =>
+        satisfiesValueConstraints(value, constraint, context)
+      );
+      if (!allSatisfied) {
+        violations.push({
+          path: `/${propKey}`,
+          message: "Value does not satisfy all constraints in sh:and",
+          value,
+          constraint: "and",
+        });
+      }
+    }
+
+    if (propShape.not) {
+      if (satisfiesValueConstraints(value, propShape.not, context)) {
+        violations.push({
+          path: `/${propKey}`,
+          message: "Value satisfies constraint in sh:not (should not)",
+          value,
+          constraint: "not",
         });
       }
     }
@@ -255,7 +353,11 @@ export function validate(shape: ShapeNodeDef, data: unknown): ShapeValidationRes
 }
 
 // Check only value-level constraints (no cardinality) for or/xone branches
-function satisfiesValueConstraints(value: unknown, def: Partial<ShapePropertyDef>): boolean {
+function satisfiesValueConstraints(
+  value: unknown,
+  def: Partial<ShapePropertyDef>,
+  context?: InferenceContext
+): boolean {
   // nodeKind
   if (def.nodeKind) {
     const isIri = typeof value === "string" && /^([a-zA-Z][a-zA-Z0-9+.-]*:)/.test(value);
@@ -273,6 +375,38 @@ function satisfiesValueConstraints(value: unknown, def: Partial<ShapePropertyDef
     const values = Array.isArray(value) ? value : [value];
     if (!values.some((v) => v === def.hasValue)) return false;
   }
+  // datatype
+  if (def.datatype !== undefined) {
+    const expectedDatatype = isDatatype(def.datatype) ? getDatatypeIRI(def.datatype) : def.datatype;
+
+    const values = Array.isArray(value) ? value : [value];
+    for (const v of values) {
+      if (typeof v === "string" && expectedDatatype === "http://www.w3.org/2001/XMLSchema#string")
+        continue;
+      if (typeof v === "number" && expectedDatatype === "http://www.w3.org/2001/XMLSchema#integer")
+        continue;
+      if (typeof v === "number" && expectedDatatype === "http://www.w3.org/2001/XMLSchema#decimal")
+        continue;
+      if (typeof v === "boolean" && expectedDatatype === "http://www.w3.org/2001/XMLSchema#boolean")
+        continue;
+      return false;
+    }
+  }
+  // class (requires context)
+  if (def.class !== undefined && context) {
+    const expectedClass = isClass(def.class) ? getClassIRI(def.class) : def.class;
+
+    const values = Array.isArray(value) ? value : [value];
+    for (const v of values) {
+      if (typeof v === "object" && v !== null && "@type" in v) {
+        const types = Array.isArray(v["@type"]) ? v["@type"] : [v["@type"]];
+        const isValid = types.some((type: string) => {
+          return context.classes.get(type)?.has(expectedClass) || type === expectedClass;
+        });
+        if (!isValid) return false;
+      }
+    }
+  }
   // strings
   if (typeof value === "string") {
     if (def.minLength !== undefined && value.length < def.minLength) return false;
@@ -286,13 +420,14 @@ function satisfiesValueConstraints(value: unknown, def: Partial<ShapePropertyDef
     if (def.minExclusive !== undefined && value <= def.minExclusive) return false;
     if (def.maxExclusive !== undefined && value >= def.maxExclusive) return false;
   }
+
   return true;
 }
 
 /**
  * Check if data matches shape (boolean result)
  */
-export function check(shape: ShapeNodeDef, data: unknown): boolean {
-  const result = validate(shape, data);
+export function check(shape: ShapeNodeDef, data: unknown, context?: InferenceContext): boolean {
+  const result = validate(shape, data, context);
   return result.ok;
 }

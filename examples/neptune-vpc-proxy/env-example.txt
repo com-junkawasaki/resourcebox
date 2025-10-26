@@ -1,0 +1,8 @@
+# Neptune cluster configuration
+NEPTUNE_ENDPOINT=https://your-cluster.cluster-xyz.region.neptune.amazonaws.com:8182
+NEPTUNE_DATABASE=your-database-name
+
+# AWS configuration (optional if using AWS CLI or instance profile)
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key

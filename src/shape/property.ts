@@ -25,6 +25,8 @@ export interface PropertyOptions {
   readonly propertyPath?: OntoIRI;
   readonly or?: ReadonlyArray<PropertyOptions>;
   readonly xone?: ReadonlyArray<PropertyOptions>;
+  readonly and?: ReadonlyArray<PropertyOptions>;
+  readonly not?: PropertyOptions;
   readonly description?: string;
 }
 
@@ -61,8 +63,10 @@ export function Property(options: PropertyOptions): ShapePropertyDef {
     ...(options.in !== undefined && { in: options.in }),
     ...(options.hasValue !== undefined && { hasValue: options.hasValue }),
     ...(options.propertyPath !== undefined && { propertyPath: options.propertyPath }),
-    ...(options.or !== undefined && { or: options.or as unknown as ShapePropertyDef[] }),
-    ...(options.xone !== undefined && { xone: options.xone as unknown as ShapePropertyDef[] }),
+    ...(options.or !== undefined && { or: options.or.map(Property) }),
+    ...(options.xone !== undefined && { xone: options.xone.map(Property) }),
+    ...(options.and !== undefined && { and: options.and.map(Property) }),
+    ...(options.not !== undefined && { not: Property(options.not) }),
     ...(options.description !== undefined && { description: options.description }),
   };
 }

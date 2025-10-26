@@ -4,4 +4,3 @@
 export type { RdfXmlImportOptions } from "./rdfxml.js";
 
 export { importContextFromRdfXml, importContextFromStream } from "./rdfxml.js";
-

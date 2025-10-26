@@ -1,0 +1,16 @@
+{
+  "name": "@gftdcojp/resourcebox-neptune-example",
+  "version": "0.1.0",
+  "description": "Neptune SPARQL client with SigV4 signing",
+  "main": "index.js",
+  "scripts": {
+    "query": "node query.js",
+    "update": "node update.js"
+  },
+  "dependencies": {
+    "@aws-sdk/credential-providers": "^3.600.0",
+    "@aws-sdk/signature-v4": "^4.0.0",
+    "@aws-crypto/sha256-js": "^5.2.0",
+    "undici": "^6.18.0"
+  }
+}

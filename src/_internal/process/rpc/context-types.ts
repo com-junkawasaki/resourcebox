@@ -34,9 +34,7 @@ export function expandContextValue(term: JsonLdContextValue): RpcTermKind {
 /**
  * Expand an entire context map into RPC metadata map.
  */
-export function expandContextMap(
-  context: JsonLdContextMap
-): Record<string, RpcTermKind> {
+export function expandContextMap(context: JsonLdContextMap): Record<string, RpcTermKind> {
   const result: Record<string, RpcTermKind> = {};
   for (const [term, definition] of Object.entries(context)) {
     result[term] = expandContextValue(definition);
@@ -66,4 +64,3 @@ function classifyDefinitionTerm(def: JsonLdTermDefinition): RpcTermKind {
 function isNamespaceDefinition(value: string): boolean {
   return value.endsWith(":") || value.endsWith("/") || value.endsWith("#");
 }
-
