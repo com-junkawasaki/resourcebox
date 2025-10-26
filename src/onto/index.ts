@@ -78,3 +78,13 @@ export {
   Base64Binary,
   HexBinary,
 } from "./datatype.js";
+
+// Inference (RDFS/OWL Lite reasoning)
+export {
+  createInferenceContext,
+  isSubClassOf,
+  areEquivalentClasses,
+  getInverseProperty,
+  getAllSuperClasses,
+} from "./inference.js";
+export type { InferenceContext } from "./inference.js";

@@ -6,7 +6,7 @@ import { Readable } from "node:stream";
 import type { Quad } from "@rdfjs/types";
 import { RdfXmlParser } from "rdfxml-streaming-parser";
 
-import type { JsonLdContext } from "../../../core/context/types.js";
+import type { JsonLdContext } from "../../../resource/context.js";
 
 const RDF_TYPE_IRI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 export interface RdfXmlImportOptions {

@@ -79,6 +79,13 @@ export const Onto = {
   Expressions: OntoNS.Expressions,
   OntologyContainer: OntoNS.OntologyContainer,
   toJsonLd: OntoNS.toJsonLd,
+
+  // Inference (RDFS/OWL Lite reasoning)
+  createInferenceContext: OntoNS.createInferenceContext,
+  isSubClassOf: OntoNS.isSubClassOf,
+  areEquivalentClasses: OntoNS.areEquivalentClasses,
+  getInverseProperty: OntoNS.getInverseProperty,
+  getAllSuperClasses: OntoNS.getAllSuperClasses,
 };
 
 // Export Onto types
@@ -91,7 +98,11 @@ export type {
   NamespaceOptions,
   ClassOptions,
   PropertyOptions,
+  InferenceContext,
 } from "./onto/index.js";
+
+// Top-level re-export for backward compatibility with README examples
+export { createInferenceContext } from "./onto/inference.js";
 
 // ==========================================================================
 // Resource - Resource layer (data structure definition)

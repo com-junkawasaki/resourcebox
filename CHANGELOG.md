@@ -5,6 +5,101 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2025-10-26
+
+### Design Philosophy
+
+ResourceBox now fully aligns with the TypeBox design philosophy adapted to the semantic web:
+
+**"TS静的型×RDF/OWL/SHACL、関数合成、標準準拠のランタイム検証"**
+
+- Unify TypeScript static types with RDF, OWL, and SHACL
+- Compose schemas functionally
+- Validate at runtime against open standards
+
+Inspired by [TypeBox](https://github.com/sinclairzx81/typebox).
+
+### Breaking Changes
+
+- **Removed legacy DSL API**: The entire `src/core/dsl` layer has been removed
+  - **REMOVED**: `defineShape()` - Use `Resource.Shaped()` or `Shape.Define()` + `Shape.fromResource()` instead
+  - **REMOVED**: `iri()`, `classIri()`, `propertyIri()`, `datatypeIri()` - Use `Onto.iri()` or direct IRI strings
+  - **REMOVED**: `cardinality()`, `exactlyOne()`, `optional()`, `oneOrMore()`, `zeroOrMore()` - Use SHACL `minCount`/`maxCount` in `Shape.Property()`
+  - **REMOVED**: `range.datatype()`, `range.shape()` - Use `Shape.Property({ datatype: ... })` or `Shape.Property({ class: ... })`
+
+- **Removed duplicate context generation**: `buildContext()` from `src/core/context` has been removed
+  - **Use instead**: `Resource.context()` for unified JSON-LD context generation
+  - **REMOVED**: `mergeContexts()`, `extractNamespacePrefixes()` - Now handled internally by `Resource.context()`
+
+- **Unified three-layer API**: Public API now strictly follows Onto → Resource → Shape separation
+  - Use `Onto.*` for vocabulary (classes, properties, namespaces)
+  - Use `Resource.*` for data structure (TypeBox-like schemas)
+  - Use `Shape.*` for constraints (SHACL validation)
+
+### Added
+
+- **Inference API exposure**: `createInferenceContext` is now properly exposed
+  - Available as `Onto.createInferenceContext()`
+  - Also exported at top level: `import { createInferenceContext } from '@gftdcojp/resourcebox'`
+  - Includes helper functions: `isSubClassOf`, `areEquivalentClasses`, `getInverseProperty`, `getAllSuperClasses`
+
+- **Design Philosophy section** in README documenting the TypeBox-inspired approach
+
+### Migration Guide
+
+**Before (v0.2.x with legacy DSL):**
+```typescript
+import { defineShape, iri, cardinality, range } from '@gftdcojp/resourcebox';
+
+const Person = defineShape({
+  classIri: iri("ex:Person"),
+  schema: Type.Object({
+    email: Type.String({ format: "email" }),
+  }),
+  props: {
+    email: {
+      predicate: iri("ex:hasEmail"),
+      cardinality: cardinality({ min: 1, max: 1, required: true }),
+      range: range.datatype(iri("xsd:string")),
+    },
+  },
+});
+```
+
+**After (v1.0.0 with three-layer API):**
+```typescript
+import { Onto, Resource, Shape } from '@gftdcojp/resourcebox';
+
+const ex = Onto.Namespace({ prefix: "ex", uri: "http://example.org/" });
+
+const PersonResource = Resource.Shaped({
+  class: ex("Person"),
+  properties: {
+    email: Resource.String({
+      property: ex("hasEmail"),
+      format: "email",
+      required: true
+    })
+  },
+  shape: {
+    closed: true
+  }
+});
+
+// Or use Shape.Define() for more control:
+const PersonShape = Shape.Define({
+  targetClass: ex("Person"),
+  property: {
+    email: Shape.Property({
+      path: ex("hasEmail"),
+      datatype: Onto.Datatype.String,
+      minCount: 1,
+      maxCount: 1
+    })
+  }
+});
+```
+
 ## [0.2.0] - 2025-01-24
 
 ### Added

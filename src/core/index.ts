@@ -1,7 +1,8 @@
 // DAG: core (main export)
-// @gftdcojp/resourcebox-core main entry point
+// @gftdcojp/resourcebox-core internal types (not for public API)
+// The core layer is now internal-only; public API uses Onto/Resource/Shape
 
-// Types
+// Internal types (may be referenced by Resource/Shape layers)
 export type {
   IRI,
   Cardinality,
@@ -27,23 +28,6 @@ export {
   validatePropertyMeta,
 } from "./types/index.js";
 
-// DSL API
-export {
-  iri,
-  classIri,
-  propertyIri,
-  datatypeIri,
-  cardinality,
-  exactlyOne,
-  optional,
-  oneOrMore,
-  zeroOrMore,
-  range,
-  defineShape,
-} from "./dsl/index.js";
-
-export type { DefineShape } from "./dsl/index.js";
-
 // Type-level checks (for advanced usage)
 export type {
   ValidateCardinalityOptional,
@@ -62,14 +46,3 @@ export {
   validateExtendsCircularRuntime,
   validatePropsSchemaConsistencyRuntime,
 } from "./typecheck/index.js";
-
-// Context generation
-export type {
-  JsonLdTermDefinition,
-  JsonLdContextValue,
-  JsonLdContextMap,
-  JsonLdContext,
-  BuildContextOptions,
-} from "./context/index.js";
-
-export { buildContext, mergeContexts, extractNamespacePrefixes } from "./context/index.js";

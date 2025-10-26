@@ -1,6 +1,6 @@
 {
   "name": "@gftdcojp/resourcebox",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript",
   "license": "Apache-2.0",
   "author": "GFTD Co., JP",
