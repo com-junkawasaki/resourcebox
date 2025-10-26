@@ -3,6 +3,19 @@
 // トポロジカルソート: init → tooling → ontology → inference → resource → shape → process_import → process_rpc → validation → cli → examples → docs → ci_cd → complete
 
 local dag = {
+  // Philosophy: TS × RDF/OWL/SHACL union, functional composition, standards-compliant runtime validation
+  philosophy: {
+    id: "philosophy",
+    description: "TS 静的型と RDF/OWL/SHACL の合一、関数合成、標準準拠のランタイム検証",
+    references: [
+      { name: "TypeBox", url: "https://github.com/sinclairzx81/typebox" },
+      { name: "RDF 1.2", url: "https://www.w3.org/TR/rdf12-concepts/" },
+      { name: "OWL 2", url: "https://www.w3.org/TR/owl2-overview/" },
+      { name: "SHACL", url: "https://www.w3.org/TR/shacl/" },
+      { name: "JSON-LD 1.1", url: "https://www.w3.org/TR/json-ld11/" },
+    ],
+    dependencies: [],
+  },
   // 0. プロジェクト基盤初期化
   init: {
     id: "init",
@@ -21,7 +34,7 @@ local dag = {
   tooling: {
     id: "tooling",
     description: "Vitest / Changesets / GitHub Actions 下準備",
-    dependencies: ["init"],
+    dependencies: ["init", "philosophy"],
     outputs: [
       "vitest.config.ts",
       ".changeset/config.json",

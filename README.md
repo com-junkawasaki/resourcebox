@@ -15,6 +15,12 @@ ResourceBox provides a clean, TypeScript-first API for defining RDF resources, O
 - 🔗 **Composable**: Build complex ontologies from simple pieces
 - 🚀 **Production Ready**: Neptune VPC proxy, comprehensive testing, linting
 
+## Design Philosophy
+
+- TS静的型とRDF/OWL/SHACLの合一、関数合成、標準準拠のランタイム検証
+  - Unify TypeScript static types with RDF, OWL, and SHACL; compose schemas functionally; validate at runtime against open standards.
+  - Inspired by the TypeBox approach of “Json Schema Type Builder with Static Type Resolution,” adapted to the semantic web stack. See [TypeBox](https://github.com/sinclairzx81/typebox).
+
 ## Installation
 
 ```bash
