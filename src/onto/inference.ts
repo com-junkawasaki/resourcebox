@@ -70,7 +70,7 @@ export function createInferenceContext(
         if (!equivalentClasses.has(eq)) {
           equivalentClasses.set(eq, new Set());
         }
-        equivalentClasses.get(eq)!.add(def.iri);
+        equivalentClasses.get(eq)?.add(def.iri);
       }
     }
   }

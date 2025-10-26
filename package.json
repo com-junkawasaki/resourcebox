@@ -1,6 +1,6 @@
 {
   "name": "@gftdcojp/resourcebox",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript",
   "license": "Apache-2.0",
   "author": "GFTD Co., JP",
@@ -62,6 +62,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@changesets/cli": "^2.29.7",
+    "@rdfjs/types": "^2.0.1",
     "@types/node": "^22.10.2",
     "@types/rdf-js": "^4.0.2",
     "@vitest/coverage-v8": "2.1.9",

@@ -6,7 +6,7 @@ import { Readable } from "node:stream";
 import type { Quad } from "@rdfjs/types";
 import { RdfXmlParser } from "rdfxml-streaming-parser";
 
-import type { JsonLdContext, JsonLdContextMap } from "../../../core/context/types.js";
+import type { JsonLdContext } from "../../../core/context/types.js";
 
 const RDF_TYPE_IRI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 export interface RdfXmlImportOptions {
@@ -37,7 +37,7 @@ function buildContextFromQuads(
 ): JsonLdContext {
   const { namespaces = {}, includeClasses = true } = options;
 
-  const contextMap: JsonLdContextMap = {};
+  const contextMap: Record<string, any> = {};
 
   for (const [prefix, iri] of Object.entries(namespaces)) {
     contextMap[prefix] = iri;
@@ -85,7 +85,7 @@ function buildContextFromQuads(
 }
 
 async function parseRdfXmlToQuads(stream: Readable, baseIRI?: string): Promise<Quad[]> {
-  const parser = new RdfXmlParser({ baseIRI });
+  const parser = new RdfXmlParser({ baseIRI: baseIRI || "http://example.org/" });
 
   return new Promise((resolve, reject) => {
     const quads: Quad[] = [];

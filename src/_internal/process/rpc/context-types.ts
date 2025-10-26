@@ -56,8 +56,8 @@ function classifyDefinitionTerm(def: JsonLdTermDefinition): RpcTermKind {
   return {
     kind: "literal",
     iri: def["@id"],
-    datatype: def["@type"],
-    language: def["@language"],
+    ...(def["@type"] && { datatype: def["@type"] }),
+    ...(def["@language"] && { language: def["@language"] }),
   };
 }
 
