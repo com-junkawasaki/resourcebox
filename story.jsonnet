@@ -1,6 +1,6 @@
 // DAG: resourcebox-story
 // ResourceBox プロセスネットワーク DAG 定義
-// トポロジカルソート: init → tooling → ontology → resource → shape → process_import → process_rpc → validation → cli → examples → docs → ci_cd → complete
+// トポロジカルソート: init → tooling → ontology → inference → resource → shape → process_import → process_rpc → validation → cli → examples → docs → ci_cd → complete
 
 local dag = {
   // 0. プロジェクト基盤初期化
@@ -46,11 +46,22 @@ local dag = {
     ],
   },
 
+  // 2.5. Inference レイヤー (RDFS + OWL Lite)
+  inference: {
+    id: "inference",
+    description: "RDFS クロージャ + OWL Lite (equivalentClass/inverseOf) 軽量推論エンジン実装",
+    dependencies: ["ontology"],
+    outputs: [
+      "src/onto/inference.ts",
+      "src/onto/__tests__/inference.test.ts",
+    ],
+  },
+
   // 3. Resource レイヤー
   resource: {
     id: "resource",
     description: "Resource.* API と JSON-LD / validation 連携",
-    dependencies: ["ontology"],
+    dependencies: ["inference"],
     outputs: [
       "src/resource/primitives.ts",
       "src/resource/object.ts",
@@ -65,16 +76,17 @@ local dag = {
     ],
   },
 
-  // 4. SHACL Shape レイヤー
+  // 4. SHACL Shape レイヤー (拡張 Core)
   shape: {
     id: "shape",
-    description: "Shape.Define / Shape.Property / Shape.fromResource / Shape.validate / SHACL JSON-LD Export / SHACL-lite",
+    description: "Shape.Define / Shape.Property / Shape.fromResource / Shape.validate / SHACL Core (datatype/class/and/not/or/xone) + RDFS/OWL Lite 推論連携",
     dependencies: ["resource"],
     outputs: [
       "src/shape/define.ts",
       "src/shape/property.ts",
       "src/shape/from-resource.ts",
       "src/shape/validate.ts",
+      "src/shape/types.ts",
       "src/shape/index.ts",
       "src/shape/jsonld.ts",
     ],
@@ -107,11 +119,12 @@ local dag = {
   // 7. 検証・テスト統合
   validation: {
     id: "validation",
-    description: "Resource / Shape / Process 統合テストと toTypeBox 連携",
+    description: "Resource / Shape / Inference / Process 統合テスト、SHACL Core 拡張検証、Biome リンター連携",
     dependencies: ["process_rpc"],
     outputs: [
       "src/resource/__tests__",
       "src/shape/__tests__",
+      "src/onto/__tests__/inference.test.ts",
       "src/__tests__/integration.test.ts",
     ],
   },
@@ -130,7 +143,7 @@ local dag = {
   // 9. Examples / SPARQL 連携
   examples: {
     id: "examples",
-    description: "Comunica + 各種 SPARQL DB 例、CLI デモ",
+    description: "Comunica + 各種 SPARQL DB 例、SigV4 Neptune VPC クライアント、CLI デモ",
     dependencies: ["cli"],
     outputs: [
       "examples/comunica-sparql",
@@ -213,8 +226,8 @@ local topoSort(dag) =
 
   metrics: {
     totalNodes: std.length(std.objectFields(dag)),
-    maxDepth: 12,
-    avgDependencies: 1.18,
-    structure: "ontology-resource-shape-process-import unified",
+    maxDepth: 13,
+    avgDependencies: 1.15,
+    structure: "ontology-inference-resource-shape-process-import unified with RDFS/OWL Lite reasoning",
   },
 }

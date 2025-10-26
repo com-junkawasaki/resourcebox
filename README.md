@@ -1,6 +1,6 @@
 # ResourceBox
 
-**TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript**
+**TypeBox-inspired RDF Resource type builder with SHACL Core validation, RDFS/OWL Lite reasoning, and Neptune SigV4 client for TypeScript**
 
 ResourceBox provides a clean, TypeScript-first API for defining RDF resources, OWL ontologies, and SHACL constraints. Inspired by TypeBox's elegant design, ResourceBox brings type safety and validation to the semantic web.
 
@@ -8,10 +8,12 @@ ResourceBox provides a clean, TypeScript-first API for defining RDF resources, O
 
 - 🎯 **TypeBox-like API**: Fluent, intuitive schema definition
 - 🔒 **Type Safety**: Full TypeScript type inference with `Resource.Static<T>`
-- ✅ **Dual Validation**: Structural (JSON Schema) + Semantic (SHACL) validation
+- ✅ **Triple Validation**: Structural (JSON Schema) + Semantic (SHACL) + Inference (RDFS/OWL Lite)
+- 🧠 **Lightweight Reasoning**: RDFS closure + OWL Lite (equivalentClass, inverseOf) support
 - 🌐 **JSON-LD**: Automatic `@context` generation
-- 📦 **Three Layers**: Onto (OWL/RDFS) → Resource (Data) → Shape (SHACL)
+- 📦 **Four Layers**: Onto (OWL/RDFS) → Inference (RDFS/OWL Lite) → Resource (Data) → Shape (SHACL Core)
 - 🔗 **Composable**: Build complex ontologies from simple pieces
+- 🚀 **Production Ready**: Neptune VPC proxy, comprehensive testing, linting
 
 ## Installation
 
@@ -393,6 +395,74 @@ if (structResult.ok && shapeResult.ok) {
 }
 ```
 
+### With RDFS/OWL Lite Inference
+
+```typescript
+import { Onto, createInferenceContext } from '@gftdcojp/resourcebox';
+
+// Define ontology with equivalent classes and inverse properties
+const Person = Onto.Class({
+  iri: FOAF("Person"),
+  equivalentClasses: [EX("Individual")] // OWL Lite
+});
+
+const Organization = Onto.Class({ iri: EX("Organization") });
+
+const worksFor = Onto.Property({
+  iri: EX("worksFor"),
+  domain: [Person],
+  range: [Organization],
+  inverseOf: EX("employs") // OWL Lite
+});
+
+// Create inference context
+const context = createInferenceContext(
+  [
+    { iri: Person.iri, equivalentClasses: [EX("Individual")] },
+    { iri: Organization.iri }
+  ],
+  [
+    {
+      iri: worksFor.iri,
+      inverseOf: EX("employs")
+    }
+  ]
+);
+
+// Validate with inference
+const shape = Shape.Define({
+  targetClass: Person,
+  property: {
+    employer: Property({
+      path: EX("worksFor"),
+      class: Organization // Will use inference to check class compatibility
+    })
+  }
+});
+
+const result = Shape.validate(shape, data, context); // Pass context for inference
+```
+
+### Neptune VPC Proxy (SigV4 Authentication)
+
+Complete Node.js client for Neptune with automatic SigV4 signing:
+
+```bash
+# Install dependencies
+cd examples/neptune-vpc-proxy
+pnpm install
+
+# Configure environment
+export NEPTUNE_ENDPOINT=https://your-cluster.cluster-xyz.region.neptune.amazonaws.com:8182
+export NEPTUNE_DATABASE=your-database
+
+# Query
+node query.js
+
+# Update
+node update.js
+```
+
 ### Comunica + SPARQL (Neptune/Stardog/GraphDB/Jena/SAP HANA/Oracle)
 
 See `examples/comunica-sparql`:
@@ -416,38 +486,40 @@ pnpm construct
 
 - `examples/stardog-basic-auth` — Comunica with Stardog (Basic Auth) complete with SELECT / CONSTRUCT / UPDATE scripts
 - `examples/graphdb-public` — Comunica against public Ontotext GraphDB datasets (read-only)
-- `examples/neptune-vpc-proxy` — Notes for Amazon Neptune (VPC access + SigV4 signing)
+- `examples/neptune-vpc-proxy` — Complete Neptune VPC client with SigV4 signing, SPARQL SELECT/UPDATE support
 - `examples/cli-demo` — End-to-end CLI: define ResourceBox model → generate JSON-LD context / SHACL → query via Comunica
 
 ## Design Principles
 
 1. **TypeScript-first**: Leverage TypeScript's type system for compile-time safety
-2. **Layered Architecture**: Separate concerns (Onto → Resource → Shape)
-3. **Progressive Enhancement**: Use as much or as little as you need
-4. **TypeBox Compatibility**: Familiar API for TypeBox users
-5. **Semantic Web Standards**: Built on RDF, OWL, SHACL, JSON-LD
+2. **Four-Layer Architecture**: Separate concerns (Onto → Inference → Resource → Shape)
+3. **Lightweight Reasoning**: RDFS/OWL Lite support without heavy computation
+4. **Progressive Enhancement**: Use as much or as little as you need
+5. **TypeBox Compatibility**: Familiar API for TypeBox users
+6. **Production Ready**: Neptune integration, comprehensive testing, linting
+7. **Semantic Web Standards**: Built on RDF, OWL, SHACL, JSON-LD
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    ResourceBox                      │
-├─────────────┬─────────────────┬────────────────────┤
-│  Onto       │  Resource       │  Shape             │
-│  (OWL/RDFS) │  (Data)         │  (SHACL)           │
-├─────────────┼─────────────────┼────────────────────┤
-│ - Namespace │ - String        │ - Define           │
-│ - Class     │ - Number        │ - Property         │
-│ - Property  │ - Boolean       │ - fromResource     │
-│ - Datatype  │ - Object        │ - validate         │
-│             │ - Array         │                    │
-│             │ - Ref           │                    │
-│             │ - Literal       │                    │
-│             │ - Optional      │                    │
-│             │ - Static<T>     │                    │
-│             │ - validate      │                    │
-│             │ - context       │                    │
-└─────────────┴─────────────────┴────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              ResourceBox                                   │
+├─────────────┬─────────────────┬─────────────────┬─────────────────────────┤
+│  Onto       │  Inference      │  Resource       │  Shape                  │
+│  (OWL/RDFS) │  (RDFS/OWL Lite)│  (Data)         │  (SHACL Core)           │
+├─────────────┼─────────────────┼─────────────────┼─────────────────────────┤
+│ - Namespace │ - createContext │ - String        │ - Define                │
+│ - Class     │ - subClassOf    │ - Number        │ - Property              │
+│ - Property  │ - equivalentClass│ - Boolean       │ - fromResource          │
+│ - Datatype  │ - inverseOf     │ - Object        │ - validate (w/ inference)│
+│             │                 │ - Array         │                         │
+│             │                 │ - Ref           │                         │
+│             │                 │ - Literal       │                         │
+│             │                 │ - Optional      │                         │
+│             │                 │ - Static<T>     │                         │
+│             │                 │ - validate      │                         │
+│             │                 │ - context       │                         │
+└─────────────┴─────────────────┴─────────────────┴─────────────────────────┘
 ```
 
 ### RPC Integration (JSON-LD → TypeBox → tRPC/oRPC)
@@ -483,9 +555,11 @@ pnpm construct
 |---------|------------|---------|------|----------|
 | TypeScript Support | ✅ Full | ✅ Full | ❌ | ❌ |
 | Type Inference | ✅ | ✅ | ❌ | ❌ |
-| RDF/OWL Support | ✅ | ❌ | ✅ | ✅ |
+| RDF/OWL Support | ✅ RDFS/OWL Lite | ❌ | ✅ | ✅ |
+| Lightweight Reasoning | ✅ RDFS/OWL Lite | ❌ | ❌ | ❌ |
 | JSON Schema Validation | ✅ | ✅ | ❌ | ❌ |
-| SHACL Validation | ✅ | ❌ | Partial | ✅ |
+| SHACL Validation | ✅ Core | ❌ | Partial | ✅ |
+| Neptune SigV4 Client | ✅ | ❌ | ❌ | ❌ |
 | JSON-LD Context Gen | ✅ | ❌ | ❌ | ❌ |
 | Fluent API | ✅ | ✅ | ❌ | ❌ |
 
@@ -503,4 +577,4 @@ Apache-2.0
 
 ---
 
-**ResourceBox** = TypeBox-inspired + RDF Resource Type Builder + SHACL Validation + OWL Ontology Support + JSON-LD Context Generation
+**ResourceBox** = TypeBox-inspired + RDF Resource Type Builder + SHACL Core Validation + RDFS/OWL Lite Reasoning + Neptune SigV4 Client + JSON-LD Context Generation
