@@ -19,7 +19,21 @@ ResourceBox provides a clean, TypeScript-first API for defining RDF resources, O
 
 - TS静的型とRDF/OWL/SHACLの合一、関数合成、標準準拠のランタイム検証
   - Unify TypeScript static types with RDF, OWL, and SHACL; compose schemas functionally; validate at runtime against open standards.
-  - Inspired by the TypeBox approach of “Json Schema Type Builder with Static Type Resolution,” adapted to the semantic web stack. See [TypeBox](https://github.com/sinclairzx81/typebox).
+  - Inspired by the TypeBox approach of "Json Schema Type Builder with Static Type Resolution," adapted to the semantic web stack. See [TypeBox](https://github.com/sinclairzx81/typebox).
+
+## Documentation
+
+📚 **[View Full Documentation](./docs/)** - Complete guide with tutorials, API reference, and examples
+
+To run documentation locally:
+
+```bash
+cd docs
+pnpm install
+pnpm dev
+```
+
+Visit http://localhost:4321
 
 ## Installation
 

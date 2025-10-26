@@ -1,0 +1,44 @@
+/* Custom styles for ResourceBox documentation */
+
+:root {
+	--sl-color-accent: 59, 130, 246;
+	--sl-color-accent-low: 17, 24, 39;
+	--sl-color-accent-high: 255, 255, 255;
+}
+
+/* Code blocks */
+pre {
+	border-radius: 0.5rem;
+}
+
+/* Inline code */
+:not(pre) > code {
+	background-color: var(--sl-color-gray-6);
+	padding: 0.125rem 0.375rem;
+	border-radius: 0.25rem;
+	font-size: 0.9em;
+}
+
+/* API signature blocks */
+.api-signature {
+	background-color: var(--sl-color-gray-6);
+	padding: 1rem;
+	border-radius: 0.5rem;
+	margin: 1rem 0;
+	border-left: 4px solid rgb(var(--sl-color-accent));
+}
+
+/* Example blocks */
+.example {
+	margin: 1.5rem 0;
+}
+
+/* Philosophy highlights */
+.philosophy-highlight {
+	background-color: var(--sl-color-bg-accent);
+	padding: 1rem;
+	border-radius: 0.5rem;
+	margin: 1rem 0;
+	border-left: 4px solid rgb(var(--sl-color-accent));
+}
+

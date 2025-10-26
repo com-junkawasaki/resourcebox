@@ -1,0 +1,125 @@
+---
+title: ResourceBox
+description: TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support
+template: splash
+hero:
+  title: ResourceBox
+  tagline: TypeBox-inspired RDF Resource type builder with SHACL validation and OWL ontology support for TypeScript
+  actions:
+    - text: Get Started
+      link: /installation/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/gftdcojp/resourcebox
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Design Philosophy
+
+<div class="philosophy-highlight">
+
+**"TS静的型×RDF/OWL/SHACL、関数合成、標準準拠のランタイム検証"**
+
+- Unify TypeScript static types with RDF, OWL, and SHACL
+- Compose schemas functionally
+- Validate at runtime against open standards
+
+Inspired by [TypeBox](https://github.com/sinclairzx81/typebox).
+
+</div>
+
+## Features
+
+<CardGrid>
+  <Card title="TypeBox-like API" icon="puzzle">
+    Fluent, intuitive schema definition with full TypeScript type inference
+  </Card>
+  <Card title="Three-Layer Architecture" icon="rocket">
+    Separate concerns: Onto (vocabulary) → Resource (structure) → Shape (constraints)
+  </Card>
+  <Card title="Triple Validation" icon="approve-check">
+    Structural (JSON Schema), Semantic (SHACL), and Inference (RDFS/OWL Lite)
+  </Card>
+  <Card title="Lightweight Reasoning" icon="star">
+    RDFS closure + OWL Lite support without heavy computation
+  </Card>
+  <Card title="JSON-LD Generation" icon="document">
+    Automatic @context generation from Resource definitions
+  </Card>
+  <Card title="Production Ready" icon="rocket">
+    Neptune integration, comprehensive testing, linting
+  </Card>
+</CardGrid>
+
+## Quick Example
+
+```typescript
+import { Onto, Resource, Shape } from '@gftdcojp/resourcebox';
+
+// 1. Define ontology
+const foaf = Onto.Namespace({
+  prefix: "foaf",
+  uri: "http://xmlns.com/foaf/0.1/"
+});
+
+const Person = Onto.Class({
+  iri: foaf("Person"),
+  label: "Person"
+});
+
+// 2. Define resource schema
+const PersonResource = Resource.Object({
+  "@id": Resource.String({ format: "uri" }),
+  "@type": Resource.Literal([foaf("Person")]),
+  
+  name: Resource.String({
+    property: foaf("name"),
+    minLength: 1,
+    required: true
+  }),
+  
+  email: Resource.String({
+    property: foaf("mbox"),
+    format: "email",
+    optional: true
+  })
+}, {
+  class: Person
+});
+
+// 3. Type inference
+type Person = Resource.Static<typeof PersonResource>;
+
+// 4. Validate data
+const result = Resource.validate(PersonResource, data);
+if (result.ok) {
+  console.log("✓ Valid:", result.data);
+}
+
+// 5. Generate JSON-LD context
+const context = Resource.context(PersonResource);
+```
+
+## Next Steps
+
+<CardGrid>
+  <Card title="Installation" icon="add-document">
+    Learn how to install and set up ResourceBox in your project.
+    [Get Started →](/installation/)
+  </Card>
+  <Card title="Quick Start Guide" icon="open-book">
+    Follow our step-by-step guide to build your first semantic web application.
+    [Quick Start →](/quick-start/)
+  </Card>
+  <Card title="API Reference" icon="document">
+    Explore the complete API documentation for all three layers.
+    [Browse API →](/onto/overview/)
+  </Card>
+  <Card title="Examples" icon="rocket">
+    Check out real-world examples and integration guides.
+    [View Examples →](/examples/basic/)
+  </Card>
+</CardGrid>
