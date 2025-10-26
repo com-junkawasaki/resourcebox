@@ -1,11 +1,17 @@
 // DAG: process-rpc
 // JSON-LD context term expansion utilities for RPC bridges
 
-import type {
-  JsonLdContextMap,
-  JsonLdContextValue,
-  JsonLdTermDefinition,
-} from "../../../core/context/types.js";
+import type { ContextMap, ContextValue } from "../../../resource/context.js";
+
+// Type aliases for backward compatibility
+export type JsonLdContextMap = ContextMap;
+export type JsonLdContextValue = ContextValue;
+export type JsonLdTermDefinition = {
+  "@id": string;
+  "@type"?: string;
+  "@language"?: string;
+  "@container"?: string | string[];
+};
 
 /**
  * RPC-oriented classification of JSON-LD term definitions.
